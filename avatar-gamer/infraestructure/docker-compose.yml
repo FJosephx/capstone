@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16
+    env_file: .env
+    ports: ["5432:5432"]
+    volumes: [dbdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL","pg_isready -U $$POSTGRES_USER"]
+      interval: 10s
+      retries: 5
+
+  backend:
+    build:
+      context: ../backend
+    env_file: .env
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      WEB_ORIGIN: ${WEB_ORIGIN}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports: ["8080:8080"]
+
+  frontend:
+    build:
+      context: ../frontend
+    environment:
+      - VITE_API_BASE=http://localhost:8080
+    ports: ["5173:80"]
+    depends_on: [backend]
+
+volumes:
+  dbdata:

@@ -1,0 +1,10 @@
+server:
+  port: 8080
+spring:
+  profiles:
+    active: docker   # al correr en compose usamos este perfil
+cors:
+  allowed-origins: ${WEB_ORIGIN:http://localhost:5173}
+jwt:
+  secret: ${JWT_SECRET:dev-secret}
+  expiration: 3600000
