@@ -1,98 +1,37 @@
 version: "3.9"
 
-volumes:
-  dbdata:
-  m2cache:
-
 services:
-  # =========================
-  # PROD (perfil: prod)
-  # =========================
   db:
-    image: postgres:16
-    env_file: .env
+    image: postgres:16-alpine
+    container_name: avatargamer_db
+    environment:
+      POSTGRES_DB: avatargamer
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
-      - dbdata:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL","pg_isready -U $$POSTGRES_USER"]
-      interval: 10s
-      retries: 5
-    profiles: ["prod", "dev"]  # usamos la misma DB para ambos perfiles
+      test: ["CMD-SHELL", "pg_isready -U postgres -d avatargamer"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
 
   backend:
-    build:
-      context: ../backend
-      dockerfile: Dockerfile
-    environment:
-      # asegurarse que el backend apunte a la DB del compose
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      # (agrega aquí otros envs que uses en prod)
+    build: .
+    container_name: avatargamer_backend
     depends_on:
       db:
         condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      APP_JWT_SECRET: "change-this-in-prod-32-bytes-min"
+      APP_JWT_ISSUER: "avatargamer"
+      APP_JWT_ACCESS_TTL: "PT30M"      # 30 minutos
+      APP_JWT_REFRESH_TTL: "P7D"       # 7 días
     ports:
       - "8080:8080"
-    profiles: ["prod"]
 
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    environment:
-      # El frontend en prod suele apuntar al backend publicado en host:8080
-      # Si usas proxy en Nginx, ajusta a /api
-      - VITE_API_BASE=http://localhost:8080
-    depends_on:
-      - backend
-    # Nginx sirve en 80 dentro del contenedor; exponemos 5173 en host por costumbre del proyecto
-    ports:
-      - "5173:80"
-    profiles: ["prod"]
-
-  # =========================
-  # DEV (perfil: dev) - HOT RELOAD
-  # =========================
-  backend-dev:
-    image: maven:3.9-eclipse-temurin-21
-    working_dir: /app
-    command: mvn -q spring-boot:run
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/${POSTGRES_DB}
-      - SPRING_DATASOURCE_USERNAME=${POSTGRES_USER}
-      - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
-      # (opcional) apuntar al perfil 'dev' de Spring si lo usas
-      # - SPRING_PROFILES_ACTIVE=dev
-    volumes:
-      - ../backend:/app
-      - m2cache:/root/.m2
-    depends_on:
-      db:
-        condition: service_healthy
-    ports:
-      - "8080:8080"
-    profiles: ["dev"]
-
-  frontend-dev:
-    image: node:20-alpine
-    working_dir: /app
-    # instala deps rápido y levanta Vite en 0.0.0.0
-    command: sh -c "npm ci && npm run dev -- --host 0.0.0.0 --port 5173"
-    environment:
-      # El navegador llama al backend en tu host local (mapeado a 8080)
-      - VITE_API_BASE=http://localhost:8080
-      # Watchers para Windows/Mac/WSL si no detecta cambios
-      - CHOKIDAR_USEPOLLING=1
-      - WATCHPACK_POLLING=true
-    volumes:
-      - ../frontend:/app
-      # evita que node_modules del host pisen los del contenedor
-      - /app/node_modules
-    ports:
-      - "5173:5173"
-    depends_on:
-      - backend-dev
-    profiles: ["dev"]
+volumes:
+  db_data:
