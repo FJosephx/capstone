@@ -25,3 +25,6 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+#HELP.md innecesario
+backend/HELP.md
