@@ -1,0 +1,27 @@
+# Node
+**/node_modules/
+
+# Env
+.env
+.env.*
+frontend/.env*
+backend/.env*
+
+# Java/Maven
+**/target/
+
+# IDE/Editor
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# SO / misc
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
