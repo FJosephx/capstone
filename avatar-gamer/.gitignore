@@ -1,57 +1,9 @@
-# --- OS ---
-.DS_Store
-Thumbs.db
 
-# --- IDE/editores ---
-.idea/
-.vscode/
-*.iml
 
 # --- Node/Frontend (en cualquier subcarpeta) ---
 **/node_modules/
 **/dist/
 **/.vite/
 
-# --- Java/Spring ---
-**/target/
-
-# --- Docker/volúmenes/artefactos locales ---
-**/docker-data/**
-infraestructure/dbdata/
-**/*.log
-
-# --- Entornos/secrets (NO subir .env reales) ---
-**/.env
-**/.env.*
-!**/.env.example
-
 # Node
 **/node_modules/
-
-# Env
-.env
-.env.*
-frontend/.env*
-backend/.env*
-
-# Java/Maven
-**/target/
-
-# IDE/Editor
-.idea/
-*.iml
-.vscode/
-.classpath
-.project
-.settings/
-
-# SO / misc
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/
-
-#HELP.md innecesario
-backend/HELP.md
