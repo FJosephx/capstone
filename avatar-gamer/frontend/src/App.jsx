@@ -1,23 +1,21 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import PrivateRoute from "./components/PrivateRoute";
-import Home from "./pages/Home";
 import Login from "./pages/Login";
-import "./App.css";
+import Home from "./pages/Home";
+import Users from "./pages/Users";
 
 export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Rutas protegidas */}
         <Route element={<PrivateRoute />}>
           <Route path="/" element={<Home />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/users" element={<Users />} />
         </Route>
 
-        {/* Públicas */}
         <Route path="/login" element={<Login />} />
-
-        {/* Fallback */}
-        <Route path="*" element={<Login />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
