@@ -1,27 +1,86 @@
-# --- OS ---
+# =========================
+# Entornos y secretos
+# =========================
+.env
+*.env
+# Mantener archivos de ejemplo para documentar variables
+!**/.env.example
+!**/*.env.example
+
+# Overrides locales de Docker (cada dev usa su copia local no versionada)
+docker-compose.override.yml
+!docker-compose.override.example.yml
+**/docker-compose.override.yml
+!**/docker-compose.override.example.yml
+
+# =========================
+# Datos/volúmenes locales (ajusta según tus nombres)
+# =========================
+**/db_data/
+**/redis_data/
+**/es_data/
+**/minio_data/
+**/uploads/
+**/storage/
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+**/logs/
+
+# =========================
+# Frontend (React / Vite / Next / Nuxt / Angular)
+# =========================
+**/node_modules/
+**/dist/
+**/build/
+**/.vite/
+**/.next/
+**/.nuxt/
+**/.angular/
+**/coverage/
+**/.cache
+# Importante: no ignores los lockfiles para builds reproducibles
+# (se versionan normalmente)
+#!**/package-lock.json
+#!**/pnpm-lock.yaml
+#!**/yarn.lock
+
+# =========================
+# Backend Java / Spring Boot
+# =========================
+**/target/
+**/build/
+**/out/
+**/.gradle/
+**/surefire-reports/
+**/jacoco.exec
+**/jacoco/
+
+# Wrapper de Maven:
+# En la mayoría de proyectos se COMMITTEA el wrapper, así que NO lo ignores:
+# !mvnw
+# !mvnw.cmd
+# !.mvn/**
+
+# =========================
+# IDE / OS
+# =========================
+.vscode/
+.idea/
+*.iml
 .DS_Store
 Thumbs.db
 
-# --- IDE/editores ---
-.idea/
-.vscode/
-*.iml
+# =========================
+# Otros (si aplican en infra)
+# =========================
+# Terraform
+**/.terraform/
+**/*.tfstate
+**/*.tfstate.backup
 
-# --- Node/Frontend (en cualquier subcarpeta) ---
-**/node_modules/
-**/dist/
-**/.vite/
-
-# --- Java/Spring ---
-**/target/
-
-# --- Docker/volúmenes/artefactos locales ---
-**/docker-data/**
-infraestructure/dbdata/
-**/*.log
-
-# --- Entornos/secrets (NO subir .env reales) ---
-**/.env
-**/.env.*
-!**/.env.example
-
+# Docker exportaciones
+*.tar
