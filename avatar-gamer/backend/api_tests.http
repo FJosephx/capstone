@@ -68,3 +68,37 @@ POST {{baseUrl}}/auth/token
 Content-Type: application/json
 
 {"username":"admin","password":"admin"}
+
+### Admin login
+# @name adminLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin", "password":"admin"}
+
+### Admin puede
+GET {{baseUrl}}/ping/admin
+Authorization: Bearer {{adminLogin.response.body.$.access}}
+
+### Admin no es operator → 403
+GET {{baseUrl}}/ping/operator
+Authorization: Bearer {{adminLogin.response.body.$.access}}
+
+### Operator login
+# @name opLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"op1", "password":"operador1"}
+
+### Operator puede
+GET {{baseUrl}}/ping/operator
+Authorization: Bearer {{opLogin.response.body.$.access}}
+
+### Operator no es admin → 403
+GET {{baseUrl}}/ping/admin
+Authorization: Bearer {{opLogin.response.body.$.access}}
+
+### /me incluye role
+GET {{baseUrl}}/me
+Authorization: Bearer {{opLogin.response.body.$.access}}

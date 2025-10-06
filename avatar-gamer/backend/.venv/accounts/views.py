@@ -8,6 +8,8 @@ from django.contrib.auth import authenticate
 from rest_framework import serializers
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework import permissions
+from .permissions import IsAdmin, IsOperator
 
 # Vista para probar la api de login
 class LoginView(APIView):
@@ -34,12 +36,14 @@ class MeView(APIView):
 
     def get(self, request):
         u = request.user
+        role = getattr(getattr(u, "profile", None), "role", None)
         return Response({
             "id": u.id,
             "username": u.username,
             "email": u.email,
             "first_name": u.first_name,
             "last_name": u.last_name,
+            "role": role,
         })
         
 class LoginSerializer(serializers.Serializer):
@@ -100,3 +104,13 @@ class SafeTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class SafeTokenObtainPairView(TokenObtainPairView):
     serializer_class = SafeTokenObtainPairSerializer
+
+class AdminPing(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+    def get(self, request):
+        return Response({"ok": True, "who": "admin"})
+
+class OperatorPing(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOperator]
+    def get(self, request):
+        return Response({"ok": True, "who": "operator"})

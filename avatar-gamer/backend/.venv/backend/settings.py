@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'accounts',
+    'accounts.apps.AccountsConfig',  # Using the full app config to ensure signals are loaded
 ]
 
 MIDDLEWARE = [
