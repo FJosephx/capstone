@@ -31,3 +31,40 @@ Content-Type: application/json
   "username": "admin",
   "password": "mala"
 }
+
+### Cinco fallos → bloquea
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x1"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x2"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x3"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x4"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x5"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x5"}
+
+### Intento correcto durante bloqueo → debe avisar bloqueo
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"admin"}
