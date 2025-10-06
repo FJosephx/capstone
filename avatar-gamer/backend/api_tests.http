@@ -1,0 +1,33 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### 1) Obtener token (JWT)
+# @name login
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### 2) Llamar a /me con el access token (protegido)
+GET {{baseUrl}}/me
+Authorization: Bearer {{login.response.body.$.access}}
+
+### 3) Refrescar token
+# @name refresh
+POST {{baseUrl}}/auth/token/refresh
+Content-Type: application/json
+
+{
+  "refresh": "{{login.response.body.$.refresh}}"
+}
+
+### 4) Login inválido (debe dar 400)
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "mala"
+}
