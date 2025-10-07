@@ -38,3 +38,15 @@ class AccountLock(models.Model):
 
     def __str__(self):
         return f"{self.username} locked_until={self.locked_until} fails={self.fail_count}"
+
+class OperatorUserLink(models.Model):
+    operator = models.ForeignKey(User, on_delete= models.CASCADE, related_name='linked_users')
+    user = models.ForeignKey(User, on_delete= models.CASCADE, related_name='linked_operators')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = (('operator', 'user'),)
+        indexes = [models.Index(fields=['operator', 'user'])]
+        
+    def __str__(self):
+        return f"{self.operator.username} -> {self.user.username}"

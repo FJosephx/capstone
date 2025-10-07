@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
-from .serializers import LoginSerializer
+from .serializers import LoginSerializer, UserListItemSerializer, LinkCreateSerializer
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
 from rest_framework import serializers
@@ -10,6 +10,8 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from .permissions import IsAdmin, IsOperator
+from .models import OperatorUserLink
+from django.contrib.auth.models import User
 
 # Vista para probar la api de login
 class LoginView(APIView):
@@ -74,32 +76,32 @@ class LoginSerializer(serializers.Serializer):
 
 class SafeTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
-        # Get username before parent validation to handle failed auth
+        
         username = attrs.get('username', '')
         request = self.context.get("request")
         
-        # First check if the account is already locked
+        
         locked, remaining = is_locked(username)
         if locked:
             mins = int(remaining.total_seconds() // 60) + 1
             raise serializers.ValidationError({"detail": f"Cuenta bloqueada. Intenta en ~{mins} min."})
         
         try:
-            # Try regular token validation
+
             data = super().validate(attrs)
-            # Login success: register success and reset lock counter
+            
             register_success(username)
             register_attempt(request, username, True, self.user)
             return data
         except Exception as e:
-            # Login failed: register attempt and failure
+            
             register_attempt(request, username, False, None)
             until = register_fail(username)
             
-            # Check if account should be locked after this failure
+            
             if until:
                 raise serializers.ValidationError({"detail":"Cuenta bloqueada por múltiples intentos fallidos."})
-            # Re-raise the original validation error
+            
             raise e
 
 class SafeTokenObtainPairView(TokenObtainPairView):
@@ -114,3 +116,28 @@ class OperatorPing(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOperator]
     def get(self, request):
         return Response({"ok": True, "who": "operator"})
+    
+class LinkedUsersView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOperator]
+    def get (self, request):
+        q = User.objects.filter(linked_operators__operator=request.user).distinct()
+        search = request.query_params.get('search')
+        
+        if search:
+            q = q.filter(username__icontains=search) | q.filter(first_name__icontains=search) | q.filter(last_name__icontains=search)
+        data = UserListItemSerializer(q, many=True).data
+        return Response({"count": len(data), "results": data})
+    
+class LinkUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOperator]
+    def post(self, request):
+        s = LinkCreateSerializer(data=request.data, context={'request': request})
+        s.is_valid(raise_exception=True)
+        link = s.save()
+        return Response({"ok": True, "link_id": link.id}, status=status.HTTP_201_CREATED)
+    
+class UnlinkUserView(APIView):
+    permission_classes = [permissions.IsAuthenticated, IsOperator]
+    def delete(self, request, user_id:int):
+        OperatorUserLink.objects.filter(operator=request.user, user_id=user_id).delete()
+        return Response(status=204)
