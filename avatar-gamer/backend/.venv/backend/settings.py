@@ -103,7 +103,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', '').split(',') if os.getenv('ALLOWED_ORIGINS') else []
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8100', 'http://127.0.0.1:8100']
+# Agregar configuraciones adicionales para CORS
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_METHODS = [
+    'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
+]
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8100', 'http://127.0.0.1:8100', 'http://192.168.1.81:8100', 'capacitor://localhost']
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (

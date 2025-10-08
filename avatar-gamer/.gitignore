@@ -2,3 +2,5 @@ backend/.venv/Lib
 backend/.venv/Scripts
 backend/.env
 backend/.venv/pyvenv.cfg
+node_modules
+dist

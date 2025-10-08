@@ -1,0 +1,50 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    
+    repositories {
+        google()
+        mavenCentral()
+    }
+    // Forzar Java 17 para todas las herramientas de compilación
+    ext.java_version = JavaVersion.VERSION_17
+    
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.2'
+        classpath 'com.google.gms:google-services:4.4.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+// Configuración más forzada para todos los proyectos (root y subproyectos)
+allprojects {
+    tasks.withType(JavaCompile) {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+}
+
+//  Fuerza Java 17 en todos los subproyectos, sobrescribiendo configuraciones generadas
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('compileOptions')) {
+            project.compileOptions.sourceCompatibility = JavaVersion.VERSION_17
+            project.compileOptions.targetCompatibility = JavaVersion.VERSION_17
+        }
+    }
+}
