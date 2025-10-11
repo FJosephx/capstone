@@ -20,9 +20,15 @@ const routes: Routes = [
   },
   {
     path: 'operator',
-    loadChildren: () => import('./operator/operator.module').then(m => m.OperatorPageModule),
+    loadComponent: () => import('./operator/operator.page').then(m => m.OperatorPage),
     canActivate: [AuthGuard],
     data: { requiredRole: 'operator' }
+  },
+  {
+    path: 'user',
+    loadComponent: () => import('./user/user.page').then(m => m.UserPage),
+    canActivate: [AuthGuard],
+    data: { requiredRole: 'user' }
   }
 ];
 @NgModule({

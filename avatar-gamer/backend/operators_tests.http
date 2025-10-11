@@ -1,0 +1,34 @@
+# Pruebas para los endpoints de operadores
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### 1) Obtener token como usuario
+# @name userLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "user1",
+  "password": "usuario1"
+}
+
+### 2) Obtener token como operador
+# @name operatorLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "op1",
+  "password": "operador1"
+}
+
+### 3) Listar operadores vinculados (como usuario)
+GET {{baseUrl}}/users/operators
+Authorization: Bearer {{userLogin.response.body.$.access}}
+
+### 4) Listar usuarios vinculados (como operador)
+GET {{baseUrl}}/users/linked
+Authorization: Bearer {{operatorLogin.response.body.$.access}}
+
+### 5) Verificar información del usuario actual
+GET {{baseUrl}}/me
+Authorization: Bearer {{userLogin.response.body.$.access}}

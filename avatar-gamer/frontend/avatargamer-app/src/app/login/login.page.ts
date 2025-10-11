@@ -66,7 +66,7 @@ export class LoginPage implements OnInit {
           } else if (this.auth.isOperator()) {
             this.router.navigate(['/operator']);
           } else {
-            this.router.navigate(['/tabs']);
+            this.router.navigate(['/user']);
           }
         },
         error: (error) => {
