@@ -152,11 +152,19 @@ export class Auth {
   async logout() {
     if (!this._storage) return;
     
-    this._storage.remove(this.TOKEN_KEY);
-    this._storage.remove(this.USER_KEY);
+    // Limpiar token y datos de usuario del almacenamiento
+    await this._storage.remove(this.TOKEN_KEY);
+    await this._storage.remove(this.USER_KEY);
+    
+    // Reiniciar todos los estados
     this.currentUserSubject.next(null);
     this._isLoggedIn.next(false);
-    this.router.navigate(['/login']);
+    
+    // Limpiar cualquier otro dato en memoria que pueda estar guardado
+    localStorage.clear(); // Limpiar localStorage por si acaso
+    sessionStorage.clear(); // Limpiar sessionStorage por si acaso
+    
+    // No navegamos aquí - lo haremos desde los componentes
   }
 
   getCurrentUserRole(): string | null {

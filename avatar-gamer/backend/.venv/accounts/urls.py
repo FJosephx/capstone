@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     LoginView, AdminPing, OperatorPing, LinkUserView, UnlinkUserView, LinkedUsersView,
     LinkRequestCreateView, LinkRequestOperatorListView, LinkRequestUserListView,
-    LinkRequestDetailView, LinkRequestResponseView
+    LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView
 )
 
 urlpatterns = [
@@ -20,4 +20,8 @@ urlpatterns = [
     path('link-requests/received', LinkRequestUserListView.as_view()),  # GET /api/v1/link-requests/received
     path('link-requests/<int:pk>', LinkRequestDetailView.as_view()),  # GET /api/v1/link-requests/<id>
     path('link-requests/<int:pk>/respond', LinkRequestResponseView.as_view()),  # PATCH /api/v1/link-requests/<id>/respond
+    
+    # Nuevas rutas para operadores vinculados (para usuarios)
+    path('users/operators', LinkedOperatorsView.as_view()),  # GET /api/v1/users/operators
+    path('users/operators/<int:operator_id>', OperatorDetailView.as_view()),  # GET /api/v1/users/operators/<id>
 ]

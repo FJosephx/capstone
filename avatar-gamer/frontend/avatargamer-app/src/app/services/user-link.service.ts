@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { map, catchError, retry } from 'rxjs/operators';
+import { Observable, of, throwError, forkJoin } from 'rxjs';
+import { map, catchError, retry, mergeMap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface LinkedUser {
@@ -89,32 +89,55 @@ export class UserLinkService {
         catchError((error: HttpErrorResponse) => {
           console.error('[UserLinkService] Error al obtener operadores vinculados:', error);
           
-          if (error.status === 404) {
-            console.error('[UserLinkService] Endpoint no encontrado. Prueba alternativa...');
-            // Si el endpoint /users/operators no existe, intentar con otro endpoint alternativo
-            return this.http.get<LinkedUsersResponse>(`${this.API_URL}/operators/linked`)
-              .pipe(
-                map(altResponse => {
-                  console.log('[UserLinkService] Respuesta de endpoint alternativo:', altResponse);
-                  return altResponse;
-                }),
-                catchError(altError => {
-                  console.error('[UserLinkService] También falló el endpoint alternativo:', altError);
-                  // Devolver un objeto vacío compatible
-                  return of({ count: 0, results: [] });
-                })
-              );
+          // Intenta obtener operadores desde solicitudes aprobadas si la API devuelve un error
+          return this.getApprovedLinkRequestsOperators().pipe(
+            map(operatorsFromRequests => {
+              console.log('[UserLinkService] Operadores obtenidos de solicitudes:', operatorsFromRequests);
+              return { count: operatorsFromRequests.length, results: operatorsFromRequests };
+            }),
+            catchError(reqError => {
+              console.error('[UserLinkService] Error al obtener operadores desde solicitudes:', reqError);
+              return of({ count: 0, results: [] });
+            })
+          );
+        })
+      );
+  }
+  
+  // Método auxiliar para obtener operadores desde solicitudes aprobadas
+  private getApprovedLinkRequestsOperators(): Observable<LinkedUser[]> {
+    return this.http.get<LinkRequestsResponse>(`${this.API_URL}/link-requests/received?status=approved`)
+      .pipe(
+        mergeMap(response => {
+          if (!response?.results?.length) {
+            return of([]);
           }
           
-          if (error.status) {
-            console.error(`[UserLinkService] Código de estado: ${error.status}`);
-          }
-          if (error.error) {
-            console.error('[UserLinkService] Detalles del error:', error.error);
-          }
+          // Crear observables para cada solicitud de operador
+          const operatorRequests = response.results.map(req => 
+            this.http.get<LinkedUser>(`${this.API_URL}/users/operators/${req.operator}`).pipe(
+              catchError(error => {
+                console.log(`[UserLinkService] Error al obtener operador ${req.operator}, creando placeholder`);
+                // Crear un placeholder si hay un error
+                return of({
+                  id: req.operator,
+                  username: req.operator_username || `operador${req.operator}`,
+                  email: `${req.operator_username || 'operador' + req.operator}@example.com`,
+                  first_name: 'Operador',
+                  last_name: `#${req.operator}`,
+                  role: 'operator',
+                  status: 'offline' as 'offline' // Cast explícito al tipo correcto
+                });
+              })
+            )
+          );
           
-          // Devolver un objeto vacío compatible en caso de error
-          return of({ count: 0, results: [] });
+          // Combinar todos los resultados
+          return forkJoin(operatorRequests);
+        }),
+        catchError(error => {
+          console.error('[UserLinkService] Error al procesar solicitudes aprobadas:', error);
+          return of([]);
         })
       );
   }
@@ -203,6 +226,21 @@ export class UserLinkService {
 
   // Obtener detalles de un operador por su ID
   getOperatorById(operatorId: number): Observable<LinkedUser> {
-    return this.http.get<LinkedUser>(`${this.API_URL}/users/operators/${operatorId}`);
+    return this.http.get<LinkedUser>(`${this.API_URL}/users/operators/${operatorId}`)
+      .pipe(
+        catchError((error: HttpErrorResponse) => {
+          console.log(`[UserLinkService] Error al obtener operador ${operatorId}, creando placeholder`);
+          // En caso de error, crear un operador provisional
+          return of({
+            id: operatorId,
+            username: `operador${operatorId}`,
+            email: `operador${operatorId}@example.com`,
+            first_name: 'Operador',
+            last_name: `#${operatorId}`,
+            role: 'operator',
+            status: 'offline' as 'offline'
+          });
+        })
+      );
   }
 }

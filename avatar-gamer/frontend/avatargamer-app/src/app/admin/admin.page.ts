@@ -23,7 +23,10 @@ export class AdminPage implements OnInit {
 
   async logout() {
     await this.auth.logout();
-    this.router.navigate(['/login']);
+    
+    // Navegamos a la página de login y forzamos recarga para asegurar estado limpio
+    // Esto recargará completamente la aplicación
+    window.location.href = '/login';
   }
 
 }

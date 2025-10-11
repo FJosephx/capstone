@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.db import models
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -249,3 +250,65 @@ class LinkRequestResponseView(APIView):
                 pass
         
         return Response(response_data)
+
+class LinkedOperatorsView(APIView):
+    """Vista para que los usuarios obtengan la lista de operadores vinculados a ellos"""
+    permission_classes = [permissions.IsAuthenticated, IsEndUser]
+    
+    def get(self, request):
+        # Filtrar operadores vinculados al usuario actual
+        linked_operators = User.objects.filter(linked_users__user=request.user).distinct()
+        
+        # Buscar por nombre/username si se proporciona un parámetro de búsqueda
+        search = request.query_params.get('search')
+        if search:
+            linked_operators = linked_operators.filter(
+                models.Q(username__icontains=search) | 
+                models.Q(first_name__icontains=search) | 
+                models.Q(last_name__icontains=search)
+            )
+        
+        serializer = UserListItemSerializer(linked_operators, many=True)
+        return Response({
+            "count": len(serializer.data),
+            "results": serializer.data
+        })
+
+class OperatorDetailView(APIView):
+    """Vista para obtener detalles de un operador específico"""
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, operator_id):
+        # Obtener el operador solicitado
+        try:
+            operator = User.objects.get(id=operator_id)
+            
+            # Verificar que el operador realmente tenga el rol de operador
+            profile = getattr(operator, 'profile', None)
+            if not profile or getattr(profile, 'role', None) != 'operator':
+                return Response(
+                    {"detail": "El usuario especificado no es un operador"}, 
+                    status=status.HTTP_404_NOT_FOUND
+                )
+                
+            # Para usuarios normales, verificar que estén vinculados con este operador
+            if hasattr(request.user, 'profile') and request.user.profile.role == 'user':
+                link_exists = OperatorUserLink.objects.filter(
+                    operator=operator,
+                    user=request.user
+                ).exists()
+                
+                if not link_exists:
+                    return Response(
+                        {"detail": "No estás vinculado con este operador"}, 
+                        status=status.HTTP_403_FORBIDDEN
+                    )
+            
+            serializer = UserListItemSerializer(operator)
+            return Response(serializer.data)
+            
+        except User.DoesNotExist:
+            return Response(
+                {"detail": "Operador no encontrado"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
