@@ -19,7 +19,7 @@
       <ion-item lines="none">
         <ion-icon name="person" slot="start"></ion-icon>
         <ion-label>
-          <h2>ID: {{ userProfile?.id }}</h2>
+          <h2 class="user-id">ID: <span class="id-value">{{ userProfile?.id }}</span></h2>
           <p>Email: {{ userProfile?.email }}</p>
         </ion-label>
       </ion-item>
@@ -45,14 +45,14 @@
         </ion-button>
       </ion-list-header>
       
-      <ion-item *ngFor="let user of linkedUsers" button detail>
+      <ion-item *ngFor="let user of linkedUsers" button detail class="linked-user-item">
         <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'" 
                   [color]="user.status === 'online' ? 'success' : 'medium'"
                   slot="start"></ion-icon>
         <ion-label>
-          <h2>{{ user.username }}</h2>
-          <p>{{ user.email }}</p>
-          <p>Status: {{ user.status }}</p>
+          <h2 class="user-name">{{ user.username }}</h2>
+          <p class="user-email">{{ user.email }}</p>
+          <p class="user-status">Status: <span [class]="user.status === 'online' ? 'status-online' : 'status-offline'">{{ user.status }}</span></p>
         </ion-label>
         <ion-button fill="clear" slot="end" (click)="unlinkUser(user); $event.stopPropagation()">
           <ion-icon name="trash" color="danger"></ion-icon>
@@ -87,12 +87,12 @@
         </ion-button>
       </ion-list-header>
       
-      <ion-item *ngFor="let request of linkRequests" button detail>
-        <ion-icon name="person-add-outline" slot="start"></ion-icon>
+      <ion-item *ngFor="let request of linkRequests" button detail class="request-item">
+        <ion-icon name="person-add-outline" slot="start" color="primary"></ion-icon>
         <ion-label>
-          <h2>Usuario: {{ request.user_username }}</h2>
-          <p *ngIf="request.message">{{ request.message }}</p>
-          <p>Enviada: {{ request.created_at | date:'medium' }}</p>
+          <h2 class="request-username">Usuario: {{ request.user_username }}</h2>
+          <p *ngIf="request.message" class="request-message">"{{ request.message }}"</p>
+          <p class="request-date">Enviada: {{ request.created_at | date:'medium' }}</p>
         </ion-label>
         <ion-badge slot="end" [color]="getStatusColor(request.status)">
           {{ getStatusText(request.status) }}

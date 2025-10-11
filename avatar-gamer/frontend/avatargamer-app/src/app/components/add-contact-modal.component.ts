@@ -52,9 +52,48 @@ import { FormsModule } from '@angular/forms';
     </ion-content>
   `,
   styles: [`
+    ion-header ion-toolbar {
+      --border-width: 0;
+      --background: var(--ion-color-primary);
+    }
+    
     ion-content {
-      --padding-top: 20px;
-      --padding-bottom: 20px;
+      --padding-top: var(--ag-space-lg);
+      --padding-bottom: var(--ag-space-lg);
+    }
+    
+    ion-list {
+      background: transparent;
+      padding: 0;
+    }
+    
+    ion-item {
+      --border-radius: var(--ag-border-radius-md);
+      --background: rgba(var(--ion-color-light-rgb), 0.5);
+      margin-bottom: var(--ag-space-md);
+      
+      ion-label {
+        font-weight: var(--ag-font-weight-medium);
+      }
+      
+      ion-input, ion-textarea {
+        --padding-start: var(--ag-space-sm);
+        margin-top: var(--ag-space-xs);
+      }
+    }
+    
+    ion-button {
+      margin-top: var(--ag-space-md);
+      --border-radius: var(--ag-border-radius-md);
+      height: 48px;
+      font-weight: var(--ag-font-weight-medium);
+    }
+    
+    .ion-text-center p {
+      font-size: var(--ag-font-size-sm);
+      color: var(--ion-color-medium);
+      margin: var(--ag-space-md) 0;
+      line-height: 1.5;
     }
   `]
 })

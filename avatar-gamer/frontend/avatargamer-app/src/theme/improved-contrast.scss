@@ -1,0 +1,114 @@
+/**
+ * Estilos adicionales para mejorar la legibilidad en modo oscuro
+ * Específicamente para etiquetas importantes como IDs y nombres de usuario
+ */
+
+/* Mejorar contraste para IDs y valores clave */
+.user-id,
+.operator-id,
+h2.section-title {
+  color: var(--ag-text-high-contrast, #ffffff) !important;
+  font-weight: var(--ag-font-weight-medium);
+}
+
+/* Destacar valores de ID */
+.id-value,
+.user-value,
+.operator-value {
+  background-color: rgba(var(--ion-color-primary-rgb), 0.2);
+  padding: 3px 8px;
+  border-radius: var(--ag-border-radius-sm);
+  font-weight: var(--ag-font-weight-bold);
+  color: var(--ion-color-primary-tint);
+}
+
+/* Mejoras para listados de usuarios */
+.operator-name,
+.user-name,
+.request-username {
+  color: var(--ion-color-primary-tint);
+  font-weight: var(--ag-font-weight-bold);
+  font-size: var(--ag-font-size-md);
+}
+
+.operator-details,
+.user-details {
+  color: var(--ag-text-high-contrast, #ffffff);
+  font-weight: var(--ag-font-weight-medium);
+}
+
+.operator-email,
+.user-email,
+.request-date {
+  color: var(--ag-text-medium-contrast, #e0e0e0);
+}
+
+/* Mejoras para elementos dentro de items de lista */
+ion-item {
+  h2 {
+    color: var(--ag-text-high-contrast, #ffffff);
+    font-weight: var(--ag-font-weight-medium);
+  }
+  
+  h3 {
+    color: var(--ag-text-high-contrast, #ffffff);
+    font-weight: var(--ag-font-weight-medium);
+    opacity: 0.9;
+  }
+  
+  p {
+    color: var(--ag-text-medium-contrast, #e0e0e0);
+  }
+}
+
+/* Enfatizar badges y estados */
+.status-badge,
+.role-badge {
+  --color-contrast: black;
+  font-weight: var(--ag-font-weight-bold);
+}
+
+/* Mensajes y notas */
+.request-message {
+  color: var(--ag-text-high-contrast, #ffffff);
+  font-style: italic;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--ag-border-radius-sm);
+  padding: var(--ag-space-xs) var(--ag-space-sm);
+}
+
+/* Estados de online/offline */
+.status-online {
+  color: var(--ion-color-success);
+  font-weight: var(--ag-font-weight-medium);
+}
+
+.status-offline {
+  color: var(--ag-text-medium-contrast, #e0e0e0);
+}
+
+/* Ítems con hover mejorado */
+.operator-item:hover,
+.user-item:hover,
+.request-item:hover {
+  --background: rgba(var(--ion-color-primary-rgb), 0.1);
+}
+
+/* Mejora general para textos en cards */
+ion-card {
+  ion-card-content {
+    ion-item {
+      --background: transparent;
+      
+      ion-label {
+        h2, h3 {
+          color: var(--ag-text-high-contrast, #ffffff);
+        }
+        
+        p {
+          color: var(--ag-text-medium-contrast, #e0e0e0);
+        }
+      }
+    }
+  }
+}

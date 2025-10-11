@@ -64,8 +64,58 @@ import { FormsModule } from '@angular/forms';
     </div>
   `,
   styles: [`
+    ion-list {
+      background: transparent;
+      padding: var(--ag-space-xs);
+    }
+    
+    ion-list-header {
+      padding-left: var(--ag-space-sm);
+      
+      ion-label {
+        font-family: var(--ag-font-display);
+        font-weight: var(--ag-font-weight-bold);
+        font-size: var(--ag-font-size-lg);
+        color: var(--ion-color-primary);
+      }
+    }
+    
+    ion-item {
+      --border-radius: var(--ag-border-radius-md);
+      --background: var(--ion-card-background);
+      margin-bottom: var(--ag-space-sm);
+      box-shadow: var(--ag-shadow-xs);
+      
+      h2 {
+        font-weight: var(--ag-font-weight-medium);
+        margin-bottom: var(--ag-space-xs);
+      }
+      
+      p {
+        margin-bottom: var(--ag-space-xxs);
+      }
+    }
+    
     ion-badge {
-      margin-right: 10px;
+      padding: var(--ag-space-xs) var(--ag-space-sm);
+      border-radius: var(--ag-border-radius-md);
+      font-weight: var(--ag-font-weight-medium);
+    }
+    
+    .ion-text-center {
+      padding: var(--ag-space-xl);
+      background: rgba(var(--ion-color-light-rgb), 0.3);
+      border-radius: var(--ag-border-radius-lg);
+      margin: var(--ag-space-md) 0;
+      
+      ion-spinner {
+        margin-bottom: var(--ag-space-sm);
+      }
+      
+      p {
+        margin: var(--ag-space-xs) 0;
+        color: var(--ion-color-medium);
+      }
     }
   `]
 })

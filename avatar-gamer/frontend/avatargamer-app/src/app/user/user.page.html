@@ -19,7 +19,7 @@
       <ion-item lines="none">
         <ion-icon name="person" slot="start"></ion-icon>
         <ion-label>
-          <h2>ID: {{ userProfile?.id }}</h2>
+          <h2 class="user-id">ID: <span class="id-value">{{ userProfile?.id }}</span></h2>
           <p>Email: {{ userProfile?.email }}</p>
         </ion-label>
       </ion-item>
@@ -55,9 +55,9 @@
                     size="large"></ion-icon>
         </ion-avatar>
         <ion-label>
-          <h2>{{ operator.username || 'Operador ' + operator.id }}</h2>
-          <h3>{{ operator.first_name || 'Operador' }} {{ operator.last_name || '#' + operator.id }}</h3>
-          <p>{{ operator.email || operator.username + '@example.com' }}</p>
+          <h2 class="operator-name">{{ operator.username || 'Operador ' + operator.id }}</h2>
+          <h3 class="operator-details">{{ operator.first_name || 'Operador' }} {{ operator.last_name || '#' + operator.id }}</h3>
+          <p class="operator-email">{{ operator.email || operator.username + '@example.com' }}</p>
           <div class="badge-container">
             <ion-badge [color]="operator.status === 'online' ? 'success' : 'medium'" class="status-badge">
               {{ operator.status === 'online' ? 'En línea' : 'Desconectado' }}
