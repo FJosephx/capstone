@@ -48,7 +48,7 @@
         <ion-label>Operadores vinculados</ion-label>
       </ion-list-header>
       
-      <ion-item *ngFor="let operator of linkedOperators" button detail class="operator-item">
+      <ion-item *ngFor="let operator of linkedOperators" button detail class="operator-item" (click)="startChatWithOperator(operator)">
         <ion-avatar slot="start">
           <ion-icon class="avatar-icon" [name]="operator.status === 'online' ? 'person-circle' : 'person-circle-outline'" 
                     [color]="operator.status === 'online' ? 'success' : 'medium'"
@@ -122,3 +122,10 @@
     </ion-list>
   </div>
 </ion-content>
+
+<!-- Botón flotante para chat -->
+<ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <ion-fab-button color="primary" routerLink="/chat" class="chat-button">
+    <ion-icon name="chatbubbles"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

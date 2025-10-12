@@ -45,7 +45,7 @@
         </ion-button>
       </ion-list-header>
       
-      <ion-item *ngFor="let user of linkedUsers" button detail class="linked-user-item">
+      <ion-item *ngFor="let user of linkedUsers" button detail class="linked-user-item" (click)="startChatWithUser(user)">
         <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'" 
                   [color]="user.status === 'online' ? 'success' : 'medium'"
                   slot="start"></ion-icon>
@@ -57,6 +57,7 @@
         <ion-button fill="clear" slot="end" (click)="unlinkUser(user); $event.stopPropagation()">
           <ion-icon name="trash" color="danger"></ion-icon>
         </ion-button>
+        <ion-icon name="chatbubbles-outline" slot="end" color="primary"></ion-icon>
       </ion-item>
       
       <ion-item *ngIf="isLoading && activeTab === 'linked'" lines="none">
@@ -120,6 +121,13 @@
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
     <ion-fab-button (click)="openAddContactModal()">
       <ion-icon name="person-add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  
+  <!-- Botón flotante para chat -->
+  <ion-fab vertical="bottom" horizontal="start" slot="fixed">
+    <ion-fab-button color="primary" routerLink="/chat" class="chat-button">
+      <ion-icon name="chatbubbles"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

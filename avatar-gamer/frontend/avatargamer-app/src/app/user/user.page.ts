@@ -403,4 +403,18 @@ export class UserPage implements OnInit, OnDestroy {
     // Esto recargará completamente la aplicación
     window.location.href = '/login';
   }
+  
+  startChatWithOperator(operator: LinkedOperator) {
+    console.log('Iniciando chat con operador:', operator);
+    
+    // Guardar información del operador seleccionado en localStorage para mantenerla entre páginas
+    localStorage.setItem('selectedOperator', JSON.stringify({
+      id: operator.id,
+      username: operator.username,
+      status: operator.status
+    }));
+    
+    // Navegar a la página de chat
+    this.router.navigate(['/chat']);
+  }
 }

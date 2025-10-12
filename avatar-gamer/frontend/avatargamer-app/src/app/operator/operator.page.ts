@@ -180,4 +180,18 @@ export class OperatorPage implements OnInit {
     // Esto recargará completamente la aplicación
     window.location.href = '/login';
   }
+  
+  startChatWithUser(user: LinkedUser) {
+    console.log('Iniciando chat con usuario:', user);
+    
+    // Guardar información del usuario seleccionado en localStorage para mantenerla entre páginas
+    localStorage.setItem('selectedUser', JSON.stringify({
+      id: user.id,
+      username: user.username,
+      status: user.status
+    }));
+    
+    // Navegar a la página de chat
+    this.router.navigate(['/chat']);
+  }
 }

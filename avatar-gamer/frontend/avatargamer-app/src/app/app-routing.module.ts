@@ -29,6 +29,14 @@ const routes: Routes = [
     loadComponent: () => import('./user/user.page').then(m => m.UserPage),
     canActivate: [AuthGuard],
     data: { requiredRole: 'user' }
+  },
+  {
+    path: 'chat',
+    loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule)
+  },
+  {
+    path: 'jitsi-call',
+    loadChildren: () => import('./jitsi/jitsi-call/jitsi-call.module').then(m => m.JitsiCallModule)
   }
 ];
 @NgModule({

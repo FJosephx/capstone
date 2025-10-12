@@ -1,5 +1,13 @@
 /* Operator Page Specific Styles */
 
+/* Estilos para el botón de chat */
+.chat-button {
+  --border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 /* Estilos para mejorar legibilidad del ID de usuario */
 .user-id {
   color: var(--ag-text-high-contrast, #ffffff);
