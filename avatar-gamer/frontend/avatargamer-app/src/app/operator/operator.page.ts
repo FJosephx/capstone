@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Auth, UserProfile } from '../services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { ModalController, AlertController, LoadingController, IonicModule } from '@ionic/angular';
 import { AddContactModalComponent } from '../components/add-contact-modal.component';
 import { UserLinkService, LinkedUser, LinkRequest } from '../services/user-link.service';
@@ -13,7 +13,7 @@ import { SharedModule } from '../shared/shared.module';
   templateUrl: './operator.page.html',
   styleUrls: ['./operator.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, SharedModule]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule, SharedModule]
 })
 export class OperatorPage implements OnInit {
   userProfile: UserProfile | null = null;
@@ -74,6 +74,14 @@ export class OperatorPage implements OnInit {
     } finally {
       this.isLoading = false;
     }
+  }
+
+  /**
+   * Navega a la página del chat con IA
+   */
+  navigateToAIChat() {
+    console.log('Navegando a AI Chat');
+    this.router.navigateByUrl('/ai-chat');
   }
 
   async loadPendingRequests() {

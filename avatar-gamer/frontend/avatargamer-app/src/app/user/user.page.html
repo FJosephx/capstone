@@ -26,6 +26,18 @@
     </ion-card-content>
   </ion-card>
 
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Asistente IA</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-button expand="block" (click)="navigateToAIChat()" color="tertiary">
+        <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+        Hablar con el Asistente IA
+      </ion-button>
+    </ion-card-content>
+  </ion-card>
+
   <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="ios" class="ion-margin-bottom">
     <ion-segment-button value="linked">
       <ion-label>Operadores Vinculados</ion-label>

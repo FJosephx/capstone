@@ -22,11 +22,6 @@
       </ion-label>
     </ion-item>
     
-    <ion-buttons slot="end">
-      <ion-button (click)="startVideoCall()">
-        <ion-icon name="videocam"></ion-icon>
-      </ion-button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -80,9 +75,6 @@
       <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage"></ion-input>
       <ion-button (click)="sendMessage()" [disabled]="!newMessage">
         <ion-icon name="send"></ion-icon>
-      </ion-button>
-      <ion-button color="success" (click)="startVideoCall()">
-        <ion-icon name="videocam"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>

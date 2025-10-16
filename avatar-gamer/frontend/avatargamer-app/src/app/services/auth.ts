@@ -91,6 +91,9 @@ export class Auth {
         this.currentUserSubject.next(user);
         this._isLoggedIn.next(true);
         await this._storage?.set(this.USER_KEY, user);
+        
+        // Guardar también en localStorage para acceso rápido
+        localStorage.setItem('user_profile', JSON.stringify(user));
       }
       return user;
     } catch (error) {

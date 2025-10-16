@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Auth, UserProfile } from '../services/auth';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { AlertController, LoadingController, IonicModule } from '@ionic/angular';
 import { UserLinkService, LinkRequest } from '../services/user-link.service';
 import { CommonModule } from '@angular/common';
@@ -23,7 +23,7 @@ interface LinkedOperator {
   templateUrl: './user.page.html',
   styleUrls: ['./user.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule, SharedModule]
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule, SharedModule]
 })
 export class UserPage implements OnInit, OnDestroy {
   userProfile: UserProfile | null = null;
@@ -207,6 +207,14 @@ export class UserPage implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Navega a la página del chat con IA
+   */
+  navigateToAIChat() {
+    console.log('Navegando a AI Chat');
+    this.router.navigateByUrl('/ai-chat');
+  }
+  
   /**
    * Carga las solicitudes pendientes desde el backend
    * @returns Promise que se resuelve cuando se han cargado las solicitudes

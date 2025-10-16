@@ -16,6 +16,7 @@ from rest_framework import permissions
 from .permissions import IsAdmin, IsOperator, IsEndUser
 from .models import OperatorUserLink, LinkRequest, LinkRequestStatus
 from django.contrib.auth.models import User
+from .ai_service import send_message_to_ai, AIServiceError
 
 # Vista para probar la api de login
 class LoginView(APIView):
@@ -311,4 +312,57 @@ class OperatorDetailView(APIView):
             return Response(
                 {"detail": "Operador no encontrado"}, 
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+
+# Vista para interactuar con la IA
+class AIAssistantView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        """
+        Endpoint para enviar mensajes a la IA y recibir respuestas
+        
+        Payload:
+        {
+            "text": "Mensaje para la IA",
+            "context": "Contexto opcional para personalizar la IA",
+            "response_length": "normal", // very_brief, brief, normal, complete, very_complete
+            "character_name": "sinclair", // Nombre del personaje/asistente
+            "language": "es" // Idioma (es, en)
+        }
+        """
+        try:
+            # Validar datos de entrada
+            text = request.data.get('text')
+            if not text:
+                return Response({"error": "El campo 'text' es requerido"}, 
+                               status=status.HTTP_400_BAD_REQUEST)
+            
+            # Parámetros opcionales
+            context = request.data.get('context')
+            response_length = request.data.get('response_length', 'normal')
+            character_name = request.data.get('character_name', 'sinclair')
+            language = request.data.get('language', 'es')
+            
+            # Enviar mensaje a la IA
+            ai_response = send_message_to_ai(
+                text=text,
+                context=context,
+                response_length=response_length,
+                character_name=character_name,
+                language=language
+            )
+            
+            return Response(ai_response, status=status.HTTP_200_OK)
+            
+        except AIServiceError as e:
+            return Response(
+                {"error": str(e)},
+                status=e.status_code if e.status_code else status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            return Response(
+                {"error": "Error interno del servidor"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )

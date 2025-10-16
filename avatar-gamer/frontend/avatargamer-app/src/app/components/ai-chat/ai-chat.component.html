@@ -1,0 +1,78 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Chat con IA</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="languageSelector.open()">
+        <ion-icon name="language-outline"></ion-icon>
+      </ion-button>
+      <ion-select #languageSelector [(ngModel)]="language" interface="popover" label="Idioma">
+        <ion-select-option value="es">Español</ion-select-option>
+        <ion-select-option value="en">English</ion-select-option>
+      </ion-select>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <div class="chat-container">
+          <div *ngFor="let message of messages" 
+              [ngClass]="message.isUser ? 'message user-message' : 'message ai-message'"
+              [class.error-message]="message.error">
+            <div class="message-bubble">
+              <p class="message-text">{{ message.text }}</p>
+              <p class="message-time">{{ message.timestamp | date:'short' }}</p>
+            </div>
+          </div>
+          
+          <!-- Indicador de escritura -->
+          <div *ngIf="isLoading" class="message ai-message">
+            <div class="message-bubble typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
+        </div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-grid>
+    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()">
+      <ion-row>
+        <ion-col size="12">
+          <ion-select [(ngModel)]="responseLength" 
+                      [ngModelOptions]="{standalone: true}"
+                      interface="popover" 
+                      label="Respuesta">
+            <ion-select-option *ngFor="let option of responseLengthOptions" 
+                              [value]="option.value">
+              {{ option.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="10">
+          <ion-item>
+            <ion-input formControlName="message" 
+                      placeholder="Escribe un mensaje..." 
+                      type="text"></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col size="2">
+          <ion-button expand="block" 
+                      type="submit" 
+                      [disabled]="chatForm.invalid || isLoading">
+            <ion-icon name="send"></ion-icon>
+          </ion-button>
+        </ion-col>
+      </ion-row>
+    </form>
+  </ion-grid>
+</ion-footer>

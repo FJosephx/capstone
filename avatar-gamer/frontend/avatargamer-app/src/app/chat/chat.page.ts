@@ -99,9 +99,4 @@ export class ChatPage implements OnInit {
     }
   }
 
-  startVideoCall() {
-    // Navegar al componente de llamada Jitsi
-    const roomName = `meeting-${Date.now()}`;
-    this.router.navigate(['/jitsi-call', roomName]);
-  }
 }

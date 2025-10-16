@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     LoginView, AdminPing, OperatorPing, LinkUserView, UnlinkUserView, LinkedUsersView,
     LinkRequestCreateView, LinkRequestOperatorListView, LinkRequestUserListView,
-    LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView
+    LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView,
+    AIAssistantView
 )
 
 urlpatterns = [
@@ -24,4 +25,7 @@ urlpatterns = [
     # Nuevas rutas para operadores vinculados (para usuarios)
     path('users/operators', LinkedOperatorsView.as_view()),  # GET /api/v1/users/operators
     path('users/operators/<int:operator_id>', OperatorDetailView.as_view()),  # GET /api/v1/users/operators/<id>
+    
+    # Ruta para el asistente IA
+    path('ai/chat', AIAssistantView.as_view()),  # POST /api/v1/ai/chat
 ]

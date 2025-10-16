@@ -16,6 +16,8 @@ class Profile(models.Model):
     # RF03
     role = models.CharField(max_length=16, choices=Role.choices, default=Role.USER)
     is_active = models.BooleanField(default=True)
+    # Campo para tracking de estado online
+    is_online = models.BooleanField(default=False)
     # Campos existentes
     bio = models.TextField(max_length=500, blank=True)
     avatar = models.ImageField(upload_to='avatars/', null=True, blank=True)

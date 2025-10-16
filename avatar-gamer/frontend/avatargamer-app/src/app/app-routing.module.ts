@@ -35,9 +35,9 @@ const routes: Routes = [
     loadChildren: () => import('./chat/chat.module').then(m => m.ChatModule)
   },
   {
-    path: 'jitsi-call',
-    loadChildren: () => import('./jitsi/jitsi-call/jitsi-call.module').then(m => m.JitsiCallModule)
-  }
+    path: 'ai-chat',
+    loadComponent: () => import('./ai-chat-page/ai-chat-page.page').then(m => m.AIChatPagePage)
+  },
 ];
 @NgModule({
   imports: [
