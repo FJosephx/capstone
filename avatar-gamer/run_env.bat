@@ -12,6 +12,4 @@ echo.
 echo Verificando dependencias...
 pip install -r requirements.txt
 
-echo.
-echo Iniciando el servidor Django...
-python manage.py runserver 0.0.0.0:8000
+call cd ..
