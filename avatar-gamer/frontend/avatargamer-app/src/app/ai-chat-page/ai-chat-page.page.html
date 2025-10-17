@@ -24,18 +24,31 @@
           <div *ngFor="let message of messages" 
               [ngClass]="message.isUser ? 'message user-message' : 'message ai-message'"
               [class.error-message]="message.error">
+            <div class="avatar" *ngIf="!message.isUser">
+              <ion-icon name="logo-ionic"></ion-icon>
+            </div>
             <div class="message-bubble">
+              <p class="sender-name" *ngIf="!message.isUser">Asistente Virtual</p>
               <p class="message-text">{{ message.text }}</p>
               <p class="message-time">{{ message.timestamp | date:'short' }}</p>
+            </div>
+            <div class="avatar user-avatar" *ngIf="message.isUser">
+              <ion-icon name="person"></ion-icon>
             </div>
           </div>
           
           <!-- Indicador de escritura -->
           <div *ngIf="isLoading" class="message ai-message">
+            <div class="avatar">
+              <ion-icon name="logo-ionic"></ion-icon>
+            </div>
             <div class="message-bubble typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
+              <p class="sender-name">Asistente Virtual</p>
+              <div class="dots-container">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
           </div>
         </div>
@@ -52,7 +65,9 @@
           <ion-select [(ngModel)]="responseLength" 
                       [ngModelOptions]="{standalone: true}"
                       interface="popover" 
-                      label="Respuesta">
+                      label="Respuesta"
+                      color="primary"
+                      class="response-type-select">
             <ion-select-option *ngFor="let option of responseLengthOptions" 
                               [value]="option.value">
               {{ option.label }}

@@ -86,3 +86,24 @@ a {
   max-width: 1200px;
   margin: 0 auto;
 }
+
+/* Global Styles for Select Components in Dark Mode */
+ion-select {
+  &::part(text) { 
+    color: white;
+  }
+  
+  &::part(placeholder) {
+    color: white;
+  }
+}
+
+/* Fix for popover select options in dark mode */
+.select-interface-option {
+  --color: white !important;
+  color: white !important;
+}
+
+.popover-content {
+  --background: #333 !important;
+}
