@@ -101,16 +101,18 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:8100",
-    "http://127.0.0.1:8100", 
-    "http://192.168.1.81:8100",
-    "http://localhost:4200",
-    "capacitor://localhost"
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:8100",
+#     "http://127.0.0.1:8100", 
+#     "http://192.168.1.81:8100",
+#     "http://192.168.1.5:8100",
+#     "http://localhost:4200",
+#     "capacitor://localhost"
+# ]
 
 # Agregar configuraciones adicionales para CORS
 CORS_ALLOW_CREDENTIALS = True
+
 CORS_ALLOW_METHODS = [
     'GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'
 ]
@@ -126,9 +128,9 @@ CORS_ALLOW_HEADERS = [
     'x-requested-with',
 ]
 # Para desarrollo, puedes usar esto (no recomendado en producción):
-# CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = True
 
-CSRF_TRUSTED_ORIGINS = ['http://localhost:8100', 'http://127.0.0.1:8100', 'http://192.168.1.81:8100', 'capacitor://localhost']
+CSRF_TRUSTED_ORIGINS = ['http://localhost:8100', 'http://127.0.0.1:8100', 'http://192.168.1.81:8100', 'capacitor://localhost', "http://192.168.1.5:8100"]
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
