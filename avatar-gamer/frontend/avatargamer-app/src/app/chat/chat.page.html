@@ -58,22 +58,53 @@
     </ion-card>
   </div>
 
-  <div class="chat-container">
-    <div *ngFor="let message of messages$ | async" 
-         [ngClass]="{'message-user': message.sender === 'user', 'message-operator': message.sender === 'operator'}">
-      <div class="message-bubble">
-        <div class="message-text">{{ message.text }}</div>
-        <div class="message-time">{{ message.timestamp | date:'shortTime' }}</div>
+  <ng-container *ngIf="connectionState$ | async as connectionState">
+    <ion-item *ngIf="connectionState !== 'connected'" lines="none" color="warning" class="connection-banner">
+      <ion-icon slot="start" name="cloud-offline"></ion-icon>
+      <ion-label>
+        <h3>
+          {{ connectionState === 'connecting'
+            ? 'Conectando con el servidor de chat...'
+            : 'Sin conexión con el servidor de chat' }}
+        </h3>
+        <p *ngIf="connectionState === 'disconnected'">
+          Revisa tu conexión a internet o intenta nuevamente en unos instantes.
+        </p>
+      </ion-label>
+    </ion-item>
+  </ng-container>
+
+  <div class="chat-container" *ngIf="userProfile as profile">
+    <ng-container *ngIf="messages$ | async as messages">
+      <div *ngFor="let message of messages" class="message"
+           [ngClass]="{
+             'message-outgoing': message.senderId === profile?.id,
+             'message-incoming': message.senderId !== profile?.id
+           }">
+        <div class="message-bubble">
+          <div class="message-text">{{ message.text }}</div>
+          <div class="message-meta">
+            <span class="message-author">
+              {{ message.senderId === profile?.id ? 'Tú' : (message.senderRole === 'operator' ? 'Operador' : 'Usuario') }}
+            </span>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </ng-container>
+  </div>
+
+  <div class="empty-state" *ngIf="!selectedContact">
+    <ion-icon name="chatbubbles-outline"></ion-icon>
+    <p>Selecciona un contacto para iniciar una conversación.</p>
   </div>
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
     <div class="input-container">
-      <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage"></ion-input>
-      <ion-button (click)="sendMessage()" [disabled]="!newMessage">
+      <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" [disabled]="!selectedContact"></ion-input>
+      <ion-button (click)="sendMessage()" [disabled]="!newMessage || !selectedContact">
         <ion-icon name="send"></ion-icon>
       </ion-button>
     </div>

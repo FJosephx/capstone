@@ -59,23 +59,47 @@
   }
 }
 
+.connection-banner {
+  --background: rgba(255, 193, 7, 0.15);
+  --inner-padding-bottom: 12px;
+  --inner-padding-top: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  h3 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--ion-color-medium-shade);
+  }
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 100px);
+  height: calc(100% - 120px);
   overflow-y: auto;
+  gap: 8px;
 }
 
-.message-user, .message-operator {
+.message {
   display: flex;
-  margin: 8px 0;
 }
 
-.message-user {
+.message-outgoing {
   justify-content: flex-end;
 }
 
-.message-operator {
+.message-incoming {
   justify-content: flex-start;
 }
 
@@ -83,25 +107,36 @@
   padding: 10px 15px;
   border-radius: 18px;
   max-width: 80%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.message-user .message-bubble {
+.message-outgoing .message-bubble {
   background-color: var(--ion-color-primary);
   color: white;
   border-bottom-right-radius: 0;
 }
 
-.message-operator .message-bubble {
+.message-incoming .message-bubble {
   background-color: #f1f1f1;
   color: black;
   border-bottom-left-radius: 0;
 }
 
-.message-time {
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   font-size: 0.7rem;
   margin-top: 4px;
-  text-align: right;
-  opacity: 0.7;
+  opacity: 0.8;
+}
+
+.message-author {
+  font-weight: 600;
+}
+
+.message-time {
+  margin-left: 12px;
 }
 
 .input-container {
@@ -117,4 +152,19 @@ ion-input {
   margin-right: 8px;
   --padding-start: 15px;
   --padding-end: 15px;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ion-color-medium);
+  margin-top: 32px;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
 }

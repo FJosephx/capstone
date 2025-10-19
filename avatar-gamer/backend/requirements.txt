@@ -6,3 +6,5 @@ django-cors-headers
 djangorestframework-simplejwt
 pillow
 requests
+python-socketio
+uvicorn
