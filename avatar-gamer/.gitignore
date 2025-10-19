@@ -31,6 +31,7 @@ backend/.venv/pyvenv.cfg
 backend/.venv/Include/
 backend/.venv/Lib/site-packages/
 
-
+AndroidManifest.xml
+AndroidManifest.xml.orig
 
 
