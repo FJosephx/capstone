@@ -1,5 +1,5 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
 
 import { environment } from '../../environments/environment';
@@ -28,6 +28,15 @@ export interface ChatMessage {
   timestamp: Date;
 }
 
+export interface PresenceUpdate {
+  userId: number;
+  role: ChatParticipantRole;
+  isOnline: boolean;
+  username?: string;
+  firstName?: string;
+  lastName?: string;
+}
+
 export type SocketConnectionState = 'disconnected' | 'connecting' | 'connected';
 
 @Injectable({
@@ -46,6 +55,9 @@ export class ChatService implements OnDestroy {
 
   private readonly connectionStateSubject = new BehaviorSubject<SocketConnectionState>('disconnected');
   readonly connectionState$ = this.connectionStateSubject.asObservable();
+
+  private readonly presenceSubject = new Subject<PresenceUpdate>();
+  readonly presenceUpdates$ = this.presenceSubject.asObservable();
 
   constructor(private readonly auth: Auth) {
     this.authSubscription = this.auth.currentUser.subscribe((user) => {
@@ -203,6 +215,10 @@ export class ChatService implements OnDestroy {
 
       this.appendMessage(message);
     });
+
+    this.socket.on('presence:update', (payload: unknown) => {
+      this.handlePresenceUpdate(payload);
+    });
   }
 
   private joinConversation(): void {
@@ -243,6 +259,67 @@ export class ChatService implements OnDestroy {
     this.activeContact = null;
     this.conversationId = null;
     this.messagesSubject.next([]);
+  }
+
+  private handlePresenceUpdate(payload: unknown): void {
+    if (!payload || typeof payload !== 'object') {
+      return;
+    }
+
+    const raw = payload as Record<string, unknown>;
+    const userId = this.normalizeNumericField(raw['userId'] ?? raw['user_id']);
+
+    if (userId === null || (this.currentUser && userId === this.currentUser.id)) {
+      return;
+    }
+
+    const role = this.normalizeRole(raw['role']);
+
+    const onlineRaw = raw['isOnline'] ?? raw['is_online'];
+    let isOnline = false;
+
+    if (typeof onlineRaw === 'boolean') {
+      isOnline = onlineRaw;
+    } else if (typeof onlineRaw === 'string') {
+      const normalized = onlineRaw.trim().toLowerCase();
+      isOnline = normalized === 'true' || normalized === '1';
+    } else if (typeof onlineRaw === 'number') {
+      isOnline = onlineRaw === 1;
+    } else if (onlineRaw != null) {
+      isOnline = Boolean(onlineRaw);
+    }
+
+    const username = typeof raw['username'] === 'string' ? raw['username'] : undefined;
+    const firstName = typeof raw['firstName'] === 'string'
+      ? raw['firstName']
+      : typeof raw['first_name'] === 'string'
+        ? raw['first_name'] as string
+        : undefined;
+    const lastName = typeof raw['lastName'] === 'string'
+      ? raw['lastName']
+      : typeof raw['last_name'] === 'string'
+        ? raw['last_name'] as string
+        : undefined;
+
+    const update: PresenceUpdate = {
+      userId,
+      role,
+      isOnline,
+      username,
+      firstName,
+      lastName
+    };
+
+    if (this.activeContact && this.activeContact.id === userId && this.activeContact.role === role) {
+      const status = isOnline ? 'online' : 'offline';
+      this.activeContact = {
+        ...this.activeContact,
+        status,
+        username: update.username ?? this.activeContact.username
+      };
+    }
+
+    this.presenceSubject.next(update);
   }
 
   private appendMessage(message: ChatMessage): void {

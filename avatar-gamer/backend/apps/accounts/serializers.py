@@ -46,12 +46,19 @@ class SafeTokenObtainPairSerializer(TokenObtainPairSerializer):
     
 class UserListItemSerializer(serializers.ModelSerializer):
     role = serializers.SerializerMethodField()
+    is_online = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'email', 'role']
+        fields = ['id', 'username', 'email', 'first_name', 'last_name', 'role', 'is_online']
+
     def get_role(self, obj):
         p = getattr(obj, 'profile', None)
         return getattr(p, 'role', None)
+
+    def get_is_online(self, obj):
+        p = getattr(obj, 'profile', None)
+        return bool(getattr(p, 'is_online', False))
 
 class LinkRequestSerializer(serializers.ModelSerializer):
     operator_username = serializers.SerializerMethodField()

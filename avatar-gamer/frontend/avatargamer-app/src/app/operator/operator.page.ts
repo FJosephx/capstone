@@ -1,12 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Auth, UserProfile } from '../services/auth';
 import { Router, RouterModule } from '@angular/router';
-import { ModalController, AlertController, LoadingController, IonicModule } from '@ionic/angular';
+import { ModalController, AlertController, LoadingController, IonicModule, ToastController } from '@ionic/angular';
 import { AddContactModalComponent } from '../components/add-contact-modal.component';
 import { UserLinkService, LinkedUser, LinkRequest } from '../services/user-link.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
+import { Subscription } from 'rxjs';
+import { ChatService, PresenceUpdate } from '../services/chat.service';
 
 @Component({
   selector: 'app-operator',
@@ -15,13 +17,14 @@ import { SharedModule } from '../shared/shared.module';
   standalone: true,
   imports: [CommonModule, FormsModule, IonicModule, RouterModule, SharedModule]
 })
-export class OperatorPage implements OnInit {
+export class OperatorPage implements OnInit, OnDestroy {
   userProfile: UserProfile | null = null;
   linkedUsers: LinkedUser[] = [];
   linkRequests: LinkRequest[] = [];
   isLoading: boolean = false;
   error: string | null = null;
   activeTab: 'linked' | 'pending' = 'linked';
+  private presenceSubscription?: Subscription;
 
   constructor(
     private auth: Auth, 
@@ -29,7 +32,9 @@ export class OperatorPage implements OnInit {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private userLinkService: UserLinkService
+    private userLinkService: UserLinkService,
+    private chatService: ChatService,
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit() {
@@ -39,6 +44,12 @@ export class OperatorPage implements OnInit {
       this.loadLinkedUsers();
       this.loadPendingRequests();
     });
+
+    this.listenPresenceUpdates();
+  }
+
+  ngOnDestroy(): void {
+    this.presenceSubscription?.unsubscribe();
   }
 
   segmentChanged(event: any) {
@@ -60,11 +71,10 @@ export class OperatorPage implements OnInit {
     try {
       const response = await this.userLinkService.getLinkedUsers().toPromise();
       
-      // Asignar estado aleatorio (online/offline) a los usuarios
-      // En una implementación real, esto vendría del backend
-      this.linkedUsers = response?.results.map(user => ({
+      // Normalizar estado segun datos del backend
+      this.linkedUsers = response?.results?.map(user => ({
         ...user,
-        status: Math.random() > 0.5 ? 'online' : 'offline'
+        status: user.status ?? (user.is_online ? 'online' : 'offline')
       })) || [];
       
       console.log('Usuarios vinculados:', this.linkedUsers);
@@ -188,7 +198,7 @@ export class OperatorPage implements OnInit {
     // Esto recargará completamente la aplicación
     window.location.href = '/login';
   }
-  
+
   startChatWithUser(user: LinkedUser) {
     console.log('Iniciando chat con usuario:', user);
     
@@ -201,5 +211,58 @@ export class OperatorPage implements OnInit {
     
     // Navegar a la página de chat
     this.router.navigate(['/chat']);
+  }
+
+  private listenPresenceUpdates(): void {
+    this.presenceSubscription?.unsubscribe();
+    this.presenceSubscription = this.chatService.presenceUpdates$.subscribe(update => {
+      void this.handlePresenceUpdate(update);
+    });
+  }
+
+  private async handlePresenceUpdate(update: PresenceUpdate): Promise<void> {
+    if (update.role !== 'user') {
+      return;
+    }
+
+    const index = this.linkedUsers.findIndex(user => user.id === update.userId);
+    if (index === -1) {
+      return;
+    }
+
+    const previousStatus = this.linkedUsers[index].status === 'online' ? 'online' : 'offline';
+    const newStatus: 'online' | 'offline' = update.isOnline ? 'online' : 'offline';
+
+    if (previousStatus === newStatus && update.username === undefined) {
+      return;
+    }
+
+    const updatedUser: LinkedUser = {
+      ...this.linkedUsers[index],
+      status: newStatus,
+      is_online: update.isOnline,
+      username: update.username ?? this.linkedUsers[index].username
+    };
+
+    this.linkedUsers = [
+      ...this.linkedUsers.slice(0, index),
+      updatedUser,
+      ...this.linkedUsers.slice(index + 1)
+    ];
+
+    if (previousStatus !== 'online' && newStatus === 'online') {
+      await this.presentPresenceToast(`${updatedUser.username || `Usuario ${updatedUser.id}`} se ha conectado`);
+    }
+  }
+
+  private async presentPresenceToast(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      color: 'success',
+      position: 'top'
+    });
+
+    await toast.present();
   }
 }

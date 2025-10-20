@@ -1,5 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ChatContact, ChatService } from '../services/chat.service';
+import { Subscription } from 'rxjs';
+import { AlertController } from '@ionic/angular';
+import { ChatContact, ChatService, PresenceUpdate } from '../services/chat.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
@@ -21,10 +23,12 @@ export class ChatPage implements OnInit, OnDestroy {
   selectedContact: ChatContact | null = null;
   contactName: string = '';
   contactStatus: string = '';
+  private presenceSubscription?: Subscription;
 
   constructor(
     private chatService: ChatService,
-    private auth: Auth
+    private auth: Auth,
+    private alertCtrl: AlertController
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -34,12 +38,14 @@ export class ChatPage implements OnInit, OnDestroy {
       this.userRole = userProfile?.role || '';
 
       await this.restoreSelectedContact();
+      this.listenPresenceUpdates();
     } catch (error) {
       console.error('Error obteniendo perfil:', error);
     }
   }
 
   ngOnDestroy(): void {
+    this.presenceSubscription?.unsubscribe();
     this.chatService.clearConversation();
   }
 
@@ -50,6 +56,61 @@ export class ChatPage implements OnInit, OnDestroy {
 
     this.chatService.sendMessage(this.newMessage);
     this.newMessage = '';
+  }
+
+  private listenPresenceUpdates(): void {
+    this.presenceSubscription?.unsubscribe();
+    this.presenceSubscription = this.chatService.presenceUpdates$.subscribe((update) => {
+      void this.applyPresenceUpdate(update);
+    });
+  }
+
+  private async applyPresenceUpdate(update: PresenceUpdate): Promise<void> {
+    if (!this.selectedContact) {
+      return;
+    }
+
+    const isForActiveContact =
+      update.userId === this.selectedContact.id && update.role === this.selectedContact.role;
+
+    if (!isForActiveContact) {
+      return;
+    }
+
+    const previousStatus = this.selectedContact.status === 'online' ? 'online' : 'offline';
+    const newStatus = update.isOnline ? 'online' : 'offline';
+
+    this.selectedContact = {
+      ...this.selectedContact,
+      status: newStatus,
+      username: update.username ?? this.selectedContact.username
+    };
+
+    this.contactStatus = newStatus;
+    this.contactName = this.getDisplayName(this.selectedContact);
+
+    if (update.role === 'operator' && newStatus === 'online' && previousStatus !== 'online') {
+      await this.presentPresenceAlert(update);
+    }
+  }
+
+  private async presentPresenceAlert(update: PresenceUpdate): Promise<void> {
+    if (!this.selectedContact) {
+      return;
+    }
+
+    const displayName = this.getDisplayName({
+      ...this.selectedContact,
+      username: update.username ?? this.selectedContact.username
+    });
+
+    const alert = await this.alertCtrl.create({
+      header: 'Conexion detectada',
+      message: `${displayName} se ha conectado`,
+      buttons: ['OK']
+    });
+
+    await alert.present();
   }
 
   private async restoreSelectedContact(): Promise<void> {
@@ -70,15 +131,16 @@ export class ChatPage implements OnInit, OnDestroy {
     }
 
     if (storedContact?.id) {
+      const status = storedContact.status === 'online' ? 'online' : 'offline';
       this.selectedContact = {
         id: storedContact.id,
-        username: storedContact.username || 'Contacto',
-        status: storedContact.status || 'offline',
+        username: storedContact.username || '',
+        status,
         role: this.userRole === 'operator' ? 'user' : 'operator'
       };
 
-      this.contactName = this.selectedContact.username;
-      this.contactStatus = this.selectedContact.status ?? 'offline';
+      this.contactName = this.getDisplayName(this.selectedContact);
+      this.contactStatus = status;
 
       await this.chatService.setActiveContact(this.selectedContact);
     } else {
@@ -88,6 +150,19 @@ export class ChatPage implements OnInit, OnDestroy {
 
       await this.chatService.setActiveContact(null);
     }
+  }
+
+  private getDisplayName(contact: ChatContact | null | undefined): string {
+    if (!contact) {
+      return '';
+    }
+
+    if (contact.username && contact.username.trim().length > 0) {
+      return contact.username;
+    }
+
+    const label = contact.role === 'operator' ? 'Operador' : 'Usuario';
+    return `${label} ${contact.id}`;
   }
 
 }

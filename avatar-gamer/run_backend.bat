@@ -13,3 +13,7 @@ echo Verificando dependencias...
 pip install -r requirements.txt
 
 call cd ..
+call cd backend
+call python manage.py makemigrations
+call python manage.py migrate
+call uvicorn config.asgi:application --host 0.0.0.0 --port 8000

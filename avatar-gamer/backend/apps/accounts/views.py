@@ -125,7 +125,7 @@ class OperatorPing(APIView):
 class LinkedUsersView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsOperator]
     def get (self, request):
-        q = User.objects.filter(linked_operators__operator=request.user).distinct()
+        q = User.objects.filter(linked_operators__operator=request.user).select_related('profile').distinct()
         search = request.query_params.get('search')
         
         if search:
@@ -258,7 +258,9 @@ class LinkedOperatorsView(APIView):
     
     def get(self, request):
         # Filtrar operadores vinculados al usuario actual
-        linked_operators = User.objects.filter(linked_users__user=request.user).distinct()
+        linked_operators = User.objects.filter(
+            linked_users__user=request.user
+        ).select_related('profile').distinct()
         
         # Buscar por nombre/username si se proporciona un parámetro de búsqueda
         search = request.query_params.get('search')
@@ -282,7 +284,7 @@ class OperatorDetailView(APIView):
     def get(self, request, operator_id):
         # Obtener el operador solicitado
         try:
-            operator = User.objects.get(id=operator_id)
+            operator = User.objects.select_related('profile').get(id=operator_id)
             
             # Verificar que el operador realmente tenga el rol de operador
             profile = getattr(operator, 'profile', None)

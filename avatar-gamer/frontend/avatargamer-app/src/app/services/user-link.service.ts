@@ -11,6 +11,7 @@ export interface LinkedUser {
   first_name: string;
   last_name: string;
   role: string;
+  is_online?: boolean;
   status?: 'online' | 'offline'; // Campo agregado para UI
 }
 
@@ -64,7 +65,13 @@ export class UserLinkService {
 
   // Obtener usuarios vinculados al operador actual
   getLinkedUsers(): Observable<LinkedUsersResponse> {
-    return this.http.get<LinkedUsersResponse>(`${this.API_URL}/users/linked`);
+    return this.http.get<LinkedUsersResponse>(`${this.API_URL}/users/linked`)
+      .pipe(
+        map(response => ({
+          ...response,
+          results: this.normalizeStatuses(response?.results)
+        }))
+      );
   }
   
   // Obtener operadores vinculados al usuario actual
@@ -84,7 +91,11 @@ export class UserLinkService {
           } else {
             console.log('[UserLinkService] No se encontraron operadores vinculados');
           }
-          return response;
+          const normalizedResults = this.normalizeStatuses(response?.results);
+          return {
+            ...response,
+            results: normalizedResults
+          };
         }),
         catchError((error: HttpErrorResponse) => {
           console.error('[UserLinkService] Error al obtener operadores vinculados:', error);
@@ -93,7 +104,8 @@ export class UserLinkService {
           return this.getApprovedLinkRequestsOperators().pipe(
             map(operatorsFromRequests => {
               console.log('[UserLinkService] Operadores obtenidos de solicitudes:', operatorsFromRequests);
-              return { count: operatorsFromRequests.length, results: operatorsFromRequests };
+              const normalized = this.normalizeStatuses(operatorsFromRequests);
+              return { count: normalized.length, results: normalized };
             }),
             catchError(reqError => {
               console.error('[UserLinkService] Error al obtener operadores desde solicitudes:', reqError);
@@ -126,6 +138,7 @@ export class UserLinkService {
                   first_name: 'Operador',
                   last_name: `#${req.operator}`,
                   role: 'operator',
+                  is_online: false,
                   status: 'offline' as 'offline' // Cast explícito al tipo correcto
                 });
               })
@@ -238,9 +251,21 @@ export class UserLinkService {
             first_name: 'Operador',
             last_name: `#${operatorId}`,
             role: 'operator',
+            is_online: false,
             status: 'offline' as 'offline'
           });
         })
       );
+  }
+
+  private normalizeStatuses(items?: LinkedUser[]): LinkedUser[] {
+    if (!items) {
+      return [];
+    }
+
+    return items.map(item => ({
+      ...item,
+      status: item.status ?? ((item.is_online ?? false) ? 'online' : 'offline')
+    }));
   }
 }

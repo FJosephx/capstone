@@ -1,12 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Auth, UserProfile } from '../services/auth';
 import { Router, RouterModule } from '@angular/router';
-import { AlertController, LoadingController, IonicModule } from '@ionic/angular';
+import { AlertController, LoadingController, IonicModule, ToastController } from '@ionic/angular';
 import { UserLinkService, LinkRequest } from '../services/user-link.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { environment } from '../../environments/environment';
+import { Subscription } from 'rxjs';
+import { ChatService, PresenceUpdate } from '../services/chat.service';
 
 interface LinkedOperator {
   id: number;
@@ -15,6 +17,7 @@ interface LinkedOperator {
   first_name?: string;
   last_name?: string;
   role: string;
+  is_online?: boolean;
   status: 'online' | 'offline';
 }
 
@@ -33,13 +36,16 @@ export class UserPage implements OnInit, OnDestroy {
   error: string | null = null;
   activeTab: 'linked' | 'requests' = 'linked';
   private refreshInterval: any;
+  private presenceSubscription?: Subscription;
 
   constructor(
     private auth: Auth,
     private router: Router,
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
-    private userLinkService: UserLinkService
+    private userLinkService: UserLinkService,
+    private chatService: ChatService,
+    private toastCtrl: ToastController
   ) { }
 
   ngOnInit() {
@@ -59,10 +65,12 @@ export class UserPage implements OnInit, OnDestroy {
     
     // Configurar actualización periódica de operadores vinculados
     this.startPeriodicUpdates();
+    this.listenPresenceUpdates();
   }
   
   ngOnDestroy() {
     this.stopPeriodicUpdates();
+    this.presenceSubscription?.unsubscribe();
   }
   
   startPeriodicUpdates() {
@@ -112,12 +120,14 @@ export class UserPage implements OnInit, OnDestroy {
       console.log('[UserPage] Usuario actual:', this.userProfile);
       
       if (response && response.results && response.results.length > 0) {
-        // Asignar estado aleatorio (online/offline) a los operadores
-        this.linkedOperators = response.results.map(operator => ({
-          ...operator,
-          status: Math.random() > 0.5 ? 'online' as const : 'offline' as const,
-          role: 'operator'
-        }));
+        this.linkedOperators = response.results.map(operator => {
+          const status: 'online' | 'offline' = operator.status ?? (operator.is_online ? 'online' : 'offline');
+          return {
+            ...operator,
+            status,
+            role: operator.role || 'operator'
+          };
+        });
         
         console.log('[UserPage] Operadores vinculados procesados:', this.linkedOperators);
         console.log('[UserPage] Número de operadores vinculados:', this.linkedOperators.length);
@@ -130,8 +140,8 @@ export class UserPage implements OnInit, OnDestroy {
           const approvedRequests = await this.userLinkService.getReceivedLinkRequests('approved').toPromise();
           console.log('[UserPage] Solicitudes aprobadas:', approvedRequests);
           
-          if (approvedRequests && approvedRequests.results && approvedRequests.results.length > 0) {
-            const operatorsFromRequests: LinkedOperator[] = [];
+        if (approvedRequests && approvedRequests.results && approvedRequests.results.length > 0) {
+          const operatorsFromRequests: LinkedOperator[] = [];
             
             for (const req of approvedRequests.results) {
               console.log(`[UserPage] Procesando solicitud aprobada ID: ${req.id} de operador ID: ${req.operator}`);
@@ -144,22 +154,23 @@ export class UserPage implements OnInit, OnDestroy {
                 if (operatorData) {
                   operatorsFromRequests.push({
                     ...operatorData,
-                    status: Math.random() > 0.5 ? 'online' as const : 'offline' as const,
-                    role: 'operator'
+                    status: operatorData.status ?? (operatorData.is_online ? 'online' : 'offline'),
+                    role: operatorData.role || 'operator'
                   });
                   console.log(`[UserPage] Operador ${req.operator} agregado a la lista`);
                 } else {
                   // Si no se puede obtener datos completos, usar los básicos de la solicitud
                   console.log(`[UserPage] No se obtuvieron datos completos del operador ${req.operator}, usando datos básicos`);
-                  operatorsFromRequests.push({
-                    id: req.operator,
-                    username: req.operator_username || `operador${req.operator}`,
-                    email: `${req.operator_username || 'operador' + req.operator}@example.com`,
-                    first_name: 'Operador',
-                    last_name: `#${req.operator}`,
-                    role: 'operator',
-                    status: 'offline' as const
-                  });
+                operatorsFromRequests.push({
+                  id: req.operator,
+                  username: req.operator_username || `operador${req.operator}`,
+                  email: `${req.operator_username || 'operador' + req.operator}@example.com`,
+                  first_name: 'Operador',
+                  last_name: `#${req.operator}`,
+                  role: 'operator',
+                  is_online: false,
+                  status: 'offline' as const
+                });
                 }
               } catch (error) {
                 console.error(`[UserPage] Error al obtener datos del operador ${req.operator}:`, error);
@@ -172,6 +183,7 @@ export class UserPage implements OnInit, OnDestroy {
                   first_name: 'Operador',
                   last_name: `#${req.operator}`,
                   role: 'operator',
+                  is_online: false,
                   status: 'offline' as 'offline'
                 });
               }
@@ -327,6 +339,7 @@ export class UserPage implements OnInit, OnDestroy {
           username: request.operator_username || `operador${request.operator}`,
           email: `${request.operator_username || 'operador' + request.operator}@example.com`,
           role: 'operator',
+          is_online: true,
           status: 'online',
           first_name: 'Operador',
           last_name: `#${request.operator}`
@@ -424,5 +437,58 @@ export class UserPage implements OnInit, OnDestroy {
     
     // Navegar a la página de chat
     this.router.navigate(['/chat']);
+  }
+
+  private listenPresenceUpdates(): void {
+    this.presenceSubscription?.unsubscribe();
+    this.presenceSubscription = this.chatService.presenceUpdates$.subscribe(update => {
+      void this.handlePresenceUpdate(update);
+    });
+  }
+
+  private async handlePresenceUpdate(update: PresenceUpdate): Promise<void> {
+    if (update.role !== 'operator') {
+      return;
+    }
+
+    const index = this.linkedOperators.findIndex(op => op.id === update.userId);
+    if (index === -1) {
+      return;
+    }
+
+    const previousStatus = this.linkedOperators[index].status === 'online' ? 'online' : 'offline';
+    const newStatus: 'online' | 'offline' = update.isOnline ? 'online' : 'offline';
+
+    if (previousStatus === newStatus && update.username === undefined) {
+      return;
+    }
+
+    const updatedOperator: LinkedOperator = {
+      ...this.linkedOperators[index],
+      status: newStatus,
+      is_online: update.isOnline,
+      username: update.username ?? this.linkedOperators[index].username
+    };
+
+    this.linkedOperators = [
+      ...this.linkedOperators.slice(0, index),
+      updatedOperator,
+      ...this.linkedOperators.slice(index + 1)
+    ];
+
+    if (previousStatus !== 'online' && newStatus === 'online') {
+      await this.presentPresenceToast(`${updatedOperator.username || `Operador ${updatedOperator.id}`} se ha conectado`);
+    }
+  }
+
+  private async presentPresenceToast(message: string): Promise<void> {
+    const toast = await this.toastCtrl.create({
+      message,
+      duration: 2500,
+      color: 'success',
+      position: 'top'
+    });
+
+    await toast.present();
   }
 }

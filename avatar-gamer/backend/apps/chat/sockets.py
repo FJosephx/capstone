@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import parse_qs
 
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
 jwt_auth = JWTAuthentication()
+_active_connections: Dict[int, int] = defaultdict(int)
 
 
 # ---------------------------------------------------------------------------
@@ -62,17 +64,60 @@ def _serialize_message(message: ChatMessage) -> Dict[str, Any]:
     }
 
 
-async def _set_user_online(user_id: int, online: bool) -> None:
-    def _update() -> None:
+async def _set_user_online(user_id: int, online: bool) -> Tuple[Optional[Dict[str, Any]], bool]:
+    def _update() -> Tuple[Optional[Dict[str, Any]], bool]:
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return None, False
+
         profile, _ = Profile.objects.get_or_create(
-            user_id=user_id,
+            user=user,
             defaults={'role': Role.USER, 'bio': ''},
         )
-        if profile.is_online != online:
+
+        changed = profile.is_online != online
+        if changed:
             profile.is_online = online
             profile.save(update_fields=['is_online'])
 
-    await sync_to_async(_update)()
+        return {
+            'user_id': user.id,
+            'role': profile.role,
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+        }, changed
+
+    try:
+        return await sync_to_async(_update)()
+    except Exception as exc:  # pragma: no cover - defensive guard
+        logger.warning('Unable to update online state for user %s: %s', user_id, exc)
+        return None, False
+
+
+async def _broadcast_presence(
+    *,
+    user_id: int,
+    role: str,
+    is_online: bool,
+    username: Optional[str] = None,
+    first_name: Optional[str] = None,
+    last_name: Optional[str] = None,
+) -> None:
+    payload: Dict[str, Any] = {
+        'userId': user_id,
+        'role': role,
+        'isOnline': is_online,
+    }
+    if username:
+        payload['username'] = username
+    if first_name:
+        payload['firstName'] = first_name
+    if last_name:
+        payload['lastName'] = last_name
+
+    await sio.emit('presence:update', payload)
 
 
 async def _fetch_user(user_id: int) -> Optional[User]:
@@ -204,7 +249,21 @@ async def connect(sid: str, environ: Dict[str, Any], auth: Any) -> bool:
         )
 
     await sio.save_session(sid, {'user_id': user_id, 'user_role': role})
-    await _set_user_online(user_id, True)
+
+    previous_count = _active_connections[user_id]
+    _active_connections[user_id] = previous_count + 1
+
+    if previous_count == 0:
+        presence, _ = await _set_user_online(user_id, True)
+        if presence:
+            await _broadcast_presence(
+                user_id=presence['user_id'],
+                role=presence.get('role') or role,
+                is_online=True,
+                username=presence.get('username'),
+                first_name=presence.get('first_name'),
+                last_name=presence.get('last_name'),
+            )
 
     logger.debug('Socket connected: sid=%s user=%s role=%s', sid, user_id, role)
     return True
@@ -212,11 +271,34 @@ async def connect(sid: str, environ: Dict[str, Any], auth: Any) -> bool:
 
 @sio.event
 async def disconnect(sid: str) -> None:
-    session = await sio.get_session(sid)
+    try:
+        session = await sio.get_session(sid)
+    except KeyError:
+        logger.debug('Socket disconnected without session: sid=%s', sid)
+        return
+
     user_id = session.get('user_id')
-    if user_id:
-        await _set_user_online(user_id, False)
-    logger.debug('Socket disconnected: sid=%s user=%s', sid, user_id)
+    if not user_id:
+        logger.debug('Socket disconnected: sid=%s without user', sid)
+        return
+
+    current = max(_active_connections[user_id] - 1, 0)
+    if current == 0:
+        _active_connections.pop(user_id, None)
+        presence, _ = await _set_user_online(user_id, False)
+        if presence:
+            await _broadcast_presence(
+                user_id=presence['user_id'],
+                role=presence.get('role') or session.get('user_role', Role.USER),
+                is_online=False,
+                username=presence.get('username'),
+                first_name=presence.get('first_name'),
+                last_name=presence.get('last_name'),
+            )
+    else:
+        _active_connections[user_id] = current
+
+    logger.debug('Socket disconnected: sid=%s user=%s remaining=%s', sid, user_id, _active_connections.get(user_id, 0))
 
 
 @sio.on('chat:join')
