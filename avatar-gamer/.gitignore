@@ -33,5 +33,5 @@ backend/.venv/Lib/site-packages/
 
 AndroidManifest.xml
 AndroidManifest.xml.orig
-
+package-lock.json
 

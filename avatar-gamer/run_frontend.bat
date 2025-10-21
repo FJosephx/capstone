@@ -16,4 +16,4 @@ call npx cap sync android
 call adb reverse --remove-all
 call adb reverse tcp:8100 tcp:8100
 call adb reverse tcp:8000 tcp:8000
-call npx ionic cap run android -l --external --host=192.168.1.5 --port=8100
+call npx ionic serve
