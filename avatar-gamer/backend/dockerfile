@@ -1,24 +1,29 @@
 FROM python:3.11-slim
 
-# Evita archivos .pyc y buffer en consola
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-# Instala dependencias necesarias para psycopg2 y Pillow
-RUN apt-get update && apt-get install -y \
-    build-essential libpq-dev gettext \
+# Dependencias del sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev gettext dos2unix \
     && rm -rf /var/lib/apt/lists/*
 
-# Copia requirements y los instala
+# Requisitos Python
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
 
-# Crea usuario sin privilegios
-RUN useradd -m runner
-USER runner
+# Copiamos el proyecto completo (incluye entrypoint)
+COPY . .
+
+# Normalizamos fin de línea y permisos del entrypoint
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
+
+# (Opcional) usuario sin privilegios, después de chmod:
+# RUN useradd -m runner
+# USER runner
 
 EXPOSE 8000
 
-CMD ["bash", "-lc", "echo 'Use entrypoint.sh desde docker-compose'"]
+ENTRYPOINT ["./entrypoint.sh"]
