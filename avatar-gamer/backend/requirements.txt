@@ -8,3 +8,5 @@ pillow
 requests
 python-socketio
 uvicorn
+redis
+aioredis

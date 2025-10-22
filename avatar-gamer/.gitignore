@@ -34,4 +34,8 @@ backend/.venv/Lib/site-packages/
 AndroidManifest.xml
 AndroidManifest.xml.orig
 
-
+frontend/capacitor.build.gradle
+frontend/capacitor.settings.gradle
+frontend/avatargamer-app/node_modules
+frontend/avatargamer-app/android/capacitor.settings.gradle
+frontend/avatargamer-app/android/app/capacitor.build.gradle

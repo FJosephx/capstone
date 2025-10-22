@@ -5,6 +5,7 @@ from collections import defaultdict
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 from urllib.parse import parse_qs
 
+import redis
 import socketio
 from asgiref.sync import sync_to_async
 from django.contrib.auth import get_user_model
@@ -14,11 +15,17 @@ from rest_framework_simplejwt.exceptions import AuthenticationFailed, InvalidTok
 
 from apps.accounts.models import Profile, Role
 from .models import ChatMessage
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
-sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
+redis_manager = socketio.AsyncRedisManager(settings.SOCKETIO_CONFIG["REDIS_URL"])
+sio = socketio.AsyncServer(
+    async_mode='asgi',
+    cors_allowed_origins=settings.SOCKETIO_CONFIG["CORS_ALLOWED_ORIGINS"],
+    client_manager=redis_manager
+)
 jwt_auth = JWTAuthentication()
 _active_connections: Dict[int, int] = defaultdict(int)
 
