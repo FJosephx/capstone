@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
-from .models import OperatorUserLink, LinkRequest, LinkRequestStatus
+from .models import OperatorUserLink, LinkRequest, LinkRequestStatus, Profile, Role
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -59,6 +59,93 @@ class UserListItemSerializer(serializers.ModelSerializer):
     def get_is_online(self, obj):
         p = getattr(obj, 'profile', None)
         return bool(getattr(p, 'is_online', False))
+
+
+class AdminUserSerializer(serializers.ModelSerializer):
+    role = serializers.ChoiceField(
+        choices=Role.choices,
+        required=False,
+        allow_null=True,
+        allow_blank=False
+    )
+    password = serializers.CharField(
+        write_only=True,
+        required=False,
+        allow_blank=False,
+        style={'input_type': 'password'}
+    )
+    is_active = serializers.BooleanField(required=False)
+
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'role',
+            'password',
+            'is_active',
+            'date_joined',
+            'last_login',
+        ]
+        read_only_fields = ['id', 'date_joined', 'last_login']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        profile = getattr(instance, 'profile', None)
+        data['role'] = getattr(profile, 'role', Role.USER)
+        data['is_active'] = instance.is_active
+        return data
+
+    def create(self, validated_data):
+        role_value = validated_data.pop('role', Role.USER) or Role.USER
+        password = validated_data.pop('password', None)
+        is_active = validated_data.pop('is_active', True)
+
+        if not password:
+            raise serializers.ValidationError({'password': 'La contraseña es requerida.'})
+
+        user = User(**validated_data)
+        user.set_password(password)
+        user.is_active = is_active
+        user.save()
+
+        profile = getattr(user, 'profile', None)
+        if profile:
+            profile.role = role_value
+            profile.save()
+        else:
+            Profile.objects.create(user=user, role=role_value)
+
+        return user
+
+    def update(self, instance, validated_data):
+        role_value = validated_data.pop('role', None)
+        password = validated_data.pop('password', None)
+        is_active = validated_data.pop('is_active', None)
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+
+        if is_active is not None:
+            instance.is_active = is_active
+
+        if password:
+            instance.set_password(password)
+
+        instance.save()
+
+        if role_value:
+            profile = getattr(instance, 'profile', None)
+            if profile:
+                profile.role = role_value or Role.USER
+                profile.save()
+            else:
+                Profile.objects.create(user=instance, role=role_value or Role.USER)
+
+        return instance
 
 class LinkRequestSerializer(serializers.ModelSerializer):
     operator_username = serializers.SerializerMethodField()

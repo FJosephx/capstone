@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from .serializers import (
     LoginSerializer, UserListItemSerializer, LinkCreateSerializer,
-    LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer
+    LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer,
+    AdminUserSerializer
 )
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
@@ -315,6 +316,84 @@ class OperatorDetailView(APIView):
                 {"detail": "Operador no encontrado"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class AdminUserListCreateView(APIView):
+    """Listado y creación de usuarios para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        users = User.objects.all().select_related('profile').order_by('id')
+
+        role = request.query_params.get('role')
+        if role:
+            users = users.filter(profile__role=role)
+
+        user_id = request.query_params.get('id')
+        if user_id:
+            try:
+                users = users.filter(id=int(user_id))
+            except (TypeError, ValueError):
+                return Response(
+                    {"detail": "El parámetro 'id' debe ser numérico."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        search = request.query_params.get('search')
+        if search:
+            users = users.filter(
+                models.Q(username__icontains=search) |
+                models.Q(email__icontains=search) |
+                models.Q(first_name__icontains=search) |
+                models.Q(last_name__icontains=search)
+            )
+
+        serializer = AdminUserSerializer(users, many=True)
+        return Response({
+            "count": users.count(),
+            "results": serializer.data
+        })
+
+    def post(self, request):
+        serializer = AdminUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        response_serializer = AdminUserSerializer(user)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminUserDetailView(APIView):
+    """Detalle, actualización y eliminación de usuarios para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get_user(self, user_id):
+        return get_object_or_404(User.objects.select_related('profile'), id=user_id)
+
+    def put(self, request, user_id):
+        user = self.get_user(user_id)
+        serializer = AdminUserSerializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(AdminUserSerializer(user).data)
+
+    def patch(self, request, user_id):
+        user = self.get_user(user_id)
+        serializer = AdminUserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(AdminUserSerializer(user).data)
+
+    def delete(self, request, user_id):
+        user = self.get_user(user_id)
+
+        if user.id == request.user.id:
+            return Response(
+                {"detail": "No puedes eliminar tu propia cuenta mientras estás autenticado."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Vista para interactuar con la IA
