@@ -1,5 +1,8 @@
+from datetime import timedelta
+
 from django.shortcuts import render, get_object_or_404
 from django.db import models
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -15,8 +18,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from .permissions import IsAdmin, IsOperator, IsEndUser
-from .models import OperatorUserLink, LinkRequest, LinkRequestStatus
+from .models import (
+    OperatorUserLink,
+    LinkRequest,
+    LinkRequestStatus,
+    Profile,
+    AuthEvent,
+    AccountLock,
+)
 from django.contrib.auth.models import User
+from apps.chat.models import ChatMessage
 from .ai_service import send_message_to_ai, AIServiceError
 
 # Vista para probar la api de login
@@ -360,6 +371,131 @@ class AdminUserListCreateView(APIView):
         user = serializer.save()
         response_serializer = AdminUserSerializer(user)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminMetricsView(APIView):
+    """Panel de métricas para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        now = timezone.now()
+        last_24h = now - timedelta(hours=24)
+        last_7d = now - timedelta(days=7)
+        last_30d = now - timedelta(days=30)
+
+        total_users = User.objects.count()
+        active_users = Profile.objects.filter(is_active=True).count()
+        inactive_users = Profile.objects.filter(is_active=False).count()
+        dau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_24h,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        wau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_7d,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        mau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_30d,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        new_users_last_7_days = User.objects.filter(date_joined__gte=last_7d).count()
+        total_sessions_last_7_days = AuthEvent.objects.filter(
+            success=True, created_at__gte=last_7d
+        ).count()
+
+        link_requests_last_30 = LinkRequest.objects.filter(created_at__gte=last_30d)
+        total_link_requests_last_30 = link_requests_last_30.count()
+        approved_link_requests_last_30 = link_requests_last_30.filter(
+            status=LinkRequestStatus.APPROVED
+        ).count()
+        pending_link_requests = LinkRequest.objects.filter(
+            status=LinkRequestStatus.PENDING
+        ).count()
+        active_links_total = OperatorUserLink.objects.count()
+        new_links_last_30 = OperatorUserLink.objects.filter(
+            created_at__gte=last_30d
+        ).count()
+        messages_last_7 = ChatMessage.objects.filter(created_at__gte=last_7d)
+        messages_last_7_days = messages_last_7.count()
+        conversations_last_7_days = (
+            messages_last_7.values("conversation_id").distinct().count()
+        )
+
+        auth_events_last_7 = AuthEvent.objects.filter(created_at__gte=last_7d)
+        total_auth_events = auth_events_last_7.count()
+        failed_auth_events = auth_events_last_7.filter(success=False).count()
+        success_auth_events = auth_events_last_7.filter(success=True).count()
+        distinct_users_last_7 = (
+            auth_events_last_7.filter(user__isnull=False)
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        failure_rate = (
+            round(failed_auth_events / total_auth_events, 4)
+            if total_auth_events
+            else 0.0
+        )
+        success_rate = (
+            round(success_auth_events / total_auth_events, 4)
+            if total_auth_events
+            else 0.0
+        )
+        avg_attempts_per_user = (
+            round(total_auth_events / distinct_users_last_7, 2)
+            if distinct_users_last_7
+            else 0.0
+        )
+        locked_accounts = AccountLock.objects.filter(locked_until__gt=now).count()
+
+        data = {
+            "userActivity": {
+                "totalUsers": total_users,
+                "activeUsers": active_users,
+                "inactiveUsers": inactive_users,
+                "dailyActiveUsers": dau,
+                "weeklyActiveUsers": wau,
+                "monthlyActiveUsers": mau,
+                "newUsersLast7Days": new_users_last_7_days,
+                "sessionsLast7Days": total_sessions_last_7_days,
+            },
+            "userInteraction": {
+                "linkRequestsLast30Days": total_link_requests_last_30,
+                "approvedLinkRequestsLast30Days": approved_link_requests_last_30,
+                "pendingLinkRequests": pending_link_requests,
+                "activeLinks": active_links_total,
+                "newLinksLast30Days": new_links_last_30,
+                "messagesLast7Days": messages_last_7_days,
+                "conversationsLast7Days": conversations_last_7_days,
+            },
+            "resourcePerformance": {
+                "authSuccessRate": success_rate,
+                "authFailureRate": failure_rate,
+                "authAttemptsLast7Days": total_auth_events,
+                "avgAuthAttemptsPerUser": avg_attempts_per_user,
+                "lockedAccounts": locked_accounts,
+            },
+        }
+
+        return Response(data)
 
 
 class AdminUserDetailView(APIView):

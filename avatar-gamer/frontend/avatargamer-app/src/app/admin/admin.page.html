@@ -33,6 +33,132 @@
 
   <ion-card>
     <ion-card-header>
+      <ion-card-title>Métricas del sistema</ion-card-title>
+      <ion-card-subtitle>Actividad de usuarios, interacción y desempeño</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="metrics-toolbar">
+        <ion-button fill="clear" size="small" (click)="loadMetrics()" [disabled]="loadingMetrics">
+          <ion-icon slot="start" name="refresh-outline"></ion-icon>
+          Actualizar
+        </ion-button>
+      </div>
+
+      <div class="ion-text-center ion-padding" *ngIf="loadingMetrics">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <ion-grid *ngIf="!loadingMetrics && metrics" class="metrics-grid">
+        <ion-row>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="people-circle-outline"></ion-icon>
+                <h3>Actividad de usuarios</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Usuarios totales</span>
+                  <span class="metric-value">{{ metrics.userActivity.totalUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.activeUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Usuarios diarios activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.dailyActiveUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Usuarios semanales activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.weeklyActiveUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Nuevos (7 días)</span>
+                  <span class="metric-value">{{ metrics.userActivity.newUsersLast7Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Sesiones (7 días)</span>
+                  <span class="metric-value">{{ metrics.userActivity.sessionsLast7Days }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <h3>Interacción entre usuarios</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Vínculos activos</span>
+                  <span class="metric-value">{{ metrics.userInteraction.activeLinks }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Nuevos vínculos (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.newLinksLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Solicitudes pendientes</span>
+                  <span class="metric-value">{{ metrics.userInteraction.pendingLinkRequests }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Solicitudes totales (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.linkRequestsLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Aprobadas (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.approvedLinkRequestsLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Mensajes (7 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.messagesLast7Days }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="speedometer-outline"></ion-icon>
+                <h3>Desempeño de recursos</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Intentos autenticación (7 días)</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.authAttemptsLast7Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Éxito autenticación</span>
+                  <span class="metric-value">{{ (metrics.resourcePerformance.authSuccessRate * 100) | number:'1.0-1' }}%</span>
+                </li>
+                <li>
+                  <span class="metric-label">Fallas autenticación</span>
+                  <span class="metric-value">{{ (metrics.resourcePerformance.authFailureRate * 100) | number:'1.0-1' }}%</span>
+                </li>
+                <li>
+                  <span class="metric-label">Intentos promedio por usuario</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.avgAuthAttemptsPerUser | number:'1.0-1' }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Cuentas bloqueadas</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.lockedAccounts }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div *ngIf="!loadingMetrics && !metrics" class="ion-text-center ion-padding">
+        <p>No hay métricas disponibles por el momento.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
       <ion-card-title>Gestión de Usuarios</ion-card-title>
     </ion-card-header>
     <ion-card-content>

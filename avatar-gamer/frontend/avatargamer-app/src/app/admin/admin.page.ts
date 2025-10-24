@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 
 import { Auth, UserProfile } from '../services/auth';
 import { AdminUserService, AdminUser, AdminUserPayload } from '../services/admin-user.service';
+import { AdminMetricsService, AdminMetricsResponse } from '../services/admin-metrics.service';
 
 interface AdminUserFilters {
   search: string;
@@ -23,6 +24,8 @@ export class AdminPage implements OnInit, OnDestroy {
   users: AdminUser[] = [];
   totalUsers = 0;
   loadingUsers = false;
+  metrics: AdminMetricsResponse | null = null;
+  loadingMetrics = false;
   submittingUser = false;
 
   filters: AdminUserFilters = { search: '', role: '', id: '' };
@@ -44,6 +47,7 @@ export class AdminPage implements OnInit, OnDestroy {
   constructor(
     private auth: Auth,
     private adminUserService: AdminUserService,
+    private adminMetricsService: AdminMetricsService,
     private fb: FormBuilder,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController
@@ -65,6 +69,7 @@ export class AdminPage implements OnInit, OnDestroy {
     });
 
     this.loadUsers();
+    this.loadMetrics();
   }
 
   ngOnDestroy(): void {
@@ -105,6 +110,21 @@ export class AdminPage implements OnInit, OnDestroy {
         console.error('No se pudieron cargar los usuarios', err);
         this.loadingUsers = false;
         this.presentToast('No se pudieron cargar los usuarios.', 'danger');
+      }
+    });
+  }
+
+  loadMetrics() {
+    this.loadingMetrics = true;
+    this.adminMetricsService.getMetrics().subscribe({
+      next: response => {
+        this.metrics = response;
+        this.loadingMetrics = false;
+      },
+      error: err => {
+        console.error('No se pudieron cargar las métricas', err);
+        this.loadingMetrics = false;
+        this.presentToast('No se pudieron cargar las métricas.', 'warning');
       }
     });
   }

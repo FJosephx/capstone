@@ -6,25 +6,25 @@
 
 // Custom Colors
 :root {
-  --ag-primary: #5E35B1;         // Primary brand color
-  --ag-primary-shade: #4527A0;   // Darker variant
-  --ag-primary-tint: #7E57C2;    // Lighter variant
+  --ag-primary: #6200EA;         // Primary brand color - más vibrante
+  --ag-primary-shade: #4A00B8;   // Darker variant
+  --ag-primary-tint: #7C4DFF;    // Lighter variant
   
-  --ag-secondary: #00B0FF;       // Secondary brand color
-  --ag-secondary-shade: #0091EA; // Darker variant
-  --ag-secondary-tint: #40C4FF;  // Lighter variant
+  --ag-secondary: #00B8D4;       // Secondary brand color - más claro
+  --ag-secondary-shade: #0097A7; // Darker variant
+  --ag-secondary-tint: #18FFFF;  // Lighter variant
   
-  --ag-accent: #FF4081;          // Accent color for highlights
-  --ag-accent-shade: #F50057;    // Darker variant
-  --ag-accent-tint: #FF80AB;     // Lighter variant
+  --ag-accent: #FF6D00;          // Accent color - naranja más visible
+  --ag-accent-shade: #F57C00;    // Darker variant
+  --ag-accent-tint: #FFB74D;     // Lighter variant
   
-  --ag-success: #00E676;         // Success messages
-  --ag-warning: #FFD600;         // Warnings
-  --ag-danger: #FF1744;          // Error/danger
+  --ag-success: #00C853;         // Success messages - verde más vibrante
+  --ag-warning: #FFD740;         // Warnings - amarillo más brillante
+  --ag-danger: #D50000;          // Error/danger - rojo más profundo
   
-  --ag-light: #FAFAFA;           // Light surfaces
-  --ag-medium: #9E9E9E;          // Medium text/icons
-  --ag-dark: #212121;            // Dark text
+  --ag-light: #FFFFFF;           // Light surfaces - blanco puro
+  --ag-medium: #757575;          // Medium text/icons - gris más oscuro
+  --ag-dark: #000000;            // Dark text - negro puro
 
   // Background Colors
   --ag-background-light: #FFFFFF;
@@ -157,20 +157,20 @@
 /* Dark Mode Theme */
 .dark-theme {
   /* Optimización de colores primarios para mejor contraste */
-  --ion-color-primary: #9575cd; /* Más brillante para mejor visibilidad */
-  --ion-color-primary-rgb: 149, 117, 205;
-  --ion-color-primary-contrast: #000000; /* Texto negro sobre fondo claro */
+  --ion-color-primary: #B388FF; /* Violeta más brillante y saturado */
+  --ion-color-primary-rgb: 179, 136, 255;
+  --ion-color-primary-contrast: #000000;
   --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #8367b4;
-  --ion-color-primary-tint: #a083d2;
+  --ion-color-primary-shade: #9E77FF;
+  --ion-color-primary-tint: #C5A3FF;
 
   /* Colores secundarios con mayor luminosidad */
-  --ion-color-secondary: #40c4ff; /* Color más brillante */
-  --ion-color-secondary-rgb: 64, 196, 255;
+  --ion-color-secondary: #84FFFF; /* Cian brillante para mejor visibilidad */
+  --ion-color-secondary-rgb: 132, 255, 255;
   --ion-color-secondary-contrast: #000000;
   --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #38ace0;
-  --ion-color-secondary-tint: #53caff;
+  --ion-color-secondary-shade: #69F0F0;
+  --ion-color-secondary-tint: #A1FFFF;
   
   /* Ajustes de fondo y texto */
   --ion-background-color: #121212; /* Fondo negro suave */
