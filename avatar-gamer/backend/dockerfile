@@ -1,0 +1,29 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# Dependencias del sistema
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential libpq-dev gettext dos2unix \
+    && rm -rf /var/lib/apt/lists/*
+
+# Requisitos Python
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Copiamos el proyecto completo (incluye entrypoint)
+COPY . .
+
+# Normalizamos fin de línea y permisos del entrypoint
+RUN dos2unix entrypoint.sh && chmod +x entrypoint.sh
+
+# (Opcional) usuario sin privilegios, después de chmod:
+# RUN useradd -m runner
+# USER runner
+
+EXPOSE 8000
+
+ENTRYPOINT ["./entrypoint.sh"]

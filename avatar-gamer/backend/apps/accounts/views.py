@@ -1,11 +1,15 @@
+from datetime import timedelta
+
 from django.shortcuts import render, get_object_or_404
 from django.db import models
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .serializers import (
     LoginSerializer, UserListItemSerializer, LinkCreateSerializer,
-    LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer
+    LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer,
+    AdminUserSerializer
 )
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
@@ -14,8 +18,16 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import permissions
 from .permissions import IsAdmin, IsOperator, IsEndUser
-from .models import OperatorUserLink, LinkRequest, LinkRequestStatus
+from .models import (
+    OperatorUserLink,
+    LinkRequest,
+    LinkRequestStatus,
+    Profile,
+    AuthEvent,
+    AccountLock,
+)
 from django.contrib.auth.models import User
+from apps.chat.models import ChatMessage
 from .ai_service import send_message_to_ai, AIServiceError
 
 # Vista para probar la api de login
@@ -315,6 +327,209 @@ class OperatorDetailView(APIView):
                 {"detail": "Operador no encontrado"}, 
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class AdminUserListCreateView(APIView):
+    """Listado y creación de usuarios para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        users = User.objects.all().select_related('profile').order_by('id')
+
+        role = request.query_params.get('role')
+        if role:
+            users = users.filter(profile__role=role)
+
+        user_id = request.query_params.get('id')
+        if user_id:
+            try:
+                users = users.filter(id=int(user_id))
+            except (TypeError, ValueError):
+                return Response(
+                    {"detail": "El parámetro 'id' debe ser numérico."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+        search = request.query_params.get('search')
+        if search:
+            users = users.filter(
+                models.Q(username__icontains=search) |
+                models.Q(email__icontains=search) |
+                models.Q(first_name__icontains=search) |
+                models.Q(last_name__icontains=search)
+            )
+
+        serializer = AdminUserSerializer(users, many=True)
+        return Response({
+            "count": users.count(),
+            "results": serializer.data
+        })
+
+    def post(self, request):
+        serializer = AdminUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        response_serializer = AdminUserSerializer(user)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class AdminMetricsView(APIView):
+    """Panel de métricas para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get(self, request):
+        now = timezone.now()
+        last_24h = now - timedelta(hours=24)
+        last_7d = now - timedelta(days=7)
+        last_30d = now - timedelta(days=30)
+
+        total_users = User.objects.count()
+        active_users = Profile.objects.filter(is_active=True).count()
+        inactive_users = Profile.objects.filter(is_active=False).count()
+        dau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_24h,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        wau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_7d,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        mau = (
+            AuthEvent.objects.filter(
+                success=True,
+                created_at__gte=last_30d,
+                user__isnull=False,
+            )
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        new_users_last_7_days = User.objects.filter(date_joined__gte=last_7d).count()
+        total_sessions_last_7_days = AuthEvent.objects.filter(
+            success=True, created_at__gte=last_7d
+        ).count()
+
+        link_requests_last_30 = LinkRequest.objects.filter(created_at__gte=last_30d)
+        total_link_requests_last_30 = link_requests_last_30.count()
+        approved_link_requests_last_30 = link_requests_last_30.filter(
+            status=LinkRequestStatus.APPROVED
+        ).count()
+        pending_link_requests = LinkRequest.objects.filter(
+            status=LinkRequestStatus.PENDING
+        ).count()
+        active_links_total = OperatorUserLink.objects.count()
+        new_links_last_30 = OperatorUserLink.objects.filter(
+            created_at__gte=last_30d
+        ).count()
+        messages_last_7 = ChatMessage.objects.filter(created_at__gte=last_7d)
+        messages_last_7_days = messages_last_7.count()
+        conversations_last_7_days = (
+            messages_last_7.values("conversation_id").distinct().count()
+        )
+
+        auth_events_last_7 = AuthEvent.objects.filter(created_at__gte=last_7d)
+        total_auth_events = auth_events_last_7.count()
+        failed_auth_events = auth_events_last_7.filter(success=False).count()
+        success_auth_events = auth_events_last_7.filter(success=True).count()
+        distinct_users_last_7 = (
+            auth_events_last_7.filter(user__isnull=False)
+            .values("user_id")
+            .distinct()
+            .count()
+        )
+        failure_rate = (
+            round(failed_auth_events / total_auth_events, 4)
+            if total_auth_events
+            else 0.0
+        )
+        success_rate = (
+            round(success_auth_events / total_auth_events, 4)
+            if total_auth_events
+            else 0.0
+        )
+        avg_attempts_per_user = (
+            round(total_auth_events / distinct_users_last_7, 2)
+            if distinct_users_last_7
+            else 0.0
+        )
+        locked_accounts = AccountLock.objects.filter(locked_until__gt=now).count()
+
+        data = {
+            "userActivity": {
+                "totalUsers": total_users,
+                "activeUsers": active_users,
+                "inactiveUsers": inactive_users,
+                "dailyActiveUsers": dau,
+                "weeklyActiveUsers": wau,
+                "monthlyActiveUsers": mau,
+                "newUsersLast7Days": new_users_last_7_days,
+                "sessionsLast7Days": total_sessions_last_7_days,
+            },
+            "userInteraction": {
+                "linkRequestsLast30Days": total_link_requests_last_30,
+                "approvedLinkRequestsLast30Days": approved_link_requests_last_30,
+                "pendingLinkRequests": pending_link_requests,
+                "activeLinks": active_links_total,
+                "newLinksLast30Days": new_links_last_30,
+                "messagesLast7Days": messages_last_7_days,
+                "conversationsLast7Days": conversations_last_7_days,
+            },
+            "resourcePerformance": {
+                "authSuccessRate": success_rate,
+                "authFailureRate": failure_rate,
+                "authAttemptsLast7Days": total_auth_events,
+                "avgAuthAttemptsPerUser": avg_attempts_per_user,
+                "lockedAccounts": locked_accounts,
+            },
+        }
+
+        return Response(data)
+
+
+class AdminUserDetailView(APIView):
+    """Detalle, actualización y eliminación de usuarios para administradores."""
+    permission_classes = [permissions.IsAuthenticated, IsAdmin]
+
+    def get_user(self, user_id):
+        return get_object_or_404(User.objects.select_related('profile'), id=user_id)
+
+    def put(self, request, user_id):
+        user = self.get_user(user_id)
+        serializer = AdminUserSerializer(user, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(AdminUserSerializer(user).data)
+
+    def patch(self, request, user_id):
+        user = self.get_user(user_id)
+        serializer = AdminUserSerializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        return Response(AdminUserSerializer(user).data)
+
+    def delete(self, request, user_id):
+        user = self.get_user(user_id)
+
+        if user.id == request.user.id:
+            return Response(
+                {"detail": "No puedes eliminar tu propia cuenta mientras estás autenticado."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Vista para interactuar con la IA

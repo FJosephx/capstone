@@ -102,14 +102,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:8100",
-#     "http://127.0.0.1:8100", 
-#     "http://192.168.1.81:8100",
-#     "http://192.168.1.5:8100",
-#     "http://localhost:4200",
-#     "capacitor://localhost"
-# ]
+CORS_ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "").split(",")
 
 # Agregar configuraciones adicionales para CORS
 CORS_ALLOW_CREDENTIALS = True
@@ -143,4 +136,10 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+SOCKETIO_CONFIG = {
+    "REDIS_URL": f"redis://{os.getenv('REDIS_HOST', 'redis')}:{os.getenv('REDIS_PORT', '6379')}/0",
+    "ASYNC_MODE": "asgi",
+    "CORS_ALLOWED_ORIGINS": CORS_ALLOWED_ORIGINS if not CORS_ALLOW_ALL_ORIGINS else "*",
 }

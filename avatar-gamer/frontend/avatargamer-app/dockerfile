@@ -1,0 +1,19 @@
+FROM node:22-alpine
+
+WORKDIR /usr/src/app
+
+# CLI de Ionic para dev
+RUN npm i -g @ionic/cli@latest
+
+# Instala deps primero (cache de Docker)
+COPY package*.json ./
+RUN npm install
+
+# El código se montará por volumen
+EXPOSE 8100
+
+# Flags:
+# --host 0.0.0.0   => expone dentro del contenedor
+# --external       => permite acceder desde la red/host
+# --no-open        => no abre navegador
+CMD ["ionic", "serve", "--host=0.0.0.0", "--port=8100", "--external", "--no-open"]
