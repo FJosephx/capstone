@@ -77,3 +77,23 @@ class OperatorUserLink(models.Model):
         
     def __str__(self):
         return f"{self.operator.username} -> {self.user.username}"
+
+class UserConsent(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='consents')
+    consent_type = models.CharField(max_length=64)
+    version = models.CharField(max_length=32, blank=True, default="")
+    accepted_at = models.DateTimeField(auto_now_add=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True, default="")
+    metadata = models.JSONField(default=dict, blank=True)
+
+    class Meta:
+        unique_together = (('user', 'consent_type', 'version'),)
+        indexes = [
+            models.Index(fields=['user', 'consent_type'], name='uc_user_type_idx'),
+            models.Index(fields=['consent_type', 'accepted_at'], name='uc_type_accept_idx'),
+        ]
+
+    def __str__(self):
+        version = f" v{self.version}" if self.version else ""
+        return f"{self.user.username} -> {self.consent_type}{version}"

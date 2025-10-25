@@ -69,7 +69,9 @@
         <ion-button fill="clear" slot="end" (click)="unlinkUser(user); $event.stopPropagation()">
           <ion-icon name="trash" color="danger"></ion-icon>
         </ion-button>
-        <ion-icon name="chatbubbles-outline" slot="end" color="primary"></ion-icon>
+        <div class="chat-indicator" slot="end">
+          <ion-icon name="chatbubbles-outline" color="primary"></ion-icon>
+        </div>
       </ion-item>
       
       <ion-item *ngIf="isLoading && activeTab === 'linked'" lines="none">

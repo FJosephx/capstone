@@ -26,6 +26,7 @@ export interface ChatMessage {
   senderId: number;
   recipientId?: number;
   timestamp: Date;
+  read?: boolean;
 }
 
 export interface PresenceUpdate {
@@ -58,6 +59,9 @@ export class ChatService implements OnDestroy {
 
   private readonly presenceSubject = new Subject<PresenceUpdate>();
   readonly presenceUpdates$ = this.presenceSubject.asObservable();
+
+  private readonly unreadMessagesSubject = new BehaviorSubject<{ [key: string]: number }>({});
+  readonly unreadMessages$ = this.unreadMessagesSubject.asObservable();
 
   constructor(private readonly auth: Auth) {
     this.authSubscription = this.auth.currentUser.subscribe((user) => {
@@ -337,8 +341,48 @@ export class ChatService implements OnDestroy {
     });
 
     if (!isDuplicated) {
+      // Marcar el mensaje como no leído si es de otro usuario
+      if (this.currentUser && message.senderId !== this.currentUser.id) {
+        message.read = false;
+        this.incrementUnreadCount(message.senderId);
+      } else {
+        message.read = true;
+      }
+      
       this.messagesSubject.next([...currentMessages, message]);
     }
+  }
+
+  private incrementUnreadCount(senderId: number): void {
+    const currentCounts = this.unreadMessagesSubject.getValue();
+    const senderKey = `${senderId}`;
+    const currentCount = currentCounts[senderKey] || 0;
+    this.unreadMessagesSubject.next({
+      ...currentCounts,
+      [senderKey]: currentCount + 1
+    });
+  }
+
+  markMessagesAsRead(contactId: number): void {
+    // Marcar mensajes como leídos
+    const currentMessages = this.messagesSubject.getValue();
+    const updatedMessages = currentMessages.map(msg => {
+      if (msg.senderId === contactId && !msg.read) {
+        return { ...msg, read: true };
+      }
+      return msg;
+    });
+    this.messagesSubject.next(updatedMessages);
+
+    // Resetear el contador de mensajes no leídos
+    const currentCounts = this.unreadMessagesSubject.getValue();
+    const { [contactId.toString()]: _, ...restCounts } = currentCounts;
+    this.unreadMessagesSubject.next(restCounts);
+  }
+
+  getUnreadCount(contactId: number): number {
+    const counts = this.unreadMessagesSubject.getValue();
+    return counts[contactId.toString()] || 0;
   }
 
   private normalizeIncomingMessage(payload: unknown): ChatMessage | null {

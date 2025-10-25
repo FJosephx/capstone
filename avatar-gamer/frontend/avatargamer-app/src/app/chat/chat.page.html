@@ -104,9 +104,35 @@
   <ion-toolbar>
     <div class="input-container">
       <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" [disabled]="!selectedContact"></ion-input>
+      <div class="voice-controls">
+        <ion-button
+          fill="clear"
+          size="small"
+          [disabled]="speechSupported !== true || !selectedContact"
+          (click)="toggleRecording()"
+          [color]="isRecording ? 'danger' : 'medium'"
+          [class.recording]="isRecording"
+          aria-label="Activar microfono">
+          <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
+        </ion-button>
+        <div class="recording-indicator" *ngIf="isRecording">
+          <div class="pulse-ring"></div>
+          <div class="recording-status">
+            <span class="dot"></span>
+            <span class="label">Grabando audio...</span>
+            <span class="time">{{ recordingDuration }}</span>
+          </div>
+        </div>
+      </div>
       <ion-button (click)="sendMessage()" [disabled]="!newMessage || !selectedContact">
         <ion-icon name="send"></ion-icon>
       </ion-button>
     </div>
+    <ion-note color="danger" class="voice-error" *ngIf="recognitionError">
+      {{ recognitionError }}
+    </ion-note>
+    <ion-note color="medium" class="voice-error" *ngIf="speechSupported === false">
+      Tu navegador no admite la captura de voz.
+    </ion-note>
   </ion-toolbar>
 </ion-footer>

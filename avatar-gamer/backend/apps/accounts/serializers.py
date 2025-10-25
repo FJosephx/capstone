@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth.models import User
-from .models import OperatorUserLink, LinkRequest, LinkRequestStatus, Profile, Role
+from .models import OperatorUserLink, LinkRequest, LinkRequestStatus, Profile, Role, UserConsent
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
@@ -247,6 +247,28 @@ class LinkRequestUpdateSerializer(serializers.Serializer):
             )
         
         return instance
+
+class UserConsentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserConsent
+        fields = (
+            'id',
+            'consent_type',
+            'version',
+            'accepted_at',
+            'ip_address',
+            'user_agent',
+            'metadata',
+        )
+        read_only_fields = fields
+
+class UserConsentCreateSerializer(serializers.Serializer):
+    consent_type = serializers.CharField(max_length=64)
+    version = serializers.CharField(max_length=32, required=False, allow_blank=True, default="")
+    metadata = serializers.JSONField(required=False)
+
+    def validate_metadata(self, value):
+        return value or {}
     
 class LinkCreateSerializer(serializers.Serializer):
     user_id = serializers.IntegerField()

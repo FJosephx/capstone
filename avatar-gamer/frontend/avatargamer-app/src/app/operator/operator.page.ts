@@ -265,4 +265,6 @@ export class OperatorPage implements OnInit, OnDestroy {
 
     await toast.present();
   }
+
+
 }
