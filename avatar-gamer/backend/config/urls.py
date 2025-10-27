@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/v1/auth/token', SafeTokenObtainPairView.as_view(), name='token_obtain_pair'), # JWT
     path('api/v1/auth/token/refresh', TokenRefreshView.as_view(), name='token_refresh'), # JWT
     path('api/v1/me', MeView.as_view(), name='me'), # JWT
+    path('api/v1/', include('apps.control.urls')),
 ]
