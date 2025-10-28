@@ -288,3 +288,34 @@ ion-input {
     margin-bottom: 8px;
   }
 }
+
+/* 🟢 AÑADE ESTOS ESTILOS AL FINAL DEL ARCHIVO 🟢 */
+
+// Contenedor para el componente Jitsi
+.video-call-container {
+  width: 100%;
+  height: 100%; // Ocupa todo el <ion-content>
+  background: #000; // Fondo negro mientras carga
+
+  app-jitsi-call {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}
+
+// Selector :host para modificar el padding del ion-content
+:host {
+  ion-content {
+    // Transición suave por si acaso
+    transition: --padding-top 0.2s, --padding-bottom 0.2s;
+  }
+
+  // Cuando la llamada está activa, quitamos el padding del ion-content
+  ion-content.video-active {
+    --padding-start: 0;
+    --padding-end: 0;
+    --padding-top: 0;
+    --padding-bottom: 0;
+  }
+}
