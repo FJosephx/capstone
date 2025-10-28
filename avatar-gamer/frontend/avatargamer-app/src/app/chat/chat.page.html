@@ -1,0 +1,138 @@
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button [defaultHref]="userRole === 'operator' ? '/operator' : '/user'"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="!contactName">
+      {{ userRole === 'operator' ? 'Chat con Usuario' : 'Chat con Operador' }}
+    </ion-title>
+    
+    <!-- Muestra información del contacto si está disponible -->
+    <ion-item *ngIf="contactName" lines="none" color="primary" class="contact-header">
+      <ion-avatar slot="start">
+        <ion-icon [name]="userRole === 'operator' ? 'person' : 'headset'" color="light"></ion-icon>
+      </ion-avatar>
+      <ion-label>
+        <h2>{{ contactName }}</h2>
+        <p>
+          <ion-badge [color]="contactStatus === 'online' ? 'success' : 'medium'">
+            {{ contactStatus === 'online' ? 'En línea' : 'Desconectado' }}
+          </ion-badge>
+        </p>
+      </ion-label>
+    </ion-item>
+    
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="welcome-message" *ngIf="userRole">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>
+          <span *ngIf="!contactName">{{ userRole === 'operator' ? 'Modo Operador' : 'Soporte Técnico' }}</span>
+          <span *ngIf="contactName">Conversación con {{ contactName }}</span>
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <!-- Mensajes específicos cuando hay un contacto seleccionado -->
+        <p *ngIf="userRole === 'operator' && contactName">
+          Estás chateando con el usuario <strong>{{ contactName }}</strong>. Tus mensajes aparecerán en azul. 
+          Puedes iniciar una videollamada con el botón en la esquina superior derecha.
+        </p>
+        <p *ngIf="userRole !== 'operator' && contactName">
+          Estás chateando con el operador <strong>{{ contactName }}</strong>. 
+          Si necesitas ayuda visual, puedes solicitar una videollamada con el botón de la esquina superior derecha.
+        </p>
+        
+        <!-- Mensajes genéricos cuando no hay contacto específico -->
+        <p *ngIf="userRole === 'operator' && !contactName">
+          Estás en modo operador. Tus mensajes aparecerán en azul. 
+          Puedes iniciar una videollamada con el botón en la esquina superior derecha.
+        </p>
+        <p *ngIf="userRole !== 'operator' && !contactName">
+          Bienvenido al chat de soporte. Un operador te atenderá en breve. 
+          Si necesitas ayuda visual, puedes solicitar una videollamada.
+        </p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <ng-container *ngIf="connectionState$ | async as connectionState">
+    <ion-item *ngIf="connectionState !== 'connected'" lines="none" color="warning" class="connection-banner">
+      <ion-icon slot="start" name="cloud-offline"></ion-icon>
+      <ion-label>
+        <h3>
+          {{ connectionState === 'connecting'
+            ? 'Conectando con el servidor de chat...'
+            : 'Sin conexión con el servidor de chat' }}
+        </h3>
+        <p *ngIf="connectionState === 'disconnected'">
+          Revisa tu conexión a internet o intenta nuevamente en unos instantes.
+        </p>
+      </ion-label>
+    </ion-item>
+  </ng-container>
+
+  <div class="chat-container" *ngIf="userProfile as profile">
+    <ng-container *ngIf="messages$ | async as messages">
+      <div *ngFor="let message of messages" class="message"
+           [ngClass]="{
+             'message-outgoing': message.senderId === profile?.id,
+             'message-incoming': message.senderId !== profile?.id
+           }">
+        <div class="message-bubble">
+          <div class="message-text">{{ message.text }}</div>
+          <div class="message-meta">
+            <span class="message-author">
+              {{ message.senderId === profile?.id ? 'Tú' : (message.senderRole === 'operator' ? 'Operador' : 'Usuario') }}
+            </span>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="empty-state" *ngIf="!selectedContact">
+    <ion-icon name="chatbubbles-outline"></ion-icon>
+    <p>Selecciona un contacto para iniciar una conversación.</p>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <div class="input-container">
+      <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" [disabled]="!selectedContact"></ion-input>
+      <div class="voice-controls">
+        <ion-button
+          fill="clear"
+          size="small"
+          [disabled]="speechSupported !== true || !selectedContact"
+          (click)="toggleRecording()"
+          [color]="isRecording ? 'danger' : 'medium'"
+          [class.recording]="isRecording"
+          aria-label="Activar microfono">
+          <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
+        </ion-button>
+        <div class="recording-indicator" *ngIf="isRecording">
+          <div class="pulse-ring"></div>
+          <div class="recording-status">
+            <span class="dot"></span>
+            <span class="label">Grabando audio...</span>
+            <span class="time">{{ recordingDuration }}</span>
+          </div>
+        </div>
+      </div>
+      <ion-button (click)="sendMessage()" [disabled]="!newMessage || !selectedContact">
+        <ion-icon name="send"></ion-icon>
+      </ion-button>
+    </div>
+    <ion-note color="danger" class="voice-error" *ngIf="recognitionError">
+      {{ recognitionError }}
+    </ion-note>
+    <ion-note color="medium" class="voice-error" *ngIf="speechSupported === false">
+      Tu navegador no admite la captura de voz.
+    </ion-note>
+  </ion-toolbar>
+</ion-footer>

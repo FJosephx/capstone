@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    container_name: avatar_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  backend:
+    build:
+      context: ./backend
+    container_name: avatar_backend
+    env_file: 
+      - .env           # variables globales (Postgres)
+      - backend/.env   # variables específicas de Django
+    environment:
+      DB_HOST: db
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    # 👇 Aquí el cambio importante
+    entrypoint: ["bash", "-lc", "/app/entrypoint.sh"]
+  frontend:
+    build:
+      context: ./frontend/avatargamer-app
+    container_name: avatar_frontend
+    env_file:
+      - .env
+    environment:
+      # En Windows/Mac con volúmenes, ayuda al file-watching
+      CHOKIDAR_USEPOLLING: "true"
+      # Evita prompts/telemetry en CI
+      CI: "true"
+    ports:
+      - "${FRONTEND_PORT}:8100"
+    volumes:
+      - ./frontend/avatargamer-app:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - backend
+  redis:
+    image: redis:7-alpine
+    container_name: avatar_redis
+    ports:
+      - "6379:6379"
+
+
+
+volumes:
+  db_data:

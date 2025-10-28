@@ -1,0 +1,101 @@
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### 1) Obtener token (JWT)
+# @name login
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### 2) Llamar a /me con el access token (protegido)
+GET {{baseUrl}}/me
+Authorization: Bearer {{login.response.body.$.access}}
+
+### 3) Refrescar token
+# @name refresh
+POST {{baseUrl}}/auth/token/refresh
+Content-Type: application/json
+
+{
+  "refresh": "{{login.response.body.$.refresh}}"
+}
+
+### 4) Login inválido (debe dar 400)
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "mala"
+}
+
+### Cinco fallos → bloquea
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x1"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x2"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x3"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x4"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x5"}
+###
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"x5"}
+
+### Intento correcto durante bloqueo → debe avisar bloqueo
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"admin","password":"admin"}
+
+### Admin puede
+GET {{baseUrl}}/ping/admin
+Authorization: Bearer {{login.response.body.$.access}}
+
+### Admin no es operator → 403
+GET {{baseUrl}}/ping/operator
+Authorization: Bearer {{login.response.body.$.access}}
+
+### Operator login
+# @name opLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{"username":"op1", "password":"operador1"}
+
+### Operator puede
+GET {{baseUrl}}/ping/operator
+Authorization: Bearer {{opLogin.response.body.$.access}}
+
+### Operator no es admin → 403
+GET {{baseUrl}}/ping/admin
+Authorization: Bearer {{opLogin.response.body.$.access}}
+
+### /me incluye role
+GET {{baseUrl}}/me
+Authorization: Bearer {{opLogin.response.body.$.access}}
+
+###  /me incluye role
+GET {{baseUrl}}/me
+Authorization: Bearer {{login.response.body.$.access}}

@@ -1,0 +1,290 @@
+.contact-header {
+  --background: transparent;
+  --border-color: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  
+  ion-avatar {
+    width: 32px;
+    height: 32px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    ion-icon {
+      font-size: 20px;
+    }
+  }
+  
+  ion-label {
+    h2 {
+      color: white;
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+    
+    p {
+      margin: 0;
+    }
+    
+    ion-badge {
+      font-size: 10px;
+      padding: 3px 8px;
+    }
+  }
+}
+
+.welcome-message {
+  margin-bottom: 20px;
+  
+  ion-card {
+    margin: 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    
+    ion-card-header {
+      padding-bottom: 8px;
+    }
+    
+    ion-card-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    ion-card-content {
+      font-size: 14px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+.connection-banner {
+  --background: rgba(255, 193, 7, 0.15);
+  --inner-padding-bottom: 12px;
+  --inner-padding-top: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+
+  ion-icon {
+    font-size: 22px;
+  }
+
+  h3 {
+    margin: 0;
+    font-weight: 600;
+    color: var(--ion-color-dark);
+  }
+
+  p {
+    margin: 4px 0 0;
+    font-size: 13px;
+    color: var(--ion-color-medium-shade);
+  }
+}
+
+.chat-container {
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 120px);
+  overflow-y: auto;
+  gap: 8px;
+}
+
+.message {
+  display: flex;
+}
+
+.message-outgoing {
+  justify-content: flex-end;
+}
+
+.message-incoming {
+  justify-content: flex-start;
+}
+
+.message-bubble {
+  padding: 10px 15px;
+  border-radius: 18px;
+  max-width: 80%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.message-outgoing .message-bubble {
+  background-color: var(--ion-color-primary);
+  color: white;
+  border-bottom-right-radius: 0;
+}
+
+.message-incoming .message-bubble {
+  background-color: #f1f1f1;
+  color: black;
+  border-bottom-left-radius: 0;
+}
+
+.message-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.7rem;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.message-author {
+  font-weight: 600;
+}
+
+.message-time {
+  margin-left: 12px;
+}
+
+.input-container {
+  display: flex;
+  padding: 5px;
+  align-items: center;
+}
+
+ion-input {
+  flex: 1;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  margin-right: 8px;
+  --padding-start: 15px;
+  --padding-end: 15px;
+}
+
+.voice-controls {
+  display: flex;
+  align-items: center;
+  margin-right: 8px;
+  gap: 6px;
+  position: relative;
+
+  ion-button {
+    margin: 0;
+    --padding-start: 6px;
+    --padding-end: 6px;
+    position: relative;
+    z-index: 2;
+
+    &.recording {
+      --background: var(--ion-color-danger);
+      --color: white;
+      animation: mic-pulse 1.2s ease-in-out infinite;
+    }
+
+    ion-icon {
+      font-size: 1.2em;
+    }
+  }
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+
+  .pulse-ring {
+    position: absolute;
+    left: -24px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(var(--ion-color-danger-rgb), 0.2);
+    animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+  }
+
+  .recording-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    padding: 4px 10px;
+    border-radius: 16px;
+    
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--ion-color-danger);
+      animation: recording-pulse 1.2s ease-in-out infinite;
+    }
+
+    .label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ion-color-danger);
+    }
+
+    .time {
+      font-size: 12px;
+      color: var(--ion-color-medium);
+    }
+  }
+}
+
+@keyframes mic-pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: translateY(-50%) scale(0.7);
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.2;
+  }
+  100% {
+    transform: translateY(-50%) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.voice-error {
+  display: block;
+  font-size: 12px;
+  margin: 4px 10px 0;
+}
+
+@keyframes recording-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--ion-color-medium);
+  margin-top: 32px;
+
+  ion-icon {
+    font-size: 48px;
+    margin-bottom: 8px;
+  }
+}

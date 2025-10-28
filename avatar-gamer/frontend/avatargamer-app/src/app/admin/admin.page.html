@@ -1,0 +1,373 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Panel de Administrador</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="admin-header">
+    <h1>Bienvenido, {{ userProfile?.username || 'admin' }}</h1>
+    <p>Gestiona los usuarios y configura el sistema desde este panel.</p>
+  </div>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Información de la cuenta</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-item lines="none">
+        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
+        <ion-label>
+          <h2>ID: {{ userProfile?.id }}</h2>
+          <p>Email: {{ userProfile?.email }}</p>
+          <p>Rol: {{ userProfile?.role }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Métricas del sistema</ion-card-title>
+      <ion-card-subtitle>Actividad de usuarios, interacción y desempeño</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="metrics-toolbar">
+        <ion-button fill="clear" size="small" (click)="loadMetrics()" [disabled]="loadingMetrics">
+          <ion-icon slot="start" name="refresh-outline"></ion-icon>
+          Actualizar
+        </ion-button>
+      </div>
+
+      <div class="ion-text-center ion-padding" *ngIf="loadingMetrics">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <ion-grid *ngIf="!loadingMetrics && metrics" class="metrics-grid">
+        <ion-row>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="people-circle-outline"></ion-icon>
+                <h3>Actividad de usuarios</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Usuarios totales</span>
+                  <span class="metric-value">{{ metrics.userActivity.totalUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.activeUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Inactivos</span>
+                  <span class="metric-value">{{ metrics.userActivity.inactiveUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Usuarios diarios activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.dailyActiveUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Usuarios semanales activos</span>
+                  <span class="metric-value">{{ metrics.userActivity.weeklyActiveUsers }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Nuevos (7 días)</span>
+                  <span class="metric-value">{{ metrics.userActivity.newUsersLast7Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Sesiones (7 días)</span>
+                  <span class="metric-value">{{ metrics.userActivity.sessionsLast7Days }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <h3>Interacción entre usuarios</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Vínculos activos</span>
+                  <span class="metric-value">{{ metrics.userInteraction.activeLinks }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Nuevos vínculos (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.newLinksLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Solicitudes pendientes</span>
+                  <span class="metric-value">{{ metrics.userInteraction.pendingLinkRequests }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Solicitudes totales (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.linkRequestsLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Aprobadas (30 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.approvedLinkRequestsLast30Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Mensajes (7 días)</span>
+                  <span class="metric-value">{{ metrics.userInteraction.messagesLast7Days }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+          <ion-col size="12" sizeMd="4">
+            <div class="metric-block">
+              <div class="metric-block__title">
+                <ion-icon name="speedometer-outline"></ion-icon>
+                <h3>Desempeño de recursos</h3>
+              </div>
+              <ul>
+                <li>
+                  <span class="metric-label">Intentos autenticación (7 días)</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.authAttemptsLast7Days }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Éxito autenticación</span>
+                  <span class="metric-value">{{ (metrics.resourcePerformance.authSuccessRate * 100) | number:'1.0-1' }}%</span>
+                </li>
+                <li>
+                  <span class="metric-label">Fallas autenticación</span>
+                  <span class="metric-value">{{ (metrics.resourcePerformance.authFailureRate * 100) | number:'1.0-1' }}%</span>
+                </li>
+                <li>
+                  <span class="metric-label">Intentos promedio por usuario</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.avgAuthAttemptsPerUser | number:'1.0-1' }}</span>
+                </li>
+                <li>
+                  <span class="metric-label">Cuentas bloqueadas</span>
+                  <span class="metric-value">{{ metrics.resourcePerformance.lockedAccounts }}</span>
+                </li>
+              </ul>
+            </div>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+
+      <div *ngIf="!loadingMetrics && !metrics" class="ion-text-center ion-padding">
+        <p>No hay métricas disponibles por el momento.</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Gestión de Usuarios</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="section-header">
+        <h2>Usuarios del sistema</h2>
+        <ion-button color="primary" size="small" (click)="openCreateModal()">
+          <ion-icon slot="start" name="add-outline"></ion-icon>
+          Añadir usuario
+        </ion-button>
+      </div>
+
+      <div class="filter-controls ion-margin-bottom">
+        <ion-searchbar
+          placeholder="Buscar por nombre, email o username"
+          [(ngModel)]="filters.search"
+          debounce="400"
+          (ionInput)="onFiltersChange()">
+        </ion-searchbar>
+
+        <ion-select
+          interface="popover"
+          placeholder="Rol"
+          [(ngModel)]="filters.role"
+          (ionChange)="onFiltersChange()">
+          <ion-select-option *ngFor="let role of roles" [value]="role.value">
+            {{ role.label }}
+          </ion-select-option>
+        </ion-select>
+
+        <ion-input
+          type="number"
+          placeholder="ID de usuario"
+          [(ngModel)]="filters.id"
+          (ionChange)="onFiltersChange()">
+        </ion-input>
+
+        <ion-button fill="clear" color="medium" (click)="clearFilters()" [disabled]="!hasActiveFilters()">
+          Limpiar
+        </ion-button>
+      </div>
+
+      <div class="page-info" *ngIf="!loadingUsers">
+        <strong>Total:</strong> {{ totalUsers }} usuario{{ totalUsers === 1 ? '' : 's' }}
+      </div>
+
+      <div class="ion-text-center ion-padding" *ngIf="loadingUsers">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+
+      <div *ngIf="!loadingUsers && users.length === 0" class="ag-empty-state">
+        <ion-icon name="people-outline"></ion-icon>
+        <h4>No hay usuarios para mostrar</h4>
+        <p>Ajusta los filtros o crea un nuevo usuario con el botón superior.</p>
+      </div>
+
+      <div *ngIf="!loadingUsers && users.length > 0">
+        <table class="ag-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Usuario</th>
+              <th>Email</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th class="action-cell">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let user of users; trackBy: trackByUserId">
+              <td>{{ user.id }}</td>
+              <td>
+                <div class="ion-text-wrap">
+                  <strong>{{ user.username }}</strong>
+                  <div *ngIf="user.first_name || user.last_name" class="ion-text-sm">
+                    {{ user.first_name }} {{ user.last_name }}
+                  </div>
+                </div>
+              </td>
+              <td>{{ user.email || 'Sin correo' }}</td>
+              <td>
+                <ion-chip color="primary" outline>
+                  {{ user.role | titlecase }}
+                </ion-chip>
+              </td>
+              <td>
+                <ion-badge [color]="user.is_active ? 'success' : 'medium'">
+                  {{ user.is_active ? 'Activo' : 'Inactivo' }}
+                </ion-badge>
+              </td>
+              <td class="action-cell">
+                <div class="action-buttons">
+                  <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(user)">
+                    <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" color="danger" (click)="confirmDelete(user)">
+                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                  </ion-button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-modal [isOpen]="isUserModalOpen" (didDismiss)="closeUserModal()" cssClass="admin-user-modal">
+  <ng-template>
+    <form [formGroup]="userForm" (ngSubmit)="submitUserForm()" class="admin-user-form">
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ isEditMode ? 'Editar usuario' : 'Nuevo usuario' }}</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeUserModal()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <ion-grid class="form-grid">
+          <ion-row>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">Nombre de usuario *</ion-label>
+                <ion-input formControlName="username" autocomplete="off"></ion-input>
+              </ion-item>
+              <ion-note color="danger" *ngIf="userForm.get('username')?.touched && userForm.get('username')?.invalid">
+                El nombre de usuario es obligatorio.
+              </ion-note>
+            </ion-col>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">Email *</ion-label>
+                <ion-input type="email" formControlName="email"></ion-input>
+              </ion-item>
+              <ion-note color="danger" *ngIf="userForm.get('email')?.touched && userForm.get('email')?.invalid">
+                Debes ingresar un email valido.
+              </ion-note>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">Nombre</ion-label>
+                <ion-input formControlName="first_name"></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">Apellido</ion-label>
+                <ion-input formControlName="last_name"></ion-input>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">Rol *</ion-label>
+                <ion-select interface="popover" formControlName="role">
+                  <ion-select-option value="admin">Administrador</ion-select-option>
+                  <ion-select-option value="operator">Operador</ion-select-option>
+                  <ion-select-option value="user">Usuario final</ion-select-option>
+                </ion-select>
+              </ion-item>
+            </ion-col>
+            <ion-col size="12" sizeMd="6">
+              <ion-item>
+                <ion-label position="stacked">{{ isEditMode ? 'Actualizar contrasena' : 'Contrasena *' }}</ion-label>
+                <ion-input type="password" formControlName="password" autocomplete="new-password"></ion-input>
+              </ion-item>
+              <ion-note color="danger" *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid">
+                La contrasena debe tener al menos 6 caracteres.
+              </ion-note>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+            <ion-col size="12" sizeMd="6">
+              <ion-item lines="none">
+                <ion-label>Activo</ion-label>
+                <ion-toggle formControlName="is_active"></ion-toggle>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button fill="clear" color="medium" (click)="closeUserModal()">Cancelar</ion-button>
+          </ion-buttons>
+          <ion-buttons slot="end">
+            <ion-button type="submit" color="primary" [disabled]="submittingUser">
+              <ion-spinner slot="start" *ngIf="submittingUser" name="dots"></ion-spinner>
+              {{ isEditMode ? 'Guardar cambios' : 'Crear usuario' }}
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </form>
+  </ng-template>
+</ion-modal>
+
+

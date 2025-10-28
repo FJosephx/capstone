@@ -1,0 +1,139 @@
+/* Avatar Gamer Accessibility Enhancement */
+
+/* Focus states */
+:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .ag-animation-disabled {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Increase contrast in dark mode */
+@media (prefers-color-scheme: dark) {
+  .ag-high-contrast {
+    --ion-color-primary: #4dabff;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-text-color: #ffffff;
+    --ion-background-color: #121212;
+  }
+}
+
+/* Skip to main content link */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ion-color-primary);
+  color: white;
+  padding: 8px;
+  z-index: 100;
+  transition: top 0.3s;
+  
+  &:focus {
+    top: 0;
+  }
+}
+
+/* ARIA attributes styling */
+[aria-hidden="true"] {
+  display: none !important;
+}
+
+[aria-busy="true"] {
+  cursor: progress;
+}
+
+[aria-disabled="true"],
+[disabled] {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Color contrast helpers */
+.ag-contrast-dark {
+  color: var(--ion-color-dark);
+}
+
+.ag-contrast-light {
+  color: white;
+}
+
+/* Text helpers */
+.ag-text-large {
+  font-size: 1.2em;
+}
+
+.ag-line-height-increased {
+  line-height: 1.8;
+}
+
+/* Interactive element sizing */
+.ag-touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Focus within for interactive containers */
+.ag-focus-indicator:focus-within {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode detection */
+@media (forced-colors: active) {
+  .ag-high-contrast-adapter {
+    border: 1px solid ButtonText;
+  }
+  
+  /* Ensure icons are visible in high contrast mode */
+  ion-icon {
+    -ms-high-contrast-adjust: auto;
+    forced-color-adjust: auto;
+  }
+}
+
+/* Make sure form elements have visible focus states */
+input:focus,
+button:focus,
+textarea:focus,
+select:focus,
+ion-input:focus,
+ion-textarea:focus,
+ion-select:focus,
+ion-button:focus,
+ion-item:focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}
+
+/* Ensure proper keyboard navigation */
+[tabindex]:not([tabindex="-1"]):focus {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+}

@@ -1,0 +1,209 @@
+/* Custom Animations and Transitions */
+
+/* Fade In */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.ag-fade-in {
+  animation: fadeIn var(--ag-transition-normal) ease-in-out;
+}
+
+/* Fade In Up */
+@keyframes fadeInUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ag-fade-in-up {
+  animation: fadeInUp var(--ag-transition-normal) ease-out;
+}
+
+/* Scale In */
+@keyframes scaleIn {
+  from { 
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.ag-scale-in {
+  animation: scaleIn var(--ag-transition-normal) ease-out;
+}
+
+/* Slide In Right */
+@keyframes slideInRight {
+  from { 
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ag-slide-in-right {
+  animation: slideInRight var(--ag-transition-normal) ease-out;
+}
+
+/* Slide In Left */
+@keyframes slideInLeft {
+  from { 
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.ag-slide-in-left {
+  animation: slideInLeft var(--ag-transition-normal) ease-out;
+}
+
+/* Stagger children animations */
+.ag-stagger-children > * {
+  animation-duration: var(--ag-transition-normal);
+  animation-fill-mode: both;
+  
+  @for $i from 1 through 10 {
+    &:nth-child(#{$i}) {
+      animation-delay: #{$i * 0.05}s;
+    }
+  }
+}
+
+/* Apply stagger to specific animations */
+.ag-stagger-fade-in > * {
+  animation-name: fadeIn;
+}
+
+.ag-stagger-fade-in-up > * {
+  animation-name: fadeInUp;
+}
+
+/* Hover Effects */
+.ag-hover-scale {
+  transition: transform var(--ag-transition-fast);
+  
+  &:hover {
+    transform: scale(1.02);
+  }
+}
+
+.ag-hover-lift {
+  transition: transform var(--ag-transition-fast), box-shadow var(--ag-transition-fast);
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--ag-shadow-md);
+  }
+}
+
+/* Page transitions */
+.ag-page-enter {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Loading states */
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.ag-loading-pulse {
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+/* Skeleton loading animation */
+.ag-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(var(--ion-color-light-rgb), 0.4) 0%,
+    rgba(var(--ion-color-light-rgb), 0.6) 50%,
+    rgba(var(--ion-color-light-rgb), 0.4) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: var(--ag-border-radius-sm);
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Button animations */
+.ag-button-pulse {
+  position: relative;
+  overflow: hidden;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  
+  &:hover::after {
+    animation: buttonPulse 0.8s infinite;
+  }
+}
+
+@keyframes buttonPulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Focus effects for accessibility */
+.ag-focus-outline:focus-visible {
+  outline: 2px solid var(--ion-color-primary);
+  outline-offset: 2px;
+  transition: outline-offset 0.2s ease;
+}
+
+/* Card hover effects */
+.ag-card-hover {
+  transition: transform var(--ag-transition-normal), box-shadow var(--ag-transition-normal);
+  
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--ag-shadow-lg);
+  }
+}

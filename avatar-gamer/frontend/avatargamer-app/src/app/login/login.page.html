@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Iniciar Sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="login-container">
+    <div class="logo-container">
+      <ion-img src="assets/icon/icon.png" alt="Avatar Gamer Logo" class="logo"></ion-img>
+      <h1>Avatar Gamer</h1>
+      <p>Plataforma de acompañamiento digital</p>
+    </div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
+      <ion-card>
+        <ion-card-content>
+          <ion-list>
+            <ion-item>
+              <ion-label position="floating">Usuario</ion-label>
+              <ion-input type="text" formControlName="username" autocomplete="username"></ion-input>
+            </ion-item>
+            <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error-message">
+              <span *ngIf="loginForm.get('username')?.errors?.['required']">Usuario es obligatorio</span>
+            </div>
+            
+            <ion-item>
+              <ion-label position="floating">Contraseña</ion-label>
+              <ion-input type="password" formControlName="password" autocomplete="current-password"></ion-input>
+            </ion-item>
+            <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+              <span *ngIf="loginForm.get('password')?.errors?.['required']">Contraseña es obligatoria</span>
+              <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 4 caracteres</span>
+            </div>
+          </ion-list>
+          
+          <div class="ion-padding-top">
+            <ion-button expand="block" color="primary" type="submit" [disabled]="isSubmitting">
+              <ion-icon name="log-in-outline" slot="start"></ion-icon>
+              Iniciar Sesión
+            </ion-button>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </form>
+  </div>
+</ion-content>

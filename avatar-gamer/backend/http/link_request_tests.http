@@ -1,0 +1,67 @@
+# Pruebas para los endpoints de solicitudes de vinculación
+@baseUrl = http://127.0.0.1:8000/api/v1
+
+### 1) Obtener token como operador
+# @name operatorLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "op1",
+  "password": "operador1"
+}
+
+### 2) Obtener token como usuario
+# @name userLogin
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+
+{
+  "username": "op2",
+  "password": "operador2"
+}
+
+### 3) Crear solicitud de vinculación (como operador)
+# @name createLinkRequest
+POST {{baseUrl}}/link-requests
+Content-Type: application/json
+Authorization: Bearer {{operatorLogin.response.body.$.access}}
+
+{
+  "user_id": 3,
+  "message": "Hola, me gustaría vincularme contigo para brindarte acompañamiento"
+}
+
+### 4) Listar solicitudes enviadas (como operador)
+GET {{baseUrl}}/link-requests/sent
+Authorization: Bearer {{operatorLogin.response.body.$.access}}
+
+### 5) Listar solicitudes recibidas (como usuario)
+GET {{baseUrl}}/link-requests/received
+Authorization: Bearer {{userLogin.response.body.$.access}}
+
+### 6) Ver detalle de una solicitud
+GET {{baseUrl}}/link-requests/1
+Authorization: Bearer {{userLogin.response.body.$.access}}
+
+### 7) Aprobar una solicitud (como usuario)
+PATCH {{baseUrl}}/link-requests/1/respond
+Content-Type: application/json
+Authorization: Bearer {{userLogin.response.body.$.access}}
+
+{
+  "status": "approved"
+}
+
+### 8) Rechazar una solicitud (como usuario)
+PATCH {{baseUrl}}/link-requests/2/respond
+Content-Type: application/json
+Authorization: Bearer {{userLogin.response.body.$.access}}
+
+{
+  "status": "rejected"
+}
+
+### 9) Listar usuarios vinculados (como operador)
+GET {{baseUrl}}/users/linked
+Authorization: Bearer {{operatorLogin.response.body.$.access}}

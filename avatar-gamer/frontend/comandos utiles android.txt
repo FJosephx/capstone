@@ -1,0 +1,6 @@
+ionic build            # o: ionic build --configuration=production
+npx cap copy android
+npx cap sync android
+adb reverse tcp:8100 tcp:8100
+npx ionic cap run android -l --external --host=192.168.1.X --port=8100 opcion1
+npx ionic cap run android -l --host=localhost --port=8100 opcion2

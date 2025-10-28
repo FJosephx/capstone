@@ -1,0 +1,118 @@
+/*
+ * Avatar Gamer - Global CSS
+ * ----------------------------------------------------------------------------
+ * Global styling and CSS imports for the Avatar Gamer application.
+ * Features modern design with improved accessibility and user experience.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Font Awesome */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * Using system preference for dark mode
+ */
+@import "@ionic/angular/css/palettes/dark.system.css"; /* System preference dark mode */
+
+/* Import our custom theme files */
+@import "./theme/typography.scss";
+@import "./theme/components.scss";
+@import "./theme/animations.scss";
+@import "./theme/accessibility.scss";
+@import "./theme/text-contrast.scss";
+@import "./theme/improved-contrast.scss";
+
+/* Global Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  color: var(--ion-color-dark);
+  scroll-behavior: smooth;
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+}
+
+/* Typography Adjustments */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Orbitron', 'Inter', sans-serif;
+  margin-top: 0;
+  margin-bottom: var(--ag-space-md);
+  line-height: 1.3;
+  color: var(--ion-color-dark);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: var(--ag-font-size-xxl); }
+h2 { font-size: var(--ag-font-size-xl); }
+h3 { font-size: var(--ag-font-size-lg); }
+h4 { font-size: var(--ag-font-size-md); }
+h5 { font-size: var(--ag-font-size-sm); }
+h6 { font-size: var(--ag-font-size-xs); }
+
+p {
+  margin-top: 0;
+  margin-bottom: var(--ag-space-sm);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--ion-color-primary);
+  text-decoration: none;
+  transition: color var(--ag-transition-fast);
+  
+  &:hover {
+    color: var(--ion-color-primary-shade);
+  }
+}
+
+/* Content Container */
+.ag-container {
+  padding: var(--ag-space-md);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Global Styles for Select Components in Dark Mode */
+ion-select {
+  &::part(text) { 
+    color: white;
+  }
+  
+  &::part(placeholder) {
+    color: white;
+  }
+}
+
+/* Fix for popover select options in dark mode */
+.select-interface-option {
+  --color: white !important;
+  color: white !important;
+}
+
+.popover-content {
+  --background: #333 !important;
+}
