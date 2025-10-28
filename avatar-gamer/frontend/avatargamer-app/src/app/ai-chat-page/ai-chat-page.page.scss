@@ -207,6 +207,111 @@ ion-select[label] {
   --color: white;
 }
 
+.message-input-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.message-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #2c2c2c;
+  border-radius: 20px;
+  padding: 4px 6px 4px 10px;
+}
+
+.message-input-item {
+  flex: 1;
+  --background: transparent;
+  --inner-padding-end: 6px;
+  --inner-padding-start: 0;
+  --padding-start: 0;
+  --padding-end: 0;
+  border-radius: 18px;
+  border: none;
+}
+
+.message-input-item ion-input {
+  --padding-start: 0;
+  --padding-end: 0;
+}
+
+.mic-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  --padding-start: 6px;
+  --padding-end: 6px;
+  --color: var(--ion-color-primary-contrast, #ffffff);
+  border-radius: 50%;
+  min-width: 34px;
+  height: 34px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+
+  &.recording {
+    box-shadow: inset 0 0 0 1px var(--ion-color-danger);
+  }
+}
+
+.recording-indicator {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ion-color-danger);
+}
+
+.recording-indicator .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--ion-color-danger);
+  animation: recording-pulse 1.2s ease-in-out infinite;
+}
+
+.voice-error {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.send-button-col {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.send-button {
+  min-width: 52px;
+  margin-left: auto;
+  --border-radius: 18px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@keyframes recording-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 /* Fondo oscuro para la página de chat */
 ion-content {
   --background: #121212;
@@ -243,3 +348,4 @@ ion-toolbar {
     }
   }
 }
+

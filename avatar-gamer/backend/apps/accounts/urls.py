@@ -3,7 +3,7 @@ from .views import (
     LoginView, AdminPing, OperatorPing, LinkUserView, UnlinkUserView, LinkedUsersView,
     LinkRequestCreateView, LinkRequestOperatorListView, LinkRequestUserListView,
     LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView,
-    AIAssistantView, AdminUserListCreateView, AdminUserDetailView, AdminMetricsView
+    AIAssistantView, AdminUserListCreateView, AdminUserDetailView, AdminMetricsView, UserConsentView
 )
 
 urlpatterns = [
@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/users', AdminUserListCreateView.as_view()),  # GET/POST /api/v1/admin/users
     path('admin/users/<int:user_id>', AdminUserDetailView.as_view()),  # PUT/PATCH/DELETE /api/v1/admin/users/<id>
     path('admin/metrics', AdminMetricsView.as_view()),  # GET /api/v1/admin/metrics
+    path('consents', UserConsentView.as_view()),  # GET/POST /api/v1/consents
     
     # Ruta para el asistente IA
     path('ai/chat', AIAssistantView.as_view()),  # POST /api/v1/ai/chat

@@ -6,6 +6,21 @@
   width: 60px;
   height: 60px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  position: relative;
+
+  ion-badge {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    font-size: 12px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 /* Estilos para mejorar legibilidad del ID de usuario */
@@ -184,6 +199,29 @@
     .user-actions {
       display: flex;
       gap: var(--ag-space-xs);
+    }
+    
+    .chat-indicator {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-right: 8px;
+
+      .unread-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: var(--ion-color-primary);
+        color: white;
+        font-size: 10px;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2px;
+      }
     }
   }
 }

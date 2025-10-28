@@ -9,7 +9,7 @@ from rest_framework import status, permissions
 from .serializers import (
     LoginSerializer, UserListItemSerializer, LinkCreateSerializer,
     LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer,
-    AdminUserSerializer
+    AdminUserSerializer, UserConsentSerializer, UserConsentCreateSerializer
 )
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
@@ -25,6 +25,7 @@ from .models import (
     Profile,
     AuthEvent,
     AccountLock,
+    UserConsent,
 )
 from django.contrib.auth.models import User
 from apps.chat.models import ChatMessage
@@ -383,9 +384,18 @@ class AdminMetricsView(APIView):
         last_7d = now - timedelta(days=7)
         last_30d = now - timedelta(days=30)
 
+        # Obtener todos los usuarios y sus perfiles
         total_users = User.objects.count()
-        active_users = Profile.objects.filter(is_active=True).count()
-        inactive_users = Profile.objects.filter(is_active=False).count()
+        # Un usuario está activo si tanto su cuenta de User como su Profile están activos
+        active_users = User.objects.filter(
+            is_active=True,
+            profile__is_active=True
+        ).count()
+        # Un usuario está inactivo si su cuenta de User o su Profile están inactivos
+        inactive_users = User.objects.filter(
+            models.Q(is_active=False) | 
+            models.Q(profile__is_active=False)
+        ).count()
         dau = (
             AuthEvent.objects.filter(
                 success=True,
@@ -530,6 +540,60 @@ class AdminUserDetailView(APIView):
 
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserConsentView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        consents = UserConsent.objects.filter(user=request.user).order_by('-accepted_at')
+        consent_type = request.query_params.get('consent_type')
+        if consent_type:
+            consents = consents.filter(consent_type=consent_type)
+        version = request.query_params.get('version')
+        if version is not None:
+            consents = consents.filter(version=version)
+
+        serializer = UserConsentSerializer(consents, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = UserConsentCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        consent_type = serializer.validated_data['consent_type']
+        version = serializer.validated_data.get('version', '') or ''
+        metadata = serializer.validated_data.get('metadata') or {}
+
+        consent, created = UserConsent.objects.get_or_create(
+            user=request.user,
+            consent_type=consent_type,
+            version=version,
+            defaults={
+                'metadata': metadata,
+                'ip_address': self._get_client_ip(request),
+                'user_agent': request.META.get('HTTP_USER_AGENT', ''),
+            },
+        )
+
+        if not created:
+            consent.metadata = metadata
+            consent.ip_address = self._get_client_ip(request)
+            consent.user_agent = request.META.get('HTTP_USER_AGENT', '')
+            consent.accepted_at = timezone.now()
+            consent.save(update_fields=['metadata', 'ip_address', 'user_agent', 'accepted_at'])
+
+        response_serializer = UserConsentSerializer(consent)
+        status_code = status.HTTP_201_CREATED if created else status.HTTP_200_OK
+        return Response(response_serializer.data, status=status_code)
+
+    def _get_client_ip(self, request):
+        forwarded = request.META.get('HTTP_X_FORWARDED_FOR')
+        if forwarded:
+            parts = [p.strip() for p in forwarded.split(',') if p.strip()]
+            if parts:
+                return parts[0]
+        return request.META.get('REMOTE_ADDR')
 
 
 # Vista para interactuar con la IA

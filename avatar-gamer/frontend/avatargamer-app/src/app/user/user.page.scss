@@ -1,250 +1,160 @@
-/* User Page Specific Styles */
+/* ======================================================
+   Estilos de user.page.scss (Rediseño Amigable)
+   Integrado con tus variables de diseño (--ag-...)
+   ====================================================== */
 
-/* Card styles */
-ion-card {
-  margin-bottom: var(--ag-space-md);
-  box-shadow: var(--ag-shadow-md);
-  border-radius: var(--ag-border-radius-lg);
-  overflow: hidden;
-  transition: transform var(--ag-transition-fast), box-shadow var(--ag-transition-fast);
+/* Fondo y fuente base amigables */
+:host {
+  /* Usamos tu fuente primaria si está definida, si no, un stack seguro */
+  font-family: var(--ag-font-primary, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
   
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--ag-shadow-lg);
+  ion-content.user-page {
+    //--background: var(--ag-background-light, #f4f5f8); // Fondo gris muy claro
   }
-  
+
+  ion-toolbar {
+    ion-title {
+      font-weight: var(--ag-font-weight-bold, 600);
+    }
+  }
+}
+
+/* Tarjeta de bienvenida */
+.welcome-card {
+  margin-top: 8px;
+  margin-bottom: var(--ag-space-lg, 24px);
+  border-radius: var(--ag-border-radius-lg, 16px);
+  box-shadow: var(--ag-shadow-md, 0 4px 12px rgba(0, 0, 0, 0.05));
+  background: var(--ion-background-color, #ffffff); // Fondo blanco
+
   ion-card-header {
-    padding: var(--ag-space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding-top: var(--ag-space-lg, 24px);
+    padding-bottom: var(--ag-space-sm, 8px);
   }
-  
+
+  ion-icon[name="happy-outline"] {
+    font-size: 48px;
+    margin-bottom: var(--ag-space-sm, 8px);
+  }
+
   ion-card-title {
-    font-family: var(--ag-font-display);
-    font-weight: var(--ag-font-weight-bold);
-    font-size: var(--ag-font-size-lg);
-    color: var(--ion-color-primary);
-  }
-  
-  ion-card-subtitle {
-    color: var(--ion-color-medium);
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    font-size: var(--ag-font-size-xs);
+    font-family: var(--ag-font-display, sans-serif);
+    font-size: var(--ag-font-size-lg, 1.5rem); 
+    font-weight: var(--ag-font-weight-bold, 600);
+    /* Usamos un color de alto contraste, asumiendo tema claro */
+    color: var(--ag-text-high-contrast, #000000); 
   }
   
   ion-card-content {
-    padding: var(--ag-space-md);
-  }
-  
-  /* Estilos para mejorar legibilidad del ID de usuario */
-  .user-id {
-    color: var(--ag-text-high-contrast, #ffffff);
-    font-weight: var(--ag-font-weight-medium);
-    margin-bottom: var(--ag-space-xs);
-  }
-  
-  .id-value {
-    background-color: rgba(var(--ion-color-primary-rgb), 0.2);
-    padding: 2px 8px;
-    border-radius: var(--ag-border-radius-sm);
-    font-weight: var(--ag-font-weight-bold);
-    color: var(--ion-color-primary-tint);
+    text-align: center;
+    font-size: 1rem;
+    color: var(--ag-text-medium-contrast, #555555);
+    padding-bottom: var(--ag-space-lg, 24px);
+    line-height: 1.5;
   }
 }
 
-/* Segment control */
-ion-segment {
-  margin-bottom: var(--ag-space-lg);
-  padding: 0 var(--ag-space-sm);
-  
-  ion-segment-button {
-    --color: var(--ion-color-medium);
-    --color-checked: var(--ion-color-primary);
-    --indicator-color: var(--ion-color-primary);
-    
-    ion-label {
-      text-transform: none;
-      font-family: var(--ag-font-primary);
-      font-size: var(--ag-font-size-sm);
-    }
-  }
+/* Encabezado de la lista "Mis Asistentes" */
+.list-header {
+  display: block;
+  font-size: 1.2rem;
+  font-weight: var(--ag-font-weight-bold, 600);
+  color: var(--ag-text-medium-contrast, #333333);
+  margin-bottom: var(--ag-space-md, 12px);
+  padding-left: var(--ag-space-sm, 8px);
 }
 
-/* Operator section styles */
-.avatar-icon {
-  font-size: 32px;
-  margin: 4px;
-}
-
-ion-avatar {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--ion-color-primary-rgb), 0.1);
-  width: 48px;
-  height: 48px;
-  border: 2px solid var(--ion-color-light);
-  overflow: hidden;
-}
-
-.badge-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--ag-space-xs);
-  margin-top: var(--ag-space-xs);
-}
-
-.status-badge, .role-badge {
-  font-size: var(--ag-font-size-xs);
-  padding: 3px var(--ag-space-sm);
-  border-radius: var(--ag-border-radius-sm);
-  font-weight: var(--ag-font-weight-medium);
-}
-
-.operator-item {
-  --padding-start: var(--ag-space-md);
-  margin-bottom: var(--ag-space-sm);
-  border-radius: var(--ag-border-radius-md);
-  --background: var(--ion-background-color);
-  box-shadow: var(--ag-shadow-sm);
-  transition: transform var(--ag-transition-fast), box-shadow var(--ag-transition-fast);
-  
-  &:hover {
-    --background: rgba(var(--ion-color-light-rgb), 0.5);
-    transform: translateY(-2px);
-    box-shadow: var(--ag-shadow-md);
-  }
-  
-  /* Estilos mejorados para el listado de operadores */
-  .operator-name {
-    color: var(--ion-color-primary-tint);
-    font-weight: var(--ag-font-weight-bold);
-    font-size: var(--ag-font-size-md);
-    margin-bottom: var(--ag-space-xxs);
-  }
-  
-  .operator-details {
-    color: var(--ag-text-high-contrast, #ffffff);
-    font-weight: var(--ag-font-weight-medium);
-    font-size: var(--ag-font-size-sm);
-    margin-bottom: var(--ag-space-xxs);
-  }
-  
-  .operator-email {
-    color: var(--ag-text-medium-contrast, #e0e0e0);
-  }
-  
-  h2 {
-    font-weight: var(--ag-font-weight-medium);
-    margin: 0 0 2px 0;
-    font-size: var(--ag-font-size-md);
-  }
-  
-  h3 {
-    margin: 0 0 2px 0;
-    font-size: var(--ag-font-size-sm);
-    color: var(--ion-color-dark);
-  }
-  
-  p {
-    margin: 0 0 4px 0;
-    font-size: var(--ag-font-size-xs);
-    color: var(--ion-color-medium);
-  }
-}
-
-/* Request section styles */
-.request-item {
-  --padding-start: var(--ag-space-md);
-  margin-bottom: var(--ag-space-sm);
-  border-radius: var(--ag-border-radius-md);
-  --background: var(--ion-background-color);
-  box-shadow: var(--ag-shadow-sm);
-  
-  &:hover {
-    --background: rgba(var(--ion-color-light-rgb), 0.5);
-  }
-}
-
-.request-message {
-  font-style: italic;
-  color: var(--ion-color-medium);
-  margin-top: var(--ag-space-xs);
-  margin-bottom: var(--ag-space-xs);
-  padding: var(--ag-space-xs) var(--ag-space-sm);
-  background: rgba(var(--ion-color-light-rgb), 0.5);
-  border-radius: var(--ag-border-radius-sm);
-  border-left: 2px solid var(--ion-color-primary);
-  font-size: var(--ag-font-size-sm);
-}
-
-.action-buttons {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: var(--ag-space-xs);
-  
-  ion-button {
-    margin: 0;
-    --padding-start: var(--ag-space-sm);
-    --padding-end: var(--ag-space-sm);
-    --padding-top: var(--ag-space-xs);
-    --padding-bottom: var(--ag-space-xs);
-    height: var(--ag-touch-target);
-    width: var(--ag-touch-target);
-    
-    &[color="success"] {
-      --color: var(--ion-color-success);
-      --background-hover: rgba(var(--ion-color-success-rgb), 0.1);
-    }
-    
-    &[color="danger"] {
-      --color: var(--ion-color-danger);
-      --background-hover: rgba(var(--ion-color-danger-rgb), 0.1);
-    }
-  }
-}
-
-ion-list-header {
-  font-weight: var(--ag-font-weight-bold);
-  font-size: var(--ag-font-size-md);
-  padding-bottom: var(--ag-space-sm);
-  border-bottom: 1px solid rgba(var(--ion-color-medium-rgb), 0.2);
-  margin-bottom: var(--ag-space-md);
-  color: var(--ion-color-primary);
-}
-
-.refresh-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--ag-space-sm);
-  
-  ion-button {
-    --color: var(--ion-color-medium);
-    --background-hover: rgba(var(--ion-color-medium-rgb), 0.1);
-    --padding-start: var(--ag-space-xs);
-    --padding-end: var(--ag-space-xs);
-    --padding-top: var(--ag-space-xs);
-    --padding-bottom: var(--ag-space-xs);
-  }
-}
-
-/* Empty state */
-ion-item[lines="none"] {
-  --padding-start: var(--ag-space-md);
-  --padding-end: var(--ag-space-md);
-  --padding-top: var(--ag-space-lg);
-  --padding-bottom: var(--ag-space-lg);
-  
-  ion-label[class*="ion-text-center"] {
-    p {
-      font-size: var(--ag-font-size-sm);
-      color: var(--ion-color-medium);
-      margin-top: var(--ag-space-sm);
-    }
-  }
+/* Estados de Carga y Vacío */
+.loading-item, .empty-item {
+  --background: transparent;
+  text-align: center;
+  color: var(--ion-color-medium, #777);
   
   ion-spinner {
-    margin: 0 auto var(--ag-space-sm);
-    display: block;
+    margin-bottom: var(--ag-space-sm, 8px);
+  }
+  ion-icon {
+    font-size: 1.5rem;
+    margin-right: var(--ag-space-sm, 8px);
+  }
+  ion-label {
+    font-size: 1rem;
   }
 }
+
+/* Tarjeta de Asistente (El botón principal) */
+.assistant-card {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: var(--ag-space-md, 16px);
+  border-radius: var(--ag-border-radius-lg, 16px);
+  box-shadow: var(--ag-shadow-lg, 0 4px 16px rgba(0, 0, 0, 0.08));
+  --background: var(--ion-background-color, #ffffff);
+  
+  ion-item {
+    --background: transparent;
+    --padding-start: var(--ag-space-md, 16px);
+    --padding-end: var(--ag-space-md, 16px);
+    --inner-padding-end: 0;
+    min-height: 100px; // Mantenemos esto para un buen tamaño de toque
+  }
+
+  ion-avatar {
+    width: 60px;
+    height: 60px;
+    margin-right: var(--ag-space-md, 16px);
+    
+    ion-icon {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  ion-label {
+    h2 {
+      font-family: var(--ag-font-display, sans-serif);
+      font-size: 1.4rem;
+      font-weight: var(--ag-font-weight-bold, 600);
+      color: var(--ag-text-high-contrast, #000000);
+    }
+    ion-badge {
+      margin-top: var(--ag-space-sm, 8px);
+      font-size: 0.9rem;
+      padding: 6px 10px;
+      border-radius: var(--ag-border-radius-lg, 12px);
+      font-weight: var(--ag-font-weight-medium, 500);
+    }
+  }
+
+  ion-button[slot="end"] {
+    height: 44px;
+    font-weight: var(--ag-font-weight-bold, 600);
+    --border-radius: 22px; // Redondeado
+    
+    ion-icon {
+      margin-right: 6px;
+    }
+  }
+}
+
+/* Botón de IA (acción secundaria) */
+.ai-button {
+  --border-radius: var(--ag-border-radius-lg, 12px);
+  --border-color: var(--ion-color-tertiary);
+  --color: var(--ion-color-tertiary);
+  font-size: 1rem;
+  font-weight: var(--ag-font-weight-medium, 500);
+  height: 56px;
+  margin-top: var(--ag-space-md, 16px);
+  text-transform: none; // Sin mayúsculas, más amigable
+}
+
+/* NOTA: 
+  Todos los estilos antiguos (.operator-item, ion-segment, .request-item, etc.)
+  se han eliminado ya que el nuevo user.page.html no los utiliza.
+  Esto mantiene el archivo limpio y específico para el nuevo diseño.
+*/

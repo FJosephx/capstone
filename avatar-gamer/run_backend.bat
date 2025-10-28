@@ -16,4 +16,4 @@ call cd ..
 call cd backend
 call python manage.py makemigrations
 call python manage.py migrate
-call uvicorn config.asgi:application --host 0.0.0.0 --port 8000
+call python -m uvicorn config.asgi:application --host 0.0.0.0 --port 8000
