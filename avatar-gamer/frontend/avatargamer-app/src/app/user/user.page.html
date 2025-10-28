@@ -21,15 +21,24 @@
     </ion-card-content>
   </ion-card>
 
-  <div class="assistant-list">
-    <ion-label class="list-header">Mis Asistentes</ion-label>
+  <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="ios" class="ion-margin-bottom">
+    <ion-segment-button value="linked">
+      <ion-icon name="people-outline" layout="start"></ion-icon>
+      <ion-label>Mis Asistentes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="requests">
+      <ion-icon name="mail-outline" layout="start"></ion-icon>
+      <ion-label>Solicitudes</ion-label>
+    </ion-segment-button>
+  </ion-segment>
 
-    <ion-item *ngIf="isLoading && activeTab === 'linked'" lines="none" class="loading-item">
+  <div class="assistant-list" *ngIf="activeTab === 'linked'">
+    <ion-item *ngIf="isLoading" lines="none" class="loading-item">
       <ion-spinner name="crescent"></ion-spinner>
       <ion-label>Cargando asistentes...</ion-label>
     </ion-item>
 
-    <ion-item *ngIf="!isLoading && linkedOperators.length === 0 && activeTab === 'linked'" lines="none" class="empty-item">
+    <ion-item *ngIf="!isLoading && linkedOperators.length === 0" lines="none" class="empty-item">
       <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
       <ion-label>Aún no tienes asistentes vinculados.</ion-label>
     </ion-item>
@@ -58,6 +67,43 @@
         </ion-button>
       </ion-item>
     </ion-card>
+  </div>
+
+  <div class="requests-list" *ngIf="activeTab === 'requests'">
+    <ion-list>
+      <ion-item *ngIf="isLoading" lines="none" class="loading-item">
+        <ion-spinner name="crescent"></ion-spinner>
+        <ion-label>Cargando solicitudes...</ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="!isLoading && pendingRequests.length === 0" lines="none" class="empty-item">
+        <ion-icon name="mail-outline" slot="start"></ion-icon>
+        <ion-label>No tienes solicitudes pendientes.</ion-label>
+      </ion-item>
+
+      <ion-item-sliding *ngFor="let request of pendingRequests">
+        <ion-item class="request-item">
+          <ion-icon name="person-add-outline" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ request.operator_username }}</h2>
+            <p *ngIf="request.message">{{ request.message }}</p>
+            <p>Recibida: {{ request.created_at | date:'short' }}</p>
+          </ion-label>
+          <ion-badge slot="end" [color]="getStatusColor(request.status)">
+            {{ getStatusText(request.status) }}
+          </ion-badge>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="success" (click)="respondToRequest(request, 'approved')">
+            <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+          </ion-item-option>
+          <ion-item-option color="danger" (click)="respondToRequest(request, 'rejected')">
+            <ion-icon slot="icon-only" name="close"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
   </div>
 
   <ion-button class="ai-button" expand="block" fill="outline" (click)="navigateToAIChat()">
