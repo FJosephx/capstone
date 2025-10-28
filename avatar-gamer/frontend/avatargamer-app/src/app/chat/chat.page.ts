@@ -1,18 +1,23 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { AlertController } from '@ionic/angular';
+// 👇 LÍNEA MODIFICADA: Se añadió ModalController y AlertButton
+import { AlertController, ModalController, AlertButton } from '@ionic/angular';
 import { ChatContact, ChatService, PresenceUpdate } from '../services/chat.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { Auth } from '../services/auth';
 
+// 👇 AÑADIDO: Importar el componente de Jitsi
+import { JitsiCallComponent } from '../components/jitsi-call/jitsi-call.component';
+
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [CommonModule, FormsModule, IonicModule]
+  // 👇 LÍNEA MODIFICADA: Se añadió JitsiCallComponent
+  imports: [CommonModule, FormsModule, IonicModule, JitsiCallComponent]
 })
 export class ChatPage implements OnInit, OnDestroy {
   messages$ = this.chatService.messages$;
@@ -25,10 +30,17 @@ export class ChatPage implements OnInit, OnDestroy {
   contactStatus: string = '';
   private presenceSubscription?: Subscription;
 
+  // 🟢 AÑADIDAS: Propiedades para controlar la vista de la llamada
+  isCallActive = false;
+  currentRoomName = '';
+  currentDisplayName = '';
+
   constructor(
     private chatService: ChatService,
     private auth: Auth,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    // (Dejamos ModalController por si se usa para otros modales)
+    private modalCtrl: ModalController 
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -57,6 +69,76 @@ export class ChatPage implements OnInit, OnDestroy {
     this.chatService.sendMessage(this.newMessage);
     this.newMessage = '';
   }
+
+  async showQuickResponses() {
+    // Define las respuestas según el rol
+    const responses = this.userRole === 'operator'
+      ? ['Hola, ¿en qué puedo ayudarte?', 'Un momento, por favor.', 'Voy a iniciar la videollamada.']
+      : ['Necesito ayuda, por favor.', 'Sí', 'No', 'Gracias.'];
+
+    // Crea los botones para el Alert
+    const alertButtons: AlertButton[] = responses.map(response => ({
+      text: response,
+      handler: () => {
+        this.newMessage = response; // Pone el texto en la caja de mensaje
+        this.sendMessage();         // Envía el mensaje inmediatamente
+      }
+    }));
+
+    // Añade el botón de cancelar
+    alertButtons.push({
+      text: 'Cancelar',
+      role: 'cancel',
+    });
+
+    const alert = await this.alertCtrl.create({
+      header: 'Respuestas Rápidas',
+      buttons: alertButtons
+    });
+
+    await alert.present();
+  }
+
+  // 🟡 ==========================================
+  // 🟡 == MÉTODO DE VIDEOLLAMADA MODIFICADO ==
+  // 🟡 ==========================================
+  async startVideoCall() {
+    if (!this.selectedContact || !this.userProfile) {
+      console.error('Perfil de usuario o contacto no seleccionado');
+      return;
+    }
+
+    // 1. Generar un nombre de sala único pero consistente
+    const userId = this.userProfile.id;
+    const contactId = this.selectedContact.id;
+    
+    const sortedIds = [userId, contactId].sort();
+    
+    // 2. Asignar los valores a las propiedades de la clase
+    this.currentRoomName = `avatar-gamer-call-${sortedIds[0]}-${sortedIds[1]}`;
+    this.currentDisplayName = this.userProfile.username || `Usuario ${this.userProfile.id}`;
+
+    // 3. 🟢 Simplemente activa la vista de la llamada
+    this.isCallActive = true;
+  }
+  // 👆 ==========================================
+  // 👆 == FIN DEL MÉTODO MODIFICADO ==
+  // 👆 ==========================================
+
+
+  // 🟢 ==========================================
+  // 🟢 == AÑADIDO: Método para manejar el fin de la llamada ==
+  // 🟢 ==========================================
+  public onCallEnded() {
+    this.isCallActive = false;
+    // Limpiamos los datos de la sala
+    this.currentRoomName = '';
+    this.currentDisplayName = '';
+  }
+  // 👆 ==========================================
+  // 👆 == FIN DEL MÉTODO AÑADIDO ==
+  // 👆 ==========================================
+
 
   private listenPresenceUpdates(): void {
     this.presenceSubscription?.unsubscribe();

@@ -12,7 +12,7 @@
   
   --ag-secondary: #00B0FF;       // Secondary brand color
   --ag-secondary-shade: #0091EA; // Darker variant
-  --ag-secondary-tint: #40C4FF;  // Lighter variant
+  --ag-secondary-tint: #40C4FF;   // Lighter variant
   
   --ag-accent: #FF4081;          // Accent color for highlights
   --ag-accent-shade: #F50057;    // Darker variant
@@ -152,54 +152,6 @@
   /* Card-specific styles */
   --ion-card-border-radius: var(--ag-border-radius-lg);
   --ion-card-box-shadow: var(--ag-shadow-md);
-}
-
-/* Dark Mode Theme */
-.dark-theme {
-  /* Optimización de colores primarios para mejor contraste */
-  --ion-color-primary: #9575cd; /* Más brillante para mejor visibilidad */
-  --ion-color-primary-rgb: 149, 117, 205;
-  --ion-color-primary-contrast: #000000; /* Texto negro sobre fondo claro */
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #8367b4;
-  --ion-color-primary-tint: #a083d2;
-
-  /* Colores secundarios con mayor luminosidad */
-  --ion-color-secondary: #40c4ff; /* Color más brillante */
-  --ion-color-secondary-rgb: 64, 196, 255;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #38ace0;
-  --ion-color-secondary-tint: #53caff;
-  
-  /* Ajustes de fondo y texto */
-  --ion-background-color: #121212; /* Fondo negro suave */
-  --ion-background-color-rgb: 18, 18, 18;
-  
-  --ion-text-color: #f0f0f0; /* Texto casi blanco para mejor lectura */
-  --ion-text-color-rgb: 240, 240, 240;
-  
-  /* Colores de elementos UI */
-  --ion-border-color: #333333; /* Bordes más visibles */
-  
-  --ion-card-background: #1e1e1e;
-  
-  --ion-item-background: #1c1c1c;
-  
-  --ion-toolbar-background: #0d0d0d;
-  --ion-toolbar-border-color: #0d0d0d;
-  
-  --ion-tab-bar-background: #0d0d0d;
-  --ion-tab-bar-color: #f0f0f0; /* Texto casi blanco */
-  --ion-tab-bar-color-selected: var(--ion-color-primary);
-  
-  /* Sombras mejoradas para mejor visibilidad en modo oscuro */
-  --ion-card-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  
-  /* Variables personalizadas para textos específicos */
-  --ag-text-high-contrast: #ffffff; /* Para texto de alta importancia */
-  --ag-text-medium-contrast: #e0e0e0; /* Para texto normal */
-  --ag-text-low-contrast: #b0b0b0; /* Para texto secundario */
 }
 
 /* Enable Dark Mode by Default */

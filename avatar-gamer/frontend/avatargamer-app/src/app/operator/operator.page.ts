@@ -94,6 +94,12 @@ export class OperatorPage implements OnInit, OnDestroy {
     this.router.navigateByUrl('/ai-chat');
   }
 
+  // 🟢 AÑADIDO: Este es el método que faltaba y que el HTML está llamando.
+  // Simplemente llama a tu función 'loadPendingRequests' que ya existe.
+  loadLinkRequests() {
+    this.loadPendingRequests();
+  }
+
   async loadPendingRequests() {
     if (this.activeTab !== 'pending') return;
     
