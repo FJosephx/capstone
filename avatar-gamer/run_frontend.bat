@@ -2,15 +2,9 @@
 echo ===== Iniciando ENV =====
 echo.
 
-rem Cambia al directorio del backend
-cd %~dp0\backend
 
-rem Activa el entorno virtual
-call .venv\Scripts\activate.bat
-
-call cd ..
 call cd frontend/avatargamer-app
-call ionic build
+call npx ionic build
 call npx cap copy android
 call npx cap sync android
 call adb reverse --remove-all
