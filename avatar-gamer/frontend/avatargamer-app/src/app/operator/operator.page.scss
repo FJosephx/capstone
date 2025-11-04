@@ -393,3 +393,39 @@
     }
   }
 }
+.video-call-section {
+  margin-top: 20px;
+  ion-card {
+    margin-bottom: 10px;
+  }
+}
+
+#jitsi-container {
+  width: 100%;
+  height: 60vh;
+  background-color: #000;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.control-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 15px;
+  padding-bottom: 25px;
+
+  .horizontal {
+    display: flex;
+    gap: 12px;
+  }
+
+  ion-button {
+    width: 65px;
+    height: 65px;
+    font-size: 1.8rem;
+    border-radius: 50%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+  }
+}

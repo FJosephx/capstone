@@ -128,5 +128,29 @@
     <ion-icon name="sparkles-outline" slot="start"></ion-icon>
     Hablar con Asistente Virtual
   </ion-button>
+<!-- ====== Sección Videollamada y Control de Robot ====== -->
+<div *ngIf="activeCallUser" class="video-call-section">
+  
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Videollamada con {{ activeCallUser.username }}</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div id="jitsi-container"></div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Panel de control debajo del video -->
+  <div class="control-panel">
+    <ion-button color="primary" (click)="enviarComando('1')">⬆️</ion-button>
+    <div class="horizontal">
+      <ion-button color="primary" (click)="enviarComando('2')">⬅️</ion-button>
+      <ion-button color="danger" (click)="enviarComando('6')">⏹️</ion-button>
+      <ion-button color="primary" (click)="enviarComando('3')">➡️</ion-button>
+    </div>
+    <ion-button color="primary" (click)="enviarComando('5')">⬇️</ion-button>
+  </div>
+
+</div>
 
   </ion-content>
