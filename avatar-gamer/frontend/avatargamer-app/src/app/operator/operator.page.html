@@ -40,48 +40,64 @@
           <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
         </ion-button>
       </ion-list-header>
-      
-      <ion-item *ngFor="let user of linkedUsers" button detail class="linked-user-item" (click)="startChatWithUser(user)">
-        <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'" 
-                  [color]="user.status === 'online' ? 'success' : 'medium'"
-                  slot="start"></ion-icon>
-        <ion-label>
-          <h2 class="user-name">{{ user.username }}</h2>
-          <p class="user-email">{{ user.email }}</p>
-          <p class="user-status">Status: <span [class]="user.status === 'online' ? 'status-online' : 'status-offline'">{{ user.status }}</span></p>
-        </ion-label>
-        <ion-button fill="clear" slot="end" (click)="unlinkUser(user); $event.stopPropagation()">
-          <ion-icon name="trash" color="danger"></ion-icon>
-        </ion-button>
-        <div class="chat-indicator" slot="end">
-          <ion-icon name="chatbubbles-outline" color="primary"></ion-icon>
-        </div>
+
+      <ion-item>
+        <ion-select [(ngModel)]="selectedUserType" (ionChange)="filterUsers()" interface="popover" placeholder="Filtrar por tipo">
+          <ion-select-option value="all">Todos</ion-select-option>
+          <ion-select-option value="admin">Administradores</ion-select-option>
+          <ion-select-option value="operator">Operadores</ion-select-option>
+          <ion-select-option value="user">Usuarios</ion-select-option>
+        </ion-select>
       </ion-item>
       
-      <ion-item *ngIf="!isLoading && linkedUsers.length === 0" lines="none" class="empty-item">
+      <ion-searchbar [(ngModel)]="searchTerm" 
+                     (ionInput)="filterUsers()"
+                     placeholder="Buscar usuarios"
+                     animated="true">
+      </ion-searchbar>
+      
+      <ion-grid class="user-grid">
+        <ion-row>
+          <ion-col size="12" size-sm="6" size-md="4" *ngFor="let user of filteredUsers">
+            <ion-card class="user-card" (click)="showUserDetails(user)">
+              <ion-card-header>
+                <ion-avatar>
+                  <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'" 
+                           [color]="user.status === 'online' ? 'success' : 'medium'">
+                  </ion-icon>
+                </ion-avatar>
+                <ion-card-title>{{ user.username }}</ion-card-title>
+                <ion-badge [color]="getRoleColor(user.role)">{{ user.role }}</ion-badge>
+              </ion-card-header>
+              
+              <ion-card-content>
+                <p class="user-email">{{ user.email }}</p>
+                <p class="user-status">
+                  <ion-badge [color]="user.status === 'online' ? 'success' : 'medium'">
+                    {{ user.status }}
+                  </ion-badge>
+                </p>
+                
+                <ion-buttons class="action-buttons">
+                  <ion-button fill="clear" (click)="startChatWithUser(user); $event.stopPropagation()">
+                    <ion-icon name="chatbubbles-outline" color="primary"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" (click)="unlinkUser(user); $event.stopPropagation()">
+                    <ion-icon name="trash" color="danger"></ion-icon>
+                  </ion-button>
+                </ion-buttons>
+              </ion-card-content>
+            </ion-card>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+      
+      <ion-item *ngIf="!isLoading && filteredUsers.length === 0" lines="none" class="empty-item">
         <ion-icon name="people-outline" slot="start"></ion-icon>
-        <ion-label>No tienes usuarios vinculados.</ion-label>
+        <ion-label>No se encontraron usuarios.</ion-label>
       </ion-item>
 
-      <ion-item-sliding *ngFor="let user of linkedUsers">
-        <ion-item (click)="startChatWithUser(user)" button detail="false" class="user-item">
-          <ion-avatar slot="start">
-            <ion-icon name="person-circle" [color]="user.status === 'online' ? 'success' : 'medium'"></ion-icon>
-            <ion-badge *ngIf="user.status === 'online'" class="status-dot" color="success"></ion-badge>
-          </ion-avatar>
-          <ion-label>
-            <h2>{{ user.username }}</h2>
-            <p>{{ user.email }}</p>
-          </ion-label>
-          <ion-icon name="chatbubbles-outline" slot="end" color="primary" class="chat-icon"></ion-icon>
-        </ion-item>
 
-        <ion-item-options side="end">
-          <ion-item-option color="danger" (click)="unlinkUser(user)">
-            <ion-icon slot="icon-only" name="trash"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
       
     </ion-list>
   </div>

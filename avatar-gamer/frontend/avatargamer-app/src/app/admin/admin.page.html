@@ -219,52 +219,58 @@
       </div>
 
       <div *ngIf="!loadingUsers && users.length > 0">
-        <table class="ag-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Usuario</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th class="action-cell">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let user of users; trackBy: trackByUserId">
-              <td>{{ user.id }}</td>
-              <td>
-                <div class="ion-text-wrap">
-                  <strong>{{ user.username }}</strong>
-                  <div *ngIf="user.first_name || user.last_name" class="ion-text-sm">
-                    {{ user.first_name }} {{ user.last_name }}
+        <ion-grid>
+          <ion-row>
+            <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let user of users; trackBy: trackByUserId">
+              <ion-card>
+                <ion-card-content>
+                  <div class="user-card-header">
+                    <div class="user-info">
+                      <strong class="user-name">{{ user.username }}</strong>
+                      <p class="user-id">ID: {{ user.id }}</p>
+                    </div>
+                    <div class="user-actions">
+                      <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(user)">
+                        <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                      <ion-button fill="clear" size="small" color="danger" (click)="confirmDelete(user)">
+                        <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+                      </ion-button>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td>{{ user.email || 'Sin correo' }}</td>
-              <td>
-                <ion-chip color="primary" outline>
-                  {{ user.role | titlecase }}
-                </ion-chip>
-              </td>
-              <td>
-                <ion-badge [color]="user.is_active ? 'success' : 'medium'">
-                  {{ user.is_active ? 'Activo' : 'Inactivo' }}
-                </ion-badge>
-              </td>
-              <td class="action-cell">
-                <div class="action-buttons">
-                  <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(user)">
-                    <ion-icon name="create-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                  <ion-button fill="clear" size="small" color="danger" (click)="confirmDelete(user)">
-                    <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
-                  </ion-button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+
+                  <div class="user-details">
+                    <ion-item lines="none">
+                      <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
+                      <ion-label class="ion-text-wrap">
+                        {{ user.email || 'Sin correo' }}
+                      </ion-label>
+                    </ion-item>
+
+                    <ion-item lines="none" *ngIf="user.first_name || user.last_name">
+                      <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+                      <ion-label class="ion-text-wrap">
+                        {{ user.first_name }} {{ user.last_name }}
+                      </ion-label>
+                    </ion-item>
+
+                    <div class="user-status-row">
+                      <ion-chip color="primary" outline>
+                        <ion-icon name="shield-outline"></ion-icon>
+                        {{ user.role | titlecase }}
+                      </ion-chip>
+
+                      <ion-badge [color]="user.is_active ? 'success' : 'medium'" mode="ios">
+                        <ion-icon name="ellipse"></ion-icon>
+                        {{ user.is_active ? 'Activo' : 'Inactivo' }}
+                      </ion-badge>
+                    </div>
+                  </div>
+                </ion-card-content>
+              </ion-card>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
       </div>
     </ion-card-content>
   </ion-card>

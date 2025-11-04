@@ -1,0 +1,50 @@
+:host {
+  ion-content {
+    --background: var(--ion-color-light);
+  }
+
+  ion-list {
+    border-radius: 8px;
+    margin: 16px 0;
+  }
+
+  ion-badge {
+    margin-left: 8px;
+  }
+
+  ion-item-divider {
+    --background: var(--ion-color-light);
+    --padding-start: 16px;
+    font-weight: bold;
+    margin-top: 16px;
+  }
+
+  .user-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  ion-footer {
+    background: var(--ion-color-light);
+    border-top: 1px solid var(--ion-color-medium);
+  }
+
+  ion-button {
+    margin: 0;
+  }
+
+  h2 {
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 4px 0;
+  }
+
+  h3 {
+    margin: 4px 0;
+  }
+}

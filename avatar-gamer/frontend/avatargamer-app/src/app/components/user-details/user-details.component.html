@@ -1,0 +1,92 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalles del Usuario</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismissModal()">
+        <ion-icon name="close-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item *ngIf="!isEditing">
+      <ion-label>
+        <h2>{{ user.username }}</h2>
+        <ion-badge [color]="getRoleColor(user.role)">{{ user.role }}</ion-badge>
+      </ion-label>
+    </ion-item>
+
+    <ion-item *ngIf="isEditing">
+      <ion-label position="stacked">Nombre de usuario</ion-label>
+      <ion-input [(ngModel)]="editedUser.username" type="text"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Email</ion-label>
+      <ion-input [readonly]="!isEditing" [(ngModel)]="editedUser.email" type="email"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label position="stacked">Rol</ion-label>
+      <ion-select [disabled]="!isEditing" [(ngModel)]="editedUser.role" interface="popover">
+        <ion-select-option value="admin">Administrador</ion-select-option>
+        <ion-select-option value="operator">Operador</ion-select-option>
+        <ion-select-option value="user">Usuario</ion-select-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label>
+        <h2>Estado</h2>
+        <ion-badge [color]="user.status === 'online' ? 'success' : 'medium'">
+          {{ user.status }}
+        </ion-badge>
+      </ion-label>
+    </ion-item>
+
+    <!-- Información adicional -->
+    <ion-item-group>
+      <ion-item-divider>
+        <ion-label>Información adicional</ion-label>
+      </ion-item-divider>
+
+      <ion-item *ngIf="user.created_at">
+        <ion-label>
+          <p>Fecha de registro</p>
+          <h3>{{ user.created_at | date:'medium' }}</h3>
+        </ion-label>
+      </ion-item>
+
+      <ion-item *ngIf="user.last_login">
+        <ion-label>
+          <p>Última conexión</p>
+          <h3>{{ user.last_login | date:'medium' }}</h3>
+        </ion-label>
+      </ion-item>
+    </ion-item-group>
+  </ion-list>
+</ion-content>
+
+<ion-footer class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col>
+        <ion-button expand="block" (click)="toggleEdit()" [color]="isEditing ? 'medium' : 'primary'">
+          {{ isEditing ? 'Cancelar' : 'Editar' }}
+        </ion-button>
+      </ion-col>
+      <ion-col *ngIf="isEditing">
+        <ion-button expand="block" color="success" (click)="saveChanges()">
+          Guardar
+        </ion-button>
+      </ion-col>
+      <ion-col *ngIf="!isEditing">
+        <ion-button expand="block" color="danger" (click)="confirmDelete()">
+          Eliminar
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-footer>
