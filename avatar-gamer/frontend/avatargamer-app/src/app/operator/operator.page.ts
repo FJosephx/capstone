@@ -3,6 +3,7 @@ import { Auth, UserProfile } from '../services/auth';
 import { Router, RouterModule } from '@angular/router';
 import { ModalController, AlertController, LoadingController, IonicModule, ToastController } from '@ionic/angular';
 import { AddContactModalComponent } from '../components/add-contact-modal.component';
+import { UserDetailsComponent } from '../components/user-details/user-details.component';
 import { UserLinkService, LinkedUser, LinkRequest } from '../services/user-link.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -20,10 +21,13 @@ import { ChatService, PresenceUpdate } from '../services/chat.service';
 export class OperatorPage implements OnInit, OnDestroy {
   userProfile: UserProfile | null = null;
   linkedUsers: LinkedUser[] = [];
+  filteredUsers: LinkedUser[] = [];
   linkRequests: LinkRequest[] = [];
   isLoading: boolean = false;
   error: string | null = null;
   activeTab: 'linked' | 'pending' = 'linked';
+  selectedUserType: string = 'all';
+  searchTerm: string = '';
   private presenceSubscription?: Subscription;
 
   constructor(
@@ -76,6 +80,9 @@ export class OperatorPage implements OnInit, OnDestroy {
         ...user,
         status: user.status ?? (user.is_online ? 'online' : 'offline')
       })) || [];
+      
+      // Inicializar usuarios filtrados
+      this.filterUsers();
       
       console.log('Usuarios vinculados:', this.linkedUsers);
     } catch (error) {
@@ -194,6 +201,45 @@ export class OperatorPage implements OnInit, OnDestroy {
       case 'approved': return 'Aprobada';
       case 'rejected': return 'Rechazada';
       default: return 'Desconocido';
+    }
+  }
+
+  getRoleColor(role: string): string {
+    switch(role?.toLowerCase()) {
+      case 'admin': return 'danger';
+      case 'operator': return 'warning';
+      case 'user': return 'primary';
+      default: return 'medium';
+    }
+  }
+
+  filterUsers() {
+    this.filteredUsers = this.linkedUsers.filter(user => {
+      const matchesType = this.selectedUserType === 'all' || user.role?.toLowerCase() === this.selectedUserType;
+      const searchLower = this.searchTerm.toLowerCase();
+      const matchesSearch = !this.searchTerm || 
+        user.username.toLowerCase().includes(searchLower) ||
+        user.email.toLowerCase().includes(searchLower);
+      
+      return matchesType && matchesSearch;
+    });
+  }
+
+  async showUserDetails(user: LinkedUser) {
+    const modal = await this.modalCtrl.create({
+      component: UserDetailsComponent,
+      componentProps: {
+        user: user
+      },
+      breakpoints: [0, 0.5, 0.75, 1],
+      initialBreakpoint: 0.75
+    });
+
+    modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data?.reload) {
+      await this.loadLinkedUsers();
     }
   }
 
