@@ -9,47 +9,132 @@
         <ion-icon name="language-outline"></ion-icon>
       </ion-button>
       <ion-select #languageSelector [(ngModel)]="language" interface="popover" label="Idioma">
-        <ion-select-option value="es">Espanol</ion-select-option>
+        <ion-select-option value="es">Español</ion-select-option>
         <ion-select-option value="en">English</ion-select-option>
       </ion-select>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content [fullscreen]="true">
   <ion-grid>
     <ion-row>
       <ion-col size="12">
         <div class="chat-container">
-          <div *ngFor="let message of messages"
-               [ngClass]="message.isUser ? 'message user-message' : 'message ai-message'"
-               [class.error-message]="message.error">
-            <div class="avatar" *ngIf="!message.isUser">
-              <ion-icon name="logo-ionic"></ion-icon>
-            </div>
-            <div class="message-bubble">
-              <p class="sender-name" *ngIf="!message.isUser">Asistente Virtual</p>
-              <p class="message-text">{{ message.text }}</p>
-              <p class="message-time">{{ message.timestamp | date:'short' }}</p>
-            </div>
-            <div class="avatar user-avatar" *ngIf="message.isUser">
-              <ion-icon name="person"></ion-icon>
-            </div>
-          </div>
 
-          <div *ngIf="isLoading" class="message ai-message">
+          <!-- Render de items del timeline: chips de fecha + mensajes -->
+          <ng-container *ngFor="let item of timeline; let i = index">
+            <!-- Chip de fecha -->
+            <div *ngIf="item.type === 'date'"
+                 class="date-chip"
+                 role="separator"
+                 [attr.aria-label]="item.label">
+              <span class="date-chip__line" aria-hidden="true"></span>
+              <span class="date-chip__label">{{ item.label }}</span>
+              <span class="date-chip__line" aria-hidden="true"></span>
+            </div>
+
+            <!-- Grupo de mensajes IA -->
+            <div *ngIf="item.type === 'group' && !item.isUser" class="message-group ai-group">
+              <ng-container *ngFor="let msg of item.messages; let j = index">
+                <div class="message ai-message"
+                     [class.group-start]="msg.groupStart"
+                     [class.group-end]="msg.groupEnd"
+                     [class.error-message]="msg.error">
+
+                  <div class="avatar" *ngIf="msg.groupStart">
+                    <ion-icon name="sparkles-outline"></ion-icon>
+                  </div>
+
+                  <div class="message-bubble">
+                    <!-- Nombre del remitente (solo IA) -->
+                    <p class="sender-name" *ngIf="msg.groupStart">Asistente Virtual</p>
+
+                    <!-- Texto normal -->
+                    <p class="message-text" *ngIf="!msg.format || msg.format === 'text'">
+                      {{ msg.text }}
+                    </p>
+
+                    <!-- Bloque de código -->
+                    <div class="code-block" *ngIf="msg.format === 'code'">
+                      <pre><code>{{ msg.text }}</code></pre>
+                      <ion-button fill="clear" size="small" class="copy-btn"
+                                  (click)="copyCode(msg.text)"
+                                  aria-label="Copiar código">
+                        <ion-icon name="copy-outline" slot="start"></ion-icon>
+                        Copiar
+                      </ion-button>
+                    </div>
+
+                    <!-- Chips de fuentes -->
+                    <div class="sources" *ngIf="msg.sources?.length">
+                      <ion-chip class="source-chip" *ngFor="let s of msg.sources" (click)="openSource(s.url)">
+                        <ion-icon name="link-outline"></ion-icon>
+                        <ion-label>{{ s.label || 'Fuente' }}</ion-label>
+                      </ion-chip>
+                    </div>
+
+                    <p class="message-time">{{ msg.timestamp | date:'shortTime' }}</p>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+
+            <!-- Grupo de mensajes Usuario -->
+            <div *ngIf="item.type === 'group' && item.isUser" class="message-group user-group">
+              <ng-container *ngFor="let msg of item.messages; let j = index">
+                <div class="message user-message"
+                     [class.group-start]="msg.groupStart"
+                     [class.group-end]="msg.groupEnd"
+                     [class.error-message]="msg.error">
+
+                  <div class="message-bubble">
+                    <!-- Texto normal -->
+                    <p class="message-text" *ngIf="!msg.format || msg.format === 'text'">
+                      {{ msg.text }}
+                    </p>
+
+                    <!-- Bloque de código (por si el usuario pegó código) -->
+                    <div class="code-block" *ngIf="msg.format === 'code'">
+                      <pre><code>{{ msg.text }}</code></pre>
+                      <ion-button fill="clear" size="small" class="copy-btn"
+                                  (click)="copyCode(msg.text)"
+                                  aria-label="Copiar código">
+                        <ion-icon name="copy-outline" slot="start"></ion-icon>
+                        Copiar
+                      </ion-button>
+                    </div>
+
+                    <p class="message-time">{{ msg.timestamp | date:'shortTime' }}</p>
+                  </div>
+
+                  <div class="avatar user-avatar" *ngIf="msg.groupEnd">
+                    <ion-icon name="person-circle-outline"></ion-icon>
+                  </div>
+                </div>
+              </ng-container>
+            </div>
+          </ng-container>
+
+          <!-- Indicador escribiendo -->
+          <div *ngIf="isLoading" class="message ai-message group-start">
             <div class="avatar">
-              <ion-icon name="logo-ionic"></ion-icon>
+              <ion-icon name="sparkles-outline"></ion-icon>
             </div>
             <div class="message-bubble typing-indicator">
               <p class="sender-name">Asistente Virtual</p>
               <div class="dots-container">
-                <span></span>
-                <span></span>
-                <span></span>
+                <span></span><span></span><span></span>
               </div>
             </div>
           </div>
+
+          <!-- Estado vacío -->
+          <div *ngIf="!timeline?.length && !isLoading" class="empty-state">
+            <ion-icon name="chatbubbles-outline"></ion-icon>
+            <p>Comienza una conversación con el Asistente Virtual.</p>
+          </div>
+
         </div>
       </ion-col>
     </ion-row>
@@ -67,13 +152,13 @@
                       label="Respuesta"
                       color="primary"
                       class="response-type-select">
-            <ion-select-option *ngFor="let option of responseLengthOptions"
-                               [value]="option.value">
+            <ion-select-option *ngFor="let option of responseLengthOptions" [value]="option.value">
               {{ option.label }}
             </ion-select-option>
           </ion-select>
         </ion-col>
       </ion-row>
+
       <ion-row>
         <ion-col size="12" class="message-input-col">
           <div class="message-input-wrapper">
@@ -82,27 +167,29 @@
                          placeholder="Escribe un mensaje..."
                          type="text"></ion-input>
             </ion-item>
-            <ion-button
-              class="mic-button"
-              fill="clear"
-              size="small"
-              [disabled]="speechSupported !== true || isLoading"
-              (click)="toggleRecording()"
-              [color]="isRecording ? 'danger' : 'medium'"
-              [class.recording]="isRecording"
-              aria-label="Activar microfono">
+
+            <ion-button class="mic-button"
+                        fill="clear" size="small"
+                        [disabled]="speechSupported !== true || isLoading"
+                        (click)="toggleRecording()"
+                        [color]="isRecording ? 'danger' : 'medium'"
+                        [class.recording]="isRecording"
+                        aria-label="Activar micrófono">
               <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
             </ion-button>
+
             <ion-button class="send-button"
                         type="submit"
                         [disabled]="chatForm.invalid || isLoading">
               <ion-icon name="send"></ion-icon>
             </ion-button>
+
             <div class="recording-indicator" *ngIf="isRecording">
               <span class="dot"></span>
               <span class="label">Grabando</span>
             </div>
           </div>
+
           <ion-note color="danger" class="voice-error" *ngIf="recognitionError">
             {{ recognitionError }}
           </ion-note>

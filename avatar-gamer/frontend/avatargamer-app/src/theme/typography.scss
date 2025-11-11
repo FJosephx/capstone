@@ -1,171 +1,33 @@
-/* Typography Styles */
-
-/* Base text styles */
+/* Tipografía base y titulares */
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-size: 16px;
-  line-height: 1.6;
+  font-family: var(--ag-font-primary);
+  font-size: var(--ag-font-size-base);
   color: var(--ion-text-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Headings */
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Orbitron', sans-serif;
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--ion-text-color);
-  letter-spacing: 0.02em;
-}
-
-h1 {
-  font-size: 2.5rem;
-  letter-spacing: -0.02em;
-  margin-bottom: 1.5rem;
-  color: var(--ion-color-primary);
-}
-
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1.25rem;
-}
-
-h3 {
-  font-size: 1.5rem;
-  color: var(--ion-color-primary);
-  font-weight: 500;
-}
-
-h4 {
-  font-size: 1.25rem;
-}
-
-h5 {
-  font-size: 1.1rem;
+h1, h2, h3 {
+  font-family: var(--ag-font-display);
+  letter-spacing: .01em;
+  margin: 0 0 .5rem 0;
   color: var(--ion-text-color);
 }
 
-h6 {
-  font-size: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--ion-color-medium);
-}
+h1 { font-size: clamp(1.5rem, 2vw + 1rem, 2rem); font-weight: 800; }
+h2 { font-size: clamp(1.25rem, 1.2vw + 1rem, 1.5rem); font-weight: 700; color: var(--ion-color-primary); }
+h3 { font-size: 1.25rem; font-weight: 600; }
 
-/* Paragraph text */
-p {
-  margin-top: 0;
-  margin-bottom: 1rem;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: var(--ion-text-color);
-}
+/* Utilidades de tamaño */
+.text-sm { font-size: .9375rem; }
+.text-md { font-size: 1rem; }
+.text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
 
-/* Links */
-a {
-  color: var(--ion-color-primary);
-  text-decoration: none;
-  transition: color 0.2s ease;
-  
-  &:hover {
-    color: var(--ion-color-primary-shade);
-    text-decoration: underline;
-  }
-}
+/* Pesos */
+.fw-600 { font-weight: 600; }
+.fw-700 { font-weight: 700; }
 
-/* List text */
-ul, ol {
-  padding-left: 1.5rem;
-  margin-bottom: 1rem;
-  
-  li {
-    margin-bottom: 0.5rem;
-    line-height: 1.6;
-  }
-}
-
-/* Form text */
-label {
-  font-weight: 500;
-  margin-bottom: 0.5rem;
-  display: block;
-  color: var(--ion-text-color);
-}
-
-/* Card text */
-ion-card-title {
-  font-family: 'Orbitron', sans-serif;
-  font-size: 1.25rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.02em;
-  color: var(--ion-text-color) !important;
-}
-
-ion-card-subtitle {
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem !important;
-  color: var(--ion-color-medium) !important;
-  margin-top: 0.25rem;
-}
-
-/* Button text */
-ion-button {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  text-transform: none;
-  letter-spacing: 0.02em;
-}
-
-/* Input text */
-ion-input, ion-textarea, ion-select {
-  --placeholder-color: var(--ion-color-medium);
-  --placeholder-opacity: 0.7;
-  font-family: 'Inter', sans-serif;
-  font-size: 1rem;
-}
-
-/* Label text */
-ion-label {
-  font-family: 'Inter', sans-serif;
-  font-weight: 500;
-  color: var(--ion-text-color);
-}
-
-/* Badge text */
-ion-badge {
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  font-size: 0.875rem;
-  padding: 4px 8px;
-}
-
-/* Metric text styles */
-.metric-block {
-  &__title {
-    h3 {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 1.2rem;
-      font-weight: 600;
-      color: var(--ion-color-primary);
-      margin: 0;
-      letter-spacing: 0.02em;
-    }
-  }
-  
-  .metric-label {
-    font-family: 'Inter', sans-serif;
-    font-size: 0.95rem;
-    color: var(--ion-color-medium-tint);
-    font-weight: 500;
-  }
-  
-  .metric-value {
-    font-family: 'Inter', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--ion-text-color);
-  }
-}
+/* Espaciados de párrafo */
+p { margin: 0 0 .75rem; color: var(--ag-text); }
+.muted { color: var(--ag-muted); }

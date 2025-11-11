@@ -1,254 +1,94 @@
-/* Avatar Gamer Theme Variables
- * --------------------------------------------------
- * For more information on theme variables, see:
- * https://ionicframework.com/docs/theming/variables
- */
+/* ===========================
+   Avatar Gamer – Theme Tokens
+   =========================== */
 
-// Custom Colors
+/* --- Brand Palette (AA sobre blanco y en dark) --- */
 :root {
-  --ag-primary: #6200EA;         // Primary brand color - más vibrante
-  --ag-primary-shade: #4A00B8;   // Darker variant
-  --ag-primary-tint: #7C4DFF;    // Lighter variant
-  
-  --ag-secondary: #00B0FF;       // Secondary brand color
-  --ag-secondary-shade: #0091EA; // Darker variant
-  --ag-secondary-tint: #40C4FF;   // Lighter variant
-  
-  --ag-accent: #FF6D00;          // Accent color - naranja más visible
-  --ag-accent-shade: #F57C00;    // Darker variant
-  --ag-accent-tint: #FFB74D;     // Lighter variant
-  
-  --ag-success: #00C853;         // Success messages - verde más vibrante
-  --ag-warning: #FFD740;         // Warnings - amarillo más brillante
-  --ag-danger: #D50000;          // Error/danger - rojo más profundo
-  
-  --ag-light: #FFFFFF;           // Light surfaces - blanco puro
-  --ag-medium: #757575;          // Medium text/icons - gris más oscuro
-  --ag-dark: #000000;            // Dark text - negro puro
+  /* Primarios */
+  --ag-primary: #1e40af;              /* azul profundo */
+  --ag-primary-600: #1d4ed8;          /* hover */
+  --ag-on-primary: #ffffff;
 
-  // Background Colors
-  --ag-background-light: #FFFFFF;
-  --ag-background-dark: #121212;
-  
-  // Spacing - Using T-shirt sizing for consistency
-  --ag-space-xs: 4px;            // Extra small spacing
-  --ag-space-sm: 8px;            // Small spacing
-  --ag-space-md: 16px;           // Medium spacing
-  --ag-space-lg: 24px;           // Large spacing
-  --ag-space-xl: 32px;           // Extra large spacing
-  --ag-space-xxl: 48px;          // Double extra large spacing
-  
-  // Border Radius
-  --ag-border-radius-sm: 8px;    // Small radius
-  --ag-border-radius-md: 12px;   // Medium radius
-  --ag-border-radius-lg: 16px;   // Large radius - Used for cards
-  --ag-border-radius-xl: 24px;   // Extra large radius
-  
-  // Font Family
-  --ag-font-primary: 'Inter', sans-serif;
-  --ag-font-display: 'Orbitron', 'Inter', sans-serif;
-  
-  // Font Sizes
-  --ag-font-size-xs: 0.75rem;    // 12px
-  --ag-font-size-sm: 0.875rem;   // 14px
-  --ag-font-size-md: 1rem;       // 16px
-  --ag-font-size-lg: 1.125rem;   // 18px
-  --ag-font-size-xl: 1.25rem;    // 20px
-  --ag-font-size-xxl: 1.5rem;    // 24px
-  
-  // Font Weights
-  --ag-font-weight-regular: 400;
-  --ag-font-weight-medium: 500;
-  --ag-font-weight-bold: 700;
-  
-  // Shadows
-  --ag-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --ag-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
-  --ag-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.14);
-  
-  // Transitions
-  --ag-transition-fast: 0.15s ease;
-  --ag-transition-medium: 0.25s ease;
-  --ag-transition-slow: 0.35s ease;
-  
-  // Touch target minimum size (accessibility)
-  --ag-touch-target: 44px;
+  /* Secundarios/Accento */
+  --ag-accent: #0ea5e9;               /* cian */
+  --ag-on-accent: #05293a;
+
+  /* Semánticos */
+  --ag-success: #16a34a;
+  --ag-warning: #d97706;
+  --ag-danger:  #b91c1c;
+
+  /* Superficies y texto */
+  --ag-bg: #f7f8fb;
+  --ag-surface: #ffffff;
+  --ag-text: #111827;       /* texto principal */
+  --ag-muted: #6b7280;      /* texto secundario */
+
+  /* Tipografía */
+  --ag-font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ag-font-display: 'Orbitron', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ag-font-size-base: 1rem;          /* respeta tamaño del SO */
+  --ag-line: 1.55;
+
+  /* Espaciado y radios */
+  --ag-space-xs: .5rem;
+  --ag-space-sm: .75rem;
+  --ag-space-md: 1rem;
+  --ag-space-lg: 1.5rem;
+  --ag-radius-sm: 10px;
+  --ag-radius-md: 16px;
+
+  /* Sombras y foco */
+  --ag-shadow-sm: 0 4px 14px rgba(2, 6, 23, 0.12);
+  --ag-shadow-md: 0 12px 30px rgba(2, 6, 23, 0.14);
+  --ag-focus: 3px solid #22c55e;
+
+  /* Transiciones */
+  --ag-ease: cubic-bezier(.2,.8,.2,1);
+  --ag-t-fast: 120ms;
+  --ag-t-norm: 180ms;
 }
 
-/* Ionic Overrides - Light Mode */
+/* --- Mapear a Ionic --- */
 :root {
   --ion-color-primary: var(--ag-primary);
-  --ion-color-primary-rgb: 94, 53, 177;
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: var(--ag-primary-shade);
-  --ion-color-primary-tint: var(--ag-primary-tint);
-
-  --ion-color-secondary: var(--ag-secondary);
-  --ion-color-secondary-rgb: 0, 176, 255;
-  --ion-color-secondary-contrast: #ffffff;
-  --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: var(--ag-secondary-shade);
-  --ion-color-secondary-tint: var(--ag-secondary-tint);
-
-  --ion-color-tertiary: var(--ag-accent);
-  --ion-color-tertiary-rgb: 255, 64, 129;
-  --ion-color-tertiary-contrast: #ffffff;
-  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: var(--ag-accent-shade);
-  --ion-color-tertiary-tint: var(--ag-accent-tint);
+  --ion-color-primary-contrast: var(--ag-on-primary);
+  --ion-color-primary-rgb: 30,64,175;
 
   --ion-color-success: var(--ag-success);
-  --ion-color-success-rgb: 0, 230, 118;
-  --ion-color-success-contrast: #000000;
-  --ion-color-success-contrast-rgb: 0, 0, 0;
-  --ion-color-success-shade: #00c967;
-  --ion-color-success-tint: #1ae984;
-
   --ion-color-warning: var(--ag-warning);
-  --ion-color-warning-rgb: 255, 214, 0;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #e0bc00;
-  --ion-color-warning-tint: #ffda1a;
+  --ion-color-danger:  var(--ag-danger);
 
-  --ion-color-danger: var(--ag-danger);
-  --ion-color-danger-rgb: 255, 23, 68;
-  --ion-color-danger-contrast: #ffffff;
-  --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #e0143c;
-  --ion-color-danger-tint: #ff2e57;
+  --ion-text-color: var(--ag-text);
+  --ion-background-color: var(--ag-bg);
+  --ion-toolbar-background: var(--ag-primary);
+  --ion-toolbar-color: var(--ag-on-primary);
 
-  --ion-color-light: var(--ag-light);
-  --ion-color-light-rgb: 250, 250, 250;
-  --ion-color-light-contrast: var(--ag-dark);
-  --ion-color-light-contrast-rgb: 33, 33, 33;
-  --ion-color-light-shade: #dcdcdc;
-  --ion-color-light-tint: #fbfbfb;
-
-  --ion-color-medium: var(--ag-medium);
-  --ion-color-medium-rgb: 158, 158, 158;
-  --ion-color-medium-contrast: #000000;
-  --ion-color-medium-contrast-rgb: 0, 0, 0;
-  --ion-color-medium-shade: #8b8b8b;
-  --ion-color-medium-tint: #a8a8a8;
-
-  --ion-color-dark: var(--ag-dark);
-  --ion-color-dark-rgb: 33, 33, 33;
-  --ion-color-dark-contrast: #ffffff;
-  --ion-color-dark-contrast-rgb: 255, 255, 255;
-  --ion-color-dark-shade: #1d1d1d;
-  --ion-color-dark-tint: #383838;
-
-  /* Basic Theme Settings */
-  --ion-background-color: var(--ag-background-light);
-  --ion-background-color-rgb: 255, 255, 255;
-  
-  --ion-text-color: var(--ag-dark);
-  --ion-text-color-rgb: 33, 33, 33;
-  
-  --ion-font-family: var(--ag-font-primary);
-  
-  /* Card-specific styles */
-  --ion-card-border-radius: var(--ag-border-radius-lg);
-  --ion-card-box-shadow: var(--ag-shadow-md);
+  --ion-border-color: color-mix(in oklab, var(--ag-surface), #000 8%);
 }
 
-/* Dark Mode Theme */
-.dark-theme {
-  /* Optimización de colores primarios para mejor contraste */
-  --ion-color-primary: #B388FF; /* Violeta más brillante y saturado */
-  --ion-color-primary-rgb: 179, 136, 255;
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #9E77FF;
-  --ion-color-primary-tint: #C5A3FF;
-
-  /* Colores secundarios con mayor luminosidad */
-  --ion-color-secondary: #84FFFF; /* Cian brillante para mejor visibilidad */
-  --ion-color-secondary-rgb: 132, 255, 255;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #69F0F0;
-  --ion-color-secondary-tint: #A1FFFF;
-  
-  /* Ajustes de fondo y texto */
-  --ion-background-color: #121212; /* Fondo negro suave */
-  --ion-background-color-rgb: 18, 18, 18;
-  
-  --ion-text-color: #f0f0f0; /* Texto casi blanco para mejor lectura */
-  --ion-text-color-rgb: 240, 240, 240;
-  
-  /* Colores de elementos UI */
-  --ion-border-color: #333333; /* Bordes más visibles */
-  
-  --ion-card-background: #1e1e1e;
-  
-  --ion-item-background: #1c1c1c;
-  
-  --ion-toolbar-background: #0d0d0d;
-  --ion-toolbar-border-color: #0d0d0d;
-  
-  --ion-tab-bar-background: #0d0d0d;
-  --ion-tab-bar-color: #f0f0f0; /* Texto casi blanco */
-  --ion-tab-bar-color-selected: var(--ion-color-primary);
-  
-  /* Sombras mejoradas para mejor visibilidad en modo oscuro */
-  --ion-card-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  
-  /* Variables personalizadas para textos específicos */
-  --ag-text-high-contrast: #ffffff; /* Para texto de alta importancia */
-  --ag-text-medium-contrast: #e0e0e0; /* Para texto normal */
-  --ag-text-low-contrast: #b0b0b0; /* Para texto secundario */
-}
-
-/* Enable Dark Mode by Default */
+/* --- Dark Mode --- */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Colores primarios optimizados para modo oscuro */
-    --ion-color-primary: #9575cd; /* Más brillante para mejor visibilidad */
-    --ion-color-primary-rgb: 149, 117, 205;
-    --ion-color-primary-contrast: #000000; /* Contraste mejorado */
-    --ion-color-primary-contrast-rgb: 0, 0, 0;
-    --ion-color-primary-shade: #8367b4;
-    --ion-color-primary-tint: #a083d2;
+    --ag-bg: #0b1220;
+    --ag-surface: #0f172a;
+    --ag-text: #e5e7eb;
+    --ag-muted: #94a3b8;
 
-    /* Colores secundarios con mayor luminosidad */
-    --ion-color-secondary: #40c4ff; /* Color más brillante */
-    --ion-color-secondary-rgb: 64, 196, 255;
-    
-    /* Ajustes de fondo */
-    --ion-background-color: var(--ag-background-dark);
-    --ion-background-color-rgb: 18, 18, 18;
-    
-    /* Textos con mayor legibilidad */
-    --ion-text-color: #f0f0f0; /* Texto casi blanco para mejor lectura */
-    --ion-text-color-rgb: 240, 240, 240;
-    
-    /* Bordes más distinguibles */
-    --ion-border-color: #333333;
-    
-    /* Fondos de componentes */
-    --ion-card-background: #1e1e1e;
-    --ion-item-background: #1c1c1c;
-    --ion-toolbar-background: #0d0d0d;
-    --ion-toolbar-border-color: #0d0d0d;
-    
-    /* Navegación */
-    --ion-tab-bar-background: #0d0d0d;
-    --ion-tab-bar-color: #f0f0f0;
-    --ion-tab-bar-color-selected: var(--ion-color-primary);
-    
-    /* Variables personalizadas para textos */
-    --ag-text-high-contrast: #ffffff; /* Para texto de alta importancia */
-    --ag-text-medium-contrast: #e0e0e0; /* Para texto normal */
-    --ag-text-low-contrast: #b0b0b0; /* Para texto secundario */
-    
-    /* Modificadores para etiquetas y badges */
-    --ion-color-medium: #a0a0a0; /* Un tono medio más visible en dark mode */
-    --ion-color-medium-contrast: #000000;
+    --ion-background-color: var(--ag-bg);
+    --ion-text-color: var(--ag-text);
+    --ion-border-color: color-mix(in oklab, var(--ag-surface), #fff 10%);
   }
 }
 
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+/* --- Alto contraste del sistema --- */
+@media (forced-colors: active) {
+  :root { --ag-shadow-sm: none; --ag-shadow-md: none; }
+}
+
+/* --- Utilidades globales mínimas --- */
+:root {
+  --ag-maxw: 1080px;
+}
+
+html, body, ion-app { font-size: 100%; line-height: var(--ag-line); }

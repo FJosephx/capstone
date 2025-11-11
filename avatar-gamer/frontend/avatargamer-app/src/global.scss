@@ -1,13 +1,10 @@
-/*
- * Avatar Gamer - Global CSS
- * ----------------------------------------------------------------------------
- * Global styling and CSS imports for the Avatar Gamer application.
- * Features modern design with improved accessibility and user experience.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
+@import "./theme/typography.scss";
+@import "./theme/accessibility.scss";
+@import "./theme/components.scss";
+@import "./theme/animations.scss";
+@import "./theme/text-contrast.scss";
+@import "./theme/improved-contrast.scss";
 
-/* Font Awesome */
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Core CSS required for Ionic components to work properly */

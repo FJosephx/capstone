@@ -1,140 +1,290 @@
-/* Login Page Specific Styles */
+/* login.page.scss – Avatar Gamer
+  Objetivos: accesibilidad AA+, tipografía legible, alto contraste, foco visible, áreas táctiles grandes,
+   soporte dark mode, reducción de movimiento, y layouts responsivos. */
+
+/* ===== Paleta y tokens (CSS Variables) ===== */
+:root {
+  /* Colores base (alto contraste sobre blanco y oscuro) */
+  --ag-primary: #1e40af;      /* Azul profundo (AA con blanco) */
+  --ag-primary-contrast: #ffffff;
+  --ag-primary-600: #1d4ed8;  /* Hover */
+  --ag-accent: #0ea5e9;       /* Cian para detalles no críticos */
+  --ag-bg: #f7f8fb;
+  --ag-surface: #ffffff;
+  --ag-text: #111827;         /* Gris casi negro */
+  --ag-muted: #6b7280;        /* Gris medio para secundario */
+  --ag-danger: #b91c1c;       /* Errores */
+
+  /* Radios, sombras, medidas accesibles */
+  --ag-radius: 16px;
+  --ag-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
+  --ag-focus: 3px solid #22c55e; /* Foco verde visible */
+
+  /* Tipografía escalable (usa rem para respetar tamaño del SO) */
+  --ag-font-base: 1rem;       /* ~16px */
+  --ag-font-lg: 1.125rem;     /* ~18px */
+  --ag-font-xl: 1.25rem;      /* ~20px */
+  --ag-line: 1.5;
+
+  /* Espaciados */
+  --ag-gap: 1rem;
+  --ag-gap-lg: 1.5rem;
+
+  /* Anchos máximos */
+  --ag-maxw: 480px;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ag-bg: #0b1220;
+    --ag-surface: #0f172a;
+    --ag-text: #e5e7eb;
+    --ag-muted: #94a3b8;
+    --ag-shadow: 0 8px 24px rgba(15, 23, 42, 0.6);
+  }
+}
+
+/* Alto contraste del sistema */
+@media (forced-colors: active) {
+  :root {
+    --ag-shadow: none;
+  }
+}
+
+/* ===== Fondo y layout ===== */
+ion-content {
+  --background: linear-gradient(180deg, var(--ag-bg), color-mix(in oklab, var(--ag-bg), #dbeafe 10%));
+  display: grid;
+  place-items: center;
+  padding: var(--ag-gap-lg);
+}
 
 .login-container {
-  display: flex;
-  flex-direction: column;
-  min-height: 100%;
-  padding: var(--ag-space-lg);
-  
-  @media (min-width: 768px) {
-    max-width: 480px;
-    margin: 0 auto;
-    justify-content: center;
-  }
+  width: 100%;
+  max-width: var(--ag-maxw);
+  margin-inline: auto;
 }
 
+/* ===== Encabezado visual ===== */
 .logo-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: var(--ag-space-xl);
   text-align: center;
-  
+  margin-bottom: var(--ag-gap-lg);
+
   .logo {
-    max-width: 120px;
-    margin-bottom: var(--ag-space-md);
+    width: clamp(72px, 18vw, 96px);
+    height: auto;
+    filter: drop-shadow(0 4px 12px rgba(2, 6, 23, 0.15));
+    margin: 0 auto var(--ag-gap) auto;
   }
-  
+
   h1 {
-    font-family: var(--ag-font-display);
-    font-weight: var(--ag-font-weight-bold);
-    margin: 0 0 var(--ag-space-xs) 0;
-    color: var(--ion-color-primary);
-    font-size: var(--ag-font-size-xxl);
+    font-size: clamp(var(--ag-font-xl), 2vw + 1rem, 1.5rem);
+    line-height: var(--ag-line);
+    margin: 0 0 0.25rem 0;
+    color: var(--ag-text);
+    font-weight: 800;
+    letter-spacing: -0.01em;
   }
-  
+
   p {
-    color: var(--ion-color-medium);
+    font-size: var(--ag-font-lg);
+    color: var(--ag-muted);
     margin: 0;
-    max-width: 400px;
   }
 }
 
+/* ===== Tarjeta de formulario ===== */
 ion-card {
-  border-radius: var(--ag-border-radius-lg);
-  box-shadow: var(--ag-shadow-md);
-  padding: var(--ag-space-md);
-  margin-bottom: var(--ag-space-lg);
-  
-  ion-item {
-    --border-radius: var(--ag-border-radius-md);
-    --background: rgba(var(--ion-color-light-rgb), 0.5);
-    --highlight-color-focused: var(--ion-color-primary);
-    margin-bottom: var(--ag-space-md);
-    
-    &:last-of-type {
-      margin-bottom: var(--ag-space-lg);
-    }
-    
-    ion-label {
-      font-weight: var(--ag-font-weight-medium);
-    }
-    
-    ion-input, ion-select {
-      --padding-start: var(--ag-space-sm);
-      font-size: var(--ag-font-size-md);
-    }
+  background: var(--ag-surface);
+  border-radius: var(--ag-radius);
+  box-shadow: var(--ag-shadow);
+  overflow: hidden;
+  border: 1px solid color-mix(in oklab, var(--ag-surface), #000 6%);
+}
+
+ion-card-content {
+  padding: clamp(1rem, 2vw + 0.5rem, 1.25rem);
+}
+
+/* ===== Campos ===== */
+ion-list {
+  background: transparent;
+}
+
+ion-item {
+  --background: transparent;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+  --highlight-height: 0;
+  margin-bottom: 0.5rem;
+  border: 1px solid color-mix(in oklab, var(--ag-surface), #000 10%);
+  border-radius: 12px;
+  transition: border-color 160ms ease;
+
+  &:focus-within {
+    border-color: var(--ag-primary);
+    outline: var(--ag-focus);
+    outline-offset: 2px;
   }
 }
 
+ion-label {
+  font-size: var(--ag-font-base);
+  color: var(--ag-muted);
+}
+
+/* Aumenta legibilidad y tamaño táctil */
+ion-input {
+  font-size: var(--ag-font-lg);
+  color: var(--ag-text);
+  --padding-start: 14px;
+  --padding-end: 12px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  min-height: 52px;
+}
+
+/* Mensajes de error visibles y claros */
 .error-message {
-  color: var(--ion-color-danger);
-  font-size: var(--ag-font-size-sm);
-  margin: var(--ag-space-xs) 0 var(--ag-space-md) 0;
-  display: flex;
-  align-items: center;
-  
-  ion-icon {
-    margin-right: var(--ag-space-xs);
-    font-size: 18px;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: var(--ag-danger);
+  margin: 0.25rem 0 0.75rem 0;
+
+  span {
+    display: inline-block;
   }
 }
 
+/* ===== Botón primario accesible ===== */
 ion-button {
-  margin-top: var(--ag-space-md);
-  --border-radius: var(--ag-border-radius-md);
-  font-weight: var(--ag-font-weight-medium);
-  height: 48px;
+  --border-radius: 12px;
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --padding-top: 14px;
+  --padding-bottom: 14px;
+  --background: var(--ag-primary);
+  --background-activated: var(--ag-primary-600);
+  --background-hover: var(--ag-primary-600);
+  --color: var(--ag-primary-contrast);
+  font-weight: 700;
+  font-size: var(--ag-font-lg);
+  min-height: 52px;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.32);
+
+  &::part(native):focus {
+    outline: var(--ag-focus);
+    outline-offset: 2px;
+  }
+
+  &[disabled] {
+    opacity: 0.6 !important;
+    filter: grayscale(0.1);
+  }
 }
 
-.auth-divider {
-  display: flex;
-  align-items: center;
-  margin: var(--ag-space-md) 0;
-  color: var(--ion-color-medium);
-  font-size: var(--ag-font-size-sm);
-  
-  &::before, &::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: rgba(var(--ion-color-medium-rgb), 0.2);
-  }
-  
-  .divider-text {
-    padding: 0 var(--ag-space-md);
+/* ===== Toolbar (header) ===== */
+ion-header {
+  backdrop-filter: saturate(120%) blur(6px);
+}
+
+ion-toolbar[color="primary"] {
+  --background: var(--ag-primary);
+  --color: var(--ag-primary-contrast);
+  --border-color: transparent;
+
+  ion-title {
+    font-weight: 800;
+    letter-spacing: 0.01em;
   }
 }
 
-.register-prompt {
-  text-align: center;
-  color: var(--ion-color-medium);
-  font-size: var(--ag-font-size-sm);
-  margin-top: var(--ag-space-lg);
-  
-  a {
-    color: var(--ion-color-primary);
-    font-weight: var(--ag-font-weight-medium);
-    text-decoration: none;
-    
-    &:hover {
-      text-decoration: underline;
+/* ===== Accesibilidad extra ===== */
+
+/* Foco global bien visible para componentes internos */
+:focus-visible {
+  outline: var(--ag-focus);
+  outline-offset: 2px;
+}
+
+/* Reduce animaciones si el usuario lo pide */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ===== Responsivo ===== */
+@media (min-width: 480px) {
+  ion-card {
+    border-radius: calc(var(--ag-radius) + 4px);
+  }
+}
+
+@media (min-width: 768px) {
+  ion-content {
+    padding-block: 5vh;
+  }
+
+  .logo-container {
+    .logo {
+      width: 96px;
     }
   }
 }
 
-/* Animation */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* ===== Estados de validación mejorados (opcional si agregas clases dinámicas) ===== */
+ion-item.input-invalid {
+  border-color: var(--ag-danger);
 }
 
-ion-card {
-  animation: fadeInUp 0.5s ease-out;
+ion-item.input-valid {
+  border-color: #16a34a; /* verde ok */
+}
+
+/* ===== Micro-interacciones sutiles ===== */
+ion-item,
+ion-button {
+  transition: box-shadow 160ms ease, transform 120ms ease, border-color 160ms ease;
+}
+
+ion-button:hover {
+  transform: translateY(-1px);
+}
+
+ion-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 10px rgba(30, 64, 175, 0.28);
+}
+
+/* ===== Ayudas de lectura ===== */
+.login-container {
+  /* Maximiza contraste de texto/campos en fondos complejos */
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== Soporte para zoom del sistema ===== */
+html, body, ion-app {
+  font-size: 100%;
+  line-height: var(--ag-line);
+}
+
+/* ===== Tip extra: si agregas un botón "mostrar/ocultar" contraseña (slot="end") ===== */
+ion-item.password {
+  position: relative;
+
+  ion-button[slot="end"] {
+    --background: transparent;
+    --box-shadow: none;
+    --padding-start: 8px;
+    --padding-end: 8px;
+    min-height: 40px;
+    font-size: var(--ag-font-base);
+  }
 }
