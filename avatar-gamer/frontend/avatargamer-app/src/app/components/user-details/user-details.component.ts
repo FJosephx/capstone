@@ -134,4 +134,22 @@ export class UserDetailsComponent {
       default: return 'medium';
     }
   }
+
+  getRoleIcon(role: string): string {
+    switch(role?.toLowerCase()) {
+      case 'admin': return 'star';
+      case 'operator': return 'people';
+      case 'user': return 'person';
+      default: return 'help-circle';
+    }
+  }
+
+  getRoleLabel(role: string): string {
+    switch(role?.toLowerCase()) {
+      case 'admin': return 'Administrador';
+      case 'operator': return 'Operador';
+      case 'user': return 'Usuario';
+      default: return 'Sin rol';
+    }
+  }
 }

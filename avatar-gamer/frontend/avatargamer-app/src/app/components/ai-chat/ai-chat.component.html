@@ -1,93 +1,152 @@
-<ion-header>
+<ion-header class="ai-chat-header">
   <ion-toolbar>
-    <ion-title>Chat con IA</ion-title>
+    <ion-title>
+      <div class="header-content">
+        <ion-icon name="chatbubbles-outline" class="header-icon"></ion-icon>
+        <span>Chat con Asistente IA</span>
+      </div>
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="languageSelector.open()">
+      <ion-button (click)="languageSelector.open()" class="language-btn">
         <ion-icon name="language-outline"></ion-icon>
       </ion-button>
-      <ion-select #languageSelector [(ngModel)]="language" interface="popover" label="Idioma">
-        <ion-select-option value="es">Español</ion-select-option>
-        <ion-select-option value="en">English</ion-select-option>
+      <ion-select #languageSelector 
+                  [(ngModel)]="language" 
+                  interface="popover" 
+                  label="Idioma"
+                  class="language-select">
+        <ion-select-option value="es">🇪🇸 Español</ion-select-option>
+        <ion-select-option value="en">🇬🇧 English</ion-select-option>
       </ion-select>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12">
-        <div class="chat-container">
-          <div *ngFor="let message of messages" 
-              [ngClass]="message.isUser ? 'message user-message' : 'message ai-message'"
-              [class.error-message]="message.error">
-            <div class="message-bubble">
-              <p class="message-text">{{ message.text }}</p>
-              <p class="message-time">{{ message.timestamp | date:'short' }}</p>
-            </div>
-          </div>
-          
-          <!-- Indicador de escritura -->
-          <div *ngIf="isLoading" class="message ai-message">
-            <div class="message-bubble typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
+<ion-content class="ai-chat-content">
+  <div class="chat-wrapper">
+    <div class="chat-container">
+      <!-- Messages -->
+      <div *ngFor="let message of messages; let i = index" 
+           [ngClass]="message.isUser ? 'message-group user-group' : 'message-group ai-group'"
+           class="message-group-animated"
+           [style.animation-delay]="(i * 0.05) + 's'">
+        
+        <!-- AI Avatar -->
+        <div class="message-avatar" *ngIf="!message.isUser">
+          <ion-icon name="sparkles" class="ai-avatar-icon"></ion-icon>
+        </div>
+
+        <!-- Message Bubble -->
+        <div class="message-wrapper">
+          <div class="message-bubble" [class.error-bubble]="message.error">
+            <p class="message-text">{{ message.text }}</p>
+            <div class="message-footer">
+              <span class="message-time">{{ message.timestamp | date:'HH:mm' }}</span>
+              <ion-icon *ngIf="message.isUser" 
+                        name="checkmark-done" 
+                        class="read-indicator">
+              </ion-icon>
             </div>
           </div>
         </div>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-</ion-content>
 
-<ion-footer>
-  <ion-toolbar>
-    <ion-row>
-      <ion-col size="12">
-        <ion-select [(ngModel)]="responseLength" 
-                    interface="popover" 
-                    label="Respuesta"
-                    class="response-select">
-          <ion-select-option *ngFor="let option of responseLengthOptions" 
-                            [value]="option.value">
-            {{ option.label }}
-          </ion-select-option>
-        </ion-select>
-      </ion-col>
-    </ion-row>
-    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="input-container">
-      <ion-input formControlName="message"
-                placeholder="Escribe un mensaje..."
-                type="text"
-                class="message-input"></ion-input>
-      <ion-button class="voice-button"
-                  fill="clear"
-                  size="small"
-                  [disabled]="speechSupported !== true || isLoading"
-                  (click)="toggleRecording()"
-                  [color]="isRecording ? 'danger' : 'medium'">
-        <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
-      </ion-button>
-      <ion-button class="send-button"
-                  type="submit" 
-                  [disabled]="chatForm.invalid || isLoading">
-        <ion-icon name="send"></ion-icon>
-      </ion-button>
-    </form>
-    <div class="recording-indicator" *ngIf="isRecording">
-      <div class="pulse-ring"></div>
-      <div class="recording-status">
-        <span class="dot"></span>
-        <span class="label">Grabando audio...</span>
-        <span class="time">{{ recordingDuration }}</span>
+        <!-- User Avatar -->
+        <div class="message-avatar" *ngIf="message.isUser">
+          <ion-icon name="person-circle" class="user-avatar-icon"></ion-icon>
+        </div>
+      </div>
+      
+      <!-- Typing Indicator -->
+      <div *ngIf="isLoading" class="message-group ai-group typing-group">
+        <div class="message-avatar">
+          <ion-icon name="sparkles" class="ai-avatar-icon pulse"></ion-icon>
+        </div>
+        <div class="message-wrapper">
+          <div class="message-bubble typing-bubble">
+            <div class="typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <p class="typing-text">Pensando...</p>
+          </div>
+        </div>
       </div>
     </div>
-    <ion-note color="danger" class="voice-error" *ngIf="recognitionError">
-      {{ recognitionError }}
-    </ion-note>
-    <ion-note color="medium" class="voice-error" *ngIf="speechSupported === false">
-      Tu navegador no admite la captura de voz.
-    </ion-note>
+  </div>
+</ion-content>
+
+<ion-footer class="ai-chat-footer">
+  <ion-toolbar class="footer-toolbar">
+    <!-- Response Length Selector -->
+    <div class="response-selector">
+      <ion-icon name="options-outline" class="selector-icon"></ion-icon>
+      <ion-select [(ngModel)]="responseLength" 
+                  interface="popover" 
+                  label="Detalle de respuesta"
+                  class="response-select">
+        <ion-select-option *ngFor="let option of responseLengthOptions" 
+                          [value]="option.value">
+          {{ option.label }}
+        </ion-select-option>
+      </ion-select>
+    </div>
+
+    <!-- Recording Indicator -->
+    <div class="recording-indicator" *ngIf="isRecording">
+      <div class="recording-content">
+        <div class="pulse-animation">
+          <div class="pulse-ring"></div>
+          <div class="pulse-dot"></div>
+        </div>
+        <div class="recording-info">
+          <span class="recording-label">Grabando...</span>
+          <span class="recording-time">{{ recordingDuration }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Container -->
+    <form [formGroup]="chatForm" (ngSubmit)="sendMessage()" class="input-container">
+      <div class="input-wrapper">
+        <ion-input formControlName="message"
+                   placeholder="Escribe tu mensaje aquí..."
+                   type="text"
+                   class="message-input"
+                   [disabled]="isLoading"></ion-input>
+        
+        <div class="input-actions">
+          <!-- Voice Button -->
+          <ion-button class="voice-button"
+                      fill="clear"
+                      [disabled]="speechSupported !== true || isLoading"
+                      (click)="toggleRecording()"
+                      [class.recording-active]="isRecording">
+            <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
+          </ion-button>
+
+          <!-- Send Button -->
+          <ion-button class="send-button"
+                      type="submit" 
+                      [disabled]="chatForm.invalid || isLoading"
+                      fill="solid"
+                      shape="round">
+            <ion-icon name="send" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Error Messages -->
+    <div class="footer-messages">
+      <ion-note color="danger" class="error-note" *ngIf="recognitionError">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        {{ recognitionError }}
+      </ion-note>
+      <ion-note color="medium" class="info-note" *ngIf="speechSupported === false">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        Tu navegador no admite la captura de voz.
+      </ion-note>
+    </div>
   </ion-toolbar>
 </ion-footer>

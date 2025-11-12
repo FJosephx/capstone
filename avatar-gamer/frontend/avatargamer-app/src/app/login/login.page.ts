@@ -111,4 +111,14 @@ export class LoginPage implements OnInit {
     });
     await alert.present();
   }
+
+  async showContactInfo(event: Event) {
+    event.preventDefault();
+    const alert = await this.alertController.create({
+      header: 'Contacta con soporte',
+      message: 'Estamos aquí para ayudarte. Puedes contactarnos en cualquier momento.',
+      buttons: ['OK']
+    });
+    await alert.present();
+  }
 }

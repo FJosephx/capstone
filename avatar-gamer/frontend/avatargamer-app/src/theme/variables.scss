@@ -1,94 +1,341 @@
 /* ===========================
-   Avatar Gamer – Theme Tokens
+   Avatar Gamer – Theme Tokens (Modernizados)
    =========================== */
 
-/* --- Brand Palette (AA sobre blanco y en dark) --- */
+/* --- Paleta de Colores Moderna (Soft & Accesible) --- */
 :root {
-  /* Primarios */
-  --ag-primary: #1e40af;              /* azul profundo */
-  --ag-primary-600: #1d4ed8;          /* hover */
+  /* Colores Primarios Suaves */
+  --ag-primary: #5DADE2;              /* Soft Blue - Principal */
+  --ag-primary-dark: #3498DB;         /* Hover/Active */
+  --ag-primary-light: #85C1E9;        /* Light variant */
   --ag-on-primary: #ffffff;
 
-  /* Secundarios/Accento */
-  --ag-accent: #0ea5e9;               /* cian */
-  --ag-on-accent: #05293a;
+  /* Colores Secundarios */
+  --ag-secondary: #48C9B0;            /* Gentle Teal */
+  --ag-secondary-dark: #45B876;       /* Hover */
+  --ag-secondary-light: #76D7C4;      /* Light variant */
+  --ag-on-secondary: #ffffff;
 
-  /* Semánticos */
-  --ag-success: #16a34a;
-  --ag-warning: #d97706;
-  --ag-danger:  #b91c1c;
+  /* Colores de Acento */
+  --ag-accent: #F1948A;               /* Warm Coral */
+  --ag-accent-dark: #EC7063;          /* Hover */
+  --ag-accent-light: #F5B7B1;         /* Light variant */
+  --ag-on-accent: #ffffff;
 
-  /* Superficies y texto */
-  --ag-bg: #f7f8fb;
-  --ag-surface: #ffffff;
-  --ag-text: #111827;       /* texto principal */
-  --ag-muted: #6b7280;      /* texto secundario */
+  /* Colores Semánticos */
+  --ag-success: #58D68D;              /* Verde suave */
+  --ag-success-dark: #45b876;
+  --ag-success-light: #7DCEA0;
+  
+  --ag-warning: #F5B041;              /* Amarillo/naranja suave */
+  --ag-warning-dark: #F39C12;
+  --ag-warning-light: #F8C471;
+  
+  --ag-danger: #EC7063;               /* Rojo suave */
+  --ag-danger-dark: #E74C3C;
+  --ag-danger-light: #F1948A;
+
+  --ag-info: #5DADE2;                 /* Azul informativo */
+  --ag-info-dark: #3498DB;
+  --ag-info-light: #85C1E9;
+
+  /* Superficies y Fondos */
+  --ag-bg: #f8f9fa;                   /* Fondo principal claro */
+  --ag-bg-secondary: #e9ecef;         /* Fondo secundario */
+  --ag-surface: #ffffff;              /* Superficie de cards */
+  --ag-surface-elevated: #ffffff;     /* Superficie elevada */
+  
+  /* Texto */
+  --ag-text: #2C3E50;                 /* Texto principal oscuro */
+  --ag-text-secondary: #7f8c8d;       /* Texto secundario */
+  --ag-text-muted: #95a5a6;           /* Texto apagado */
+  --ag-text-on-dark: #ecf0f1;         /* Texto sobre oscuro */
+
+  /* Bordes y Divisores */
+  --ag-border: #dee2e6;
+  --ag-border-light: #e9ecef;
+  --ag-divider: rgba(0, 0, 0, 0.08);
+
+  /* Gradientes Modernos */
+  --ag-gradient-primary: linear-gradient(135deg, #5DADE2, #48C9B0);
+  --ag-gradient-secondary: linear-gradient(135deg, #48C9B0, #45B876);
+  --ag-gradient-accent: linear-gradient(135deg, #F1948A, #EC7063);
+  --ag-gradient-user: linear-gradient(135deg, #5DADE2, #3498DB);
+  --ag-gradient-ai: linear-gradient(135deg, #48C9B0, #45B876);
+  --ag-gradient-card: linear-gradient(135deg, rgba(93, 173, 226, 0.05), rgba(72, 201, 176, 0.05));
+  --ag-gradient-bg: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
 
   /* Tipografía */
   --ag-font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --ag-font-display: 'Orbitron', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --ag-font-size-base: 1rem;          /* respeta tamaño del SO */
-  --ag-line: 1.55;
+  --ag-font-display: 'Orbitron', 'Inter', system-ui, sans-serif;
+  --ag-font-mono: 'Fira Code', 'Courier New', monospace;
+  
+  /* Tamaños de Fuente */
+  --ag-font-size-xs: 0.75rem;        /* 12px */
+  --ag-font-size-sm: 0.875rem;       /* 14px */
+  --ag-font-size-base: 1rem;         /* 16px */
+  --ag-font-size-md: 1.125rem;       /* 18px */
+  --ag-font-size-lg: 1.25rem;        /* 20px */
+  --ag-font-size-xl: 1.5rem;         /* 24px */
+  --ag-font-size-xxl: 2rem;          /* 32px */
+  --ag-font-size-xxxl: 2.5rem;       /* 40px */
+  
+  --ag-line-height: 1.6;
+  --ag-line-height-tight: 1.3;
+  --ag-line-height-relaxed: 1.8;
 
-  /* Espaciado y radios */
-  --ag-space-xs: .5rem;
-  --ag-space-sm: .75rem;
-  --ag-space-md: 1rem;
-  --ag-space-lg: 1.5rem;
-  --ag-radius-sm: 10px;
-  --ag-radius-md: 16px;
+  /* Espaciado */
+  --ag-space-xs: 0.25rem;            /* 4px */
+  --ag-space-sm: 0.5rem;             /* 8px */
+  --ag-space-md: 1rem;               /* 16px */
+  --ag-space-lg: 1.5rem;             /* 24px */
+  --ag-space-xl: 2rem;               /* 32px */
+  --ag-space-xxl: 3rem;              /* 48px */
 
-  /* Sombras y foco */
-  --ag-shadow-sm: 0 4px 14px rgba(2, 6, 23, 0.12);
-  --ag-shadow-md: 0 12px 30px rgba(2, 6, 23, 0.14);
-  --ag-focus: 3px solid #22c55e;
+  /* Border Radius */
+  --ag-radius-xs: 0.25rem;           /* 4px */
+  --ag-radius-sm: 0.5rem;            /* 8px */
+  --ag-radius-md: 0.75rem;           /* 12px */
+  --ag-radius-lg: 1rem;              /* 16px */
+  --ag-radius-xl: 1.5rem;            /* 24px */
+  --ag-radius-full: 9999px;          /* Circular completo */
+
+  /* Sombras */
+  --ag-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --ag-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --ag-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.16);
+  
+  /* Sombras de Color */
+  --ag-shadow-primary: 0 4px 16px rgba(93, 173, 226, 0.3);
+  --ag-shadow-secondary: 0 4px 16px rgba(72, 201, 176, 0.3);
+  --ag-shadow-accent: 0 4px 16px rgba(241, 148, 138, 0.3);
+  --ag-shadow-success: 0 4px 16px rgba(88, 214, 141, 0.3);
+  --ag-shadow-danger: 0 4px 16px rgba(236, 112, 99, 0.3);
+
+  /* Focus y Estados */
+  --ag-focus: 0 0 0 4px rgba(93, 173, 226, 0.25);
+  --ag-focus-ring: 4px;
 
   /* Transiciones */
-  --ag-ease: cubic-bezier(.2,.8,.2,1);
-  --ag-t-fast: 120ms;
-  --ag-t-norm: 180ms;
+  --ag-transition-fast: 120ms;
+  --ag-transition-normal: 240ms;
+  --ag-transition-slow: 360ms;
+  --ag-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ag-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ag-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ag-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-Index Scale */
+  --ag-z-base: 1;
+  --ag-z-dropdown: 1000;
+  --ag-z-sticky: 1020;
+  --ag-z-fixed: 1030;
+  --ag-z-modal-backdrop: 1040;
+  --ag-z-modal: 1050;
+  --ag-z-popover: 1060;
+  --ag-z-tooltip: 1070;
+
+  /* Anchos Máximos */
+  --ag-max-width-xs: 20rem;          /* 320px */
+  --ag-max-width-sm: 24rem;          /* 384px */
+  --ag-max-width-md: 28rem;          /* 448px */
+  --ag-max-width-lg: 32rem;          /* 512px */
+  --ag-max-width-xl: 36rem;          /* 576px */
+  --ag-max-width-2xl: 42rem;         /* 672px */
+  --ag-max-width-3xl: 48rem;         /* 768px */
+  --ag-max-width-4xl: 56rem;         /* 896px */
+  --ag-max-width-5xl: 64rem;         /* 1024px */
+  --ag-max-width-6xl: 72rem;         /* 1152px */
+  --ag-max-width-7xl: 80rem;         /* 1280px */
+  --ag-max-width-full: 100%;
+  
+  --ag-maxw: 1080px;                 /* Ancho máximo contenedor */
 }
 
-/* --- Mapear a Ionic --- */
+/* --- Mapear Variables a Ionic --- */
 :root {
+  /* Primary */
   --ion-color-primary: var(--ag-primary);
+  --ion-color-primary-rgb: 93, 173, 226;
   --ion-color-primary-contrast: var(--ag-on-primary);
-  --ion-color-primary-rgb: 30,64,175;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: var(--ag-primary-dark);
+  --ion-color-primary-tint: var(--ag-primary-light);
 
+  /* Secondary */
+  --ion-color-secondary: var(--ag-secondary);
+  --ion-color-secondary-rgb: 72, 201, 176;
+  --ion-color-secondary-contrast: var(--ag-on-secondary);
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: var(--ag-secondary-dark);
+  --ion-color-secondary-tint: var(--ag-secondary-light);
+
+  /* Tertiary */
+  --ion-color-tertiary: var(--ag-accent);
+  --ion-color-tertiary-rgb: 241, 148, 138;
+  --ion-color-tertiary-contrast: var(--ag-on-accent);
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: var(--ag-accent-dark);
+  --ion-color-tertiary-tint: var(--ag-accent-light);
+
+  /* Success */
   --ion-color-success: var(--ag-success);
+  --ion-color-success-rgb: 88, 214, 141;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: var(--ag-success-dark);
+  --ion-color-success-tint: var(--ag-success-light);
+
+  /* Warning */
   --ion-color-warning: var(--ag-warning);
-  --ion-color-danger:  var(--ag-danger);
+  --ion-color-warning-rgb: 245, 176, 65;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: var(--ag-warning-dark);
+  --ion-color-warning-tint: var(--ag-warning-light);
 
-  --ion-text-color: var(--ag-text);
+  /* Danger */
+  --ion-color-danger: var(--ag-danger);
+  --ion-color-danger-rgb: 236, 112, 99;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: var(--ag-danger-dark);
+  --ion-color-danger-tint: var(--ag-danger-light);
+
+  /* Light */
+  --ion-color-light: #ECF0F1;
+  --ion-color-light-rgb: 236, 240, 241;
+  --ion-color-light-contrast: #2C3E50;
+  --ion-color-light-contrast-rgb: 44, 62, 80;
+  --ion-color-light-shade: #d0d4d5;
+  --ion-color-light-tint: #eef2f3;
+
+  /* Medium */
+  --ion-color-medium: #95a5a6;
+  --ion-color-medium-rgb: 149, 165, 166;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #849192;
+  --ion-color-medium-tint: #a0afb0;
+
+  /* Dark */
+  --ion-color-dark: #2C3E50;
+  --ion-color-dark-rgb: 44, 62, 80;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #273746;
+  --ion-color-dark-tint: #415162;
+
+  /* Backgrounds */
   --ion-background-color: var(--ag-bg);
-  --ion-toolbar-background: var(--ag-primary);
-  --ion-toolbar-color: var(--ag-on-primary);
+  --ion-background-color-rgb: 248, 249, 250;
+  --ion-text-color: var(--ag-text);
+  --ion-text-color-rgb: 44, 62, 80;
 
-  --ion-border-color: color-mix(in oklab, var(--ag-surface), #000 8%);
+  /* Toolbar */
+  --ion-toolbar-background: var(--ag-surface);
+  --ion-toolbar-color: var(--ag-text);
+  --ion-toolbar-border-color: var(--ag-border);
+
+  /* Borders */
+  --ion-border-color: var(--ag-border);
+  --ion-item-border-color: var(--ag-border-light);
 }
 
-/* --- Dark Mode --- */
+/* --- Dark Mode (Prefer Color Scheme) --- */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ag-bg: #0b1220;
-    --ag-surface: #0f172a;
-    --ag-text: #e5e7eb;
-    --ag-muted: #94a3b8;
+    /* Superficies Oscuras */
+    --ag-bg: #0f1419;
+    --ag-bg-secondary: #1a1f2e;
+    --ag-surface: #1a2332;
+    --ag-surface-elevated: #242d3d;
 
+    /* Texto en Dark Mode */
+    --ag-text: #ecf0f1;
+    --ag-text-secondary: #bdc3c7;
+    --ag-text-muted: #95a5a6;
+
+    /* Bordes en Dark Mode */
+    --ag-border: rgba(255, 255, 255, 0.12);
+    --ag-border-light: rgba(255, 255, 255, 0.08);
+    --ag-divider: rgba(255, 255, 255, 0.1);
+
+    /* Colores ajustados para Dark Mode */
+    --ag-primary-light: #85C1E9;
+    --ag-secondary-light: #76D7C4;
+    --ag-accent-light: #F5B7B1;
+
+    /* Sombras más sutiles en Dark */
+    --ag-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --ag-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --ag-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+    /* Gradiente de fondo oscuro */
+    --ag-gradient-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+
+    /* Ionic Dark Mode */
     --ion-background-color: var(--ag-bg);
+    --ion-background-color-rgb: 15, 20, 25;
     --ion-text-color: var(--ag-text);
-    --ion-border-color: color-mix(in oklab, var(--ag-surface), #fff 10%);
+    --ion-text-color-rgb: 236, 240, 241;
+    
+    --ion-toolbar-background: var(--ag-surface);
+    --ion-toolbar-color: var(--ag-text);
+    
+    --ion-border-color: var(--ag-border);
+    --ion-item-border-color: var(--ag-border-light);
+
+    /* Card en Dark Mode */
+    --ion-card-background: var(--ag-surface);
   }
 }
 
-/* --- Alto contraste del sistema --- */
-@media (forced-colors: active) {
-  :root { --ag-shadow-sm: none; --ag-shadow-md: none; }
+/* --- Alto Contraste (Accesibilidad) --- */
+@media (prefers-contrast: high) {
+  :root {
+    --ag-border: #000000;
+    --ag-shadow-sm: none;
+    --ag-shadow-md: none;
+    --ag-shadow-lg: 0 0 0 2px currentColor;
+  }
 }
 
-/* --- Utilidades globales mínimas --- */
-:root {
-  --ag-maxw: 1080px;
+@media (prefers-contrast: high) and (prefers-color-scheme: dark) {
+  :root {
+    --ag-border: #ffffff;
+    --ag-text: #ffffff;
+    --ag-bg: #000000;
+    --ag-surface: #1a1a1a;
+  }
 }
 
-html, body, ion-app { font-size: 100%; line-height: var(--ag-line); }
+/* --- Motion Reducido (Accesibilidad) --- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ag-transition-fast: 0ms;
+    --ag-transition-normal: 0ms;
+    --ag-transition-slow: 0ms;
+  }
+  
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Utilidades Globales --- */
+html, body, ion-app {
+  font-size: 100%;
+  line-height: var(--ag-line-height);
+  font-family: var(--ag-font-primary);
+}
+
+* {
+  box-sizing: border-box;
+}

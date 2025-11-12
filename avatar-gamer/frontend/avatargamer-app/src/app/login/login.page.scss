@@ -1,47 +1,326 @@
-/* login.page.scss – Avatar Gamer
-  Objetivos: accesibilidad AA+, tipografía legible, alto contraste, foco visible, áreas táctiles grandes,
-   soporte dark mode, reducción de movimiento, y layouts responsivos. */
+/* Login Page - Replicando diseño moderno y accesible */
 
-/* ===== Paleta y tokens (CSS Variables) ===== */
-:root {
-  /* Colores base (alto contraste sobre blanco y oscuro) */
-  --ag-primary: #1e40af;      /* Azul profundo (AA con blanco) */
-  --ag-primary-contrast: #ffffff;
-  --ag-primary-600: #1d4ed8;  /* Hover */
-  --ag-accent: #0ea5e9;       /* Cian para detalles no críticos */
-  --ag-bg: #f7f8fb;
-  --ag-surface: #ffffff;
-  --ag-text: #111827;         /* Gris casi negro */
-  --ag-muted: #6b7280;        /* Gris medio para secundario */
-  --ag-danger: #b91c1c;       /* Errores */
+:host {
+  --login-bg-light: #F8F9FA;
+  --login-bg-dark: #283747;
+  --card-bg-light: #FFFFFF;
+  --card-bg-dark: #2C3E50;
+  --text-primary-light: #212F3D;
+  --text-primary-dark: #EAECEE;
+  --text-muted-light: #85929E;
+  --text-muted-dark: #B3B6B7;
+  --primary-color: #5DADE2;
+  --primary-dark: #5499C7;
+  --secondary-color: #48C9B0;
+  --border-color-light: #E8E9EA;
+  --border-color-dark: #4A5F75;
+}
 
-  /* Radios, sombras, medidas accesibles */
-  --ag-radius: 16px;
-  --ag-shadow: 0 8px 24px rgba(2, 6, 23, 0.12);
-  --ag-focus: 3px solid #22c55e; /* Foco verde visible */
+/* Fondo principal con gradiente sutil */
+ion-content {
+  --background: linear-gradient(180deg, var(--login-bg-light) 0%, #E8F4F8 100%);
+  
+  @media (prefers-color-scheme: dark) {
+    --background: linear-gradient(180deg, var(--login-bg-dark) 0%, #1C2833 100%);
+  }
+}
 
-  /* Tipografía escalable (usa rem para respetar tamaño del SO) */
-  --ag-font-base: 1rem;       /* ~16px */
-  --ag-font-lg: 1.125rem;     /* ~18px */
-  --ag-font-xl: 1.25rem;      /* ~20px */
-  --ag-line: 1.5;
+/* Contenedor principal - centrado vertical y horizontal */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
 
-  /* Espaciados */
-  --ag-gap: 1rem;
-  --ag-gap-lg: 1.5rem;
+.login-container {
+  width: 100%;
+  max-width: 440px;
+  margin: 0 auto;
+}
 
-  /* Anchos máximos */
-  --ag-maxw: 480px;
+/* ===== Sección de encabezado ===== */
+.header-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.logo-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  
+  .logo-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    
+    @media (prefers-color-scheme: dark) {
+      color: #85C1E9;
+    }
+  }
+  
+  .heart-icon {
+    position: absolute;
+    bottom: -0.25rem;
+    right: -0.25rem;
+    font-size: 1.5rem;
+    color: var(--secondary-color);
+    
+    @media (prefers-color-scheme: dark) {
+      color: #76D7C4;
+    }
+  }
+}
+
+.welcome-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary-light);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+  
+  @media (prefers-color-scheme: dark) {
+    color: var(--text-primary-light);
+  }
+}
+
+.welcome-subtitle {
+  font-size: 1.125rem;
+  color: var(--text-muted-light);
+  margin: 0;
+  
+  @media (prefers-color-scheme: dark) {
+    color: var(--text-muted-light);
+  }
+}
+
+/* ===== Tarjeta de login ===== */
+.login-card {
+  margin: 0;
+  border-radius: 1rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--border-color-light);
+  background: var(--card-bg-light);
+  
+  @media (prefers-color-scheme: dark) {
+    background: var(--card-bg-dark);
+    border-color: var(--border-color-dark);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.card-header {
+  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  text-align: center;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary-light);
+  margin: 0;
+  
+  @media (prefers-color-scheme: dark) {
+    color: var(--text-primary-dark);
+  }
+}
+
+.card-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted-light);
+  margin-top: 0.5rem;
+  
+  @media (prefers-color-scheme: dark) {
+    color: var(--text-muted-dark);
+  }
+}
+
+.card-content {
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+/* ===== Campos del formulario ===== */
+.form-field {
+  margin-bottom: 1.5rem;
+  
+  &:first-of-type {
+    padding-top: 0.5rem; /* Espacio superior para el primer campo */
+  }
+  
+  &:last-of-type {
+    margin-bottom: 2rem;
+  }
+}
+
+.field-label {
+  display: block;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary-light);
+  margin-bottom: 0.75rem;
+  
+  @media (prefers-color-scheme: dark) {
+    color: var(--text-primary-dark);
+  }
+}
+
+.custom-input {
+  --background: var(--card-bg-light);
+  --color: var(--text-primary-light);
+  --placeholder-color: var(--text-muted-light);
+  --placeholder-opacity: 1;
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.875rem;
+  --padding-bottom: 0.875rem;
+  
+  height: 3.5rem;
+  font-size: 1rem;
+  border: 2px solid var(--border-color-light);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+  
+  @media (prefers-color-scheme: dark) {
+    --background: rgba(255, 255, 255, 0.05);
+    --color: var(--text-primary-dark);
+    --placeholder-color: var(--text-muted-dark);
+    border-color: var(--border-color-dark);
+  }
+  
+  &:focus {
+    border-color: var(--primary-color);
+    --highlight-color-focused: var(--primary-color);
+    
+    @media (prefers-color-scheme: dark) {
+      border-color: #85C1E9;
+    }
+  }
+  
+  &.input-error {
+    border-color: #EC7063;
+  }
+}
+
+/* Mensajes de error */
+.error-message {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  color: #EC7063;
+  
+  .error-icon {
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+}
+
+/* ===== Botón de envío ===== */
+.submit-button {
+  --background: var(--primary-color);
+  --background-hover: var(--primary-dark);
+  --background-activated: var(--primary-dark);
+  --color: #000000;
+  --border-radius: 0.75rem;
+  --padding-top: 0.875rem;
+  --padding-bottom: 0.875rem;
+  --box-shadow: 0 4px 12px rgba(93, 173, 226, 0.3);
+  
+  height: 3.5rem;
+  margin-top: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0;
+  
+  @media (prefers-color-scheme: dark) {
+    --background: #85C1E9;
+    --background-hover: #75a9ce;
+    --background-activated: #75a9ce;
+    --box-shadow: 0 4px 12px rgba(133, 193, 233, 0.3);
+  }
+  
+  &:hover {
+    --box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
+  }
+}
+
+/* ===== Texto de ayuda ===== */
+.help-text {
+  text-align: center;
+  margin-top: 1.5rem;
+  
+  p {
+    font-size: 0.875rem;
+    color: var(--text-muted-light);
+    margin: 0;
+    
+    @media (prefers-color-scheme: dark) {
+      color: var(--text-muted-dark);
+    }
+  }
+  
+  .help-link {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+    
+    @media (prefers-color-scheme: dark) {
+      color: #85C1E9;
+    }
+    
+    &:hover {
+      text-decoration: underline;
+      color: var(--primary-dark);
+      
+      @media (prefers-color-scheme: dark) {
+        color: #75a9ce;
+      }
+    }
+  }
+}
+
+/* ===== Accesibilidad ===== */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 768px) {
+  .login-container {
+    max-width: 460px;
+  }
+  
+  .welcome-title {
+    font-size: 2rem;
+  }
+  
+  .card-header {
+    padding: 2rem 2rem 1.25rem 2rem;
+  }
+  
+  .card-content {
+    padding: 0 2rem 2rem 2rem;
+  }
 }
 
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --ag-bg: #0b1220;
-    --ag-surface: #0f172a;
-    --ag-text: #e5e7eb;
-    --ag-muted: #94a3b8;
-    --ag-shadow: 0 8px 24px rgba(15, 23, 42, 0.6);
+    --ag-bg: #f6f9ff;
+    --ag-surface: #ffffff;
+    --ag-text: #1e293b;
+    --ag-muted: #64748b;
+    --ag-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
   }
 }
 
@@ -54,7 +333,7 @@
 
 /* ===== Fondo y layout ===== */
 ion-content {
-  --background: linear-gradient(180deg, var(--ag-bg), color-mix(in oklab, var(--ag-bg), #dbeafe 10%));
+  --background: linear-gradient(180deg, #fdfefe 0%, #f3f7fb 70%);
   display: grid;
   place-items: center;
   padding: var(--ag-gap-lg);
@@ -96,11 +375,11 @@ ion-content {
 
 /* ===== Tarjeta de formulario ===== */
 ion-card {
-  background: var(--ag-surface);
+  background: #ffffff;
   border-radius: var(--ag-radius);
   box-shadow: var(--ag-shadow);
   overflow: hidden;
-  border: 1px solid color-mix(in oklab, var(--ag-surface), #000 6%);
+  border: 1px solid color-mix(in oklab, var(--ag-text), #fff 82%);
 }
 
 ion-card-content {
@@ -118,7 +397,7 @@ ion-item {
   --inner-padding-end: 0;
   --highlight-height: 0;
   margin-bottom: 0.5rem;
-  border: 1px solid color-mix(in oklab, var(--ag-surface), #000 10%);
+  border: 1px solid color-mix(in oklab, var(--ag-text), #fff 80%);
   border-radius: 12px;
   transition: border-color 160ms ease;
 
@@ -191,13 +470,16 @@ ion-header {
 }
 
 ion-toolbar[color="primary"] {
-  --background: var(--ag-primary);
-  --color: var(--ag-primary-contrast);
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
   --border-color: transparent;
+  border-bottom: 1px solid color-mix(in oklab, var(--ag-text), #fff 85%);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
 
   ion-title {
     font-weight: 800;
     letter-spacing: 0.01em;
+    color: var(--ag-text);
   }
 }
 

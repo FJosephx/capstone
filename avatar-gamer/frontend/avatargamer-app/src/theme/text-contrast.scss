@@ -1,6 +1,6 @@
 .ag-text-high   { color: var(--ag-text) !important; }
 .ag-text-medium { color: var(--ag-muted) !important; }
-.ag-text-low    { color: color-mix(in oklab, var(--ag-muted), #000 20%) !important; }
+.ag-text-low    { color: color-mix(in oklab, var(--ag-muted), var(--ag-text) 20%) !important; }
 
 .ag-link {
   color: color-mix(in oklab, var(--ag-primary), white 10%) !important;

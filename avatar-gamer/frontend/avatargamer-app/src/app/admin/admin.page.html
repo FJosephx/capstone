@@ -1,8 +1,10 @@
 <ion-header [translucent]="true">
   <ion-toolbar color="primary">
     <ion-title>Panel de Administrador</ion-title>
+
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <!-- Accesible: etiqueta aria y solo-icon -->
+      <ion-button aria-label="Cerrar sesión" (click)="logout()">
         <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -10,20 +12,26 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" class="ion-padding">
-  <div class="admin-header">
-    <h1>Bienvenido, {{ userProfile?.username || 'admin' }}</h1>
-    <p>Gestiona los usuarios y configura el sistema desde este panel.</p>
-  </div>
+  <!-- Encabezado -->
+  <section class="admin-header" aria-labelledby="admin-welcome-title">
+    <h1 id="admin-welcome-title">
+      Bienvenido, {{ userProfile?.username || 'admin' }}
+    </h1>
+    <p class="page-info">
+      Gestiona los usuarios y configura el sistema desde este panel.
+    </p>
+  </section>
 
-  <ion-card>
+  <!-- Info de cuenta -->
+  <ion-card class="account-card" aria-labelledby="account-card-title">
     <ion-card-header>
-      <ion-card-title>Información de la cuenta</ion-card-title>
+      <ion-card-title id="account-card-title">Información de la cuenta</ion-card-title>
     </ion-card-header>
     <ion-card-content>
       <ion-item lines="none">
-        <ion-icon name="person-circle-outline" slot="start"></ion-icon>
-        <ion-label>
-          <h2>ID: {{ userProfile?.id }}</h2>
+        <ion-icon name="person-circle-outline" slot="start" aria-hidden="true"></ion-icon>
+        <ion-label class="ion-text-wrap">
+          <h2 class="account-id">ID: {{ userProfile?.id }}</h2>
           <p>Email: {{ userProfile?.email }}</p>
           <p>Rol: {{ userProfile?.role }}</p>
         </ion-label>
@@ -31,11 +39,13 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <!-- MÉTRICAS (se conserva estructura y bindings) -->
+  <ion-card class="metrics-card" aria-labelledby="metrics-card-title">
     <ion-card-header>
-      <ion-card-title>Métricas del sistema</ion-card-title>
+      <ion-card-title id="metrics-card-title">Métricas del sistema</ion-card-title>
       <ion-card-subtitle>Actividad de usuarios, interacción y desempeño</ion-card-subtitle>
     </ion-card-header>
+
     <ion-card-content>
       <div class="metrics-toolbar">
         <ion-button fill="clear" size="small" (click)="loadMetrics()" [disabled]="loadingMetrics">
@@ -44,16 +54,17 @@
         </ion-button>
       </div>
 
-      <div class="ion-text-center ion-padding" *ngIf="loadingMetrics">
+      <div class="ion-text-center ion-padding" *ngIf="loadingMetrics" aria-live="polite">
         <ion-spinner name="crescent"></ion-spinner>
       </div>
 
+      <!-- Mantengo layout y nombres EXACTOS -->
       <ion-grid *ngIf="!loadingMetrics && metrics" class="metrics-grid">
         <ion-row>
           <ion-col size="12" sizeMd="4">
-            <div class="metric-block">
+            <div class="metric-block" aria-label="Actividad de usuarios">
               <div class="metric-block__title">
-                <ion-icon name="people-circle-outline"></ion-icon>
+                <ion-icon name="people-circle-outline" aria-hidden="true"></ion-icon>
                 <h3>Actividad de usuarios</h3>
               </div>
               <ul>
@@ -88,10 +99,11 @@
               </ul>
             </div>
           </ion-col>
+
           <ion-col size="12" sizeMd="4">
-            <div class="metric-block">
+            <div class="metric-block" aria-label="Interacción entre usuarios">
               <div class="metric-block__title">
-                <ion-icon name="swap-horizontal-outline"></ion-icon>
+                <ion-icon name="swap-horizontal-outline" aria-hidden="true"></ion-icon>
                 <h3>Interacción entre usuarios</h3>
               </div>
               <ul>
@@ -122,10 +134,11 @@
               </ul>
             </div>
           </ion-col>
+
           <ion-col size="12" sizeMd="4">
-            <div class="metric-block">
+            <div class="metric-block" aria-label="Desempeño de recursos">
               <div class="metric-block__title">
-                <ion-icon name="speedometer-outline"></ion-icon>
+                <ion-icon name="speedometer-outline" aria-hidden="true"></ion-icon>
                 <h3>Desempeño de recursos</h3>
               </div>
               <ul>
@@ -161,10 +174,12 @@
     </ion-card-content>
   </ion-card>
 
-  <ion-card>
+  <!-- Gestión de Usuarios -->
+  <ion-card class="users-card" aria-labelledby="users-card-title">
     <ion-card-header>
-      <ion-card-title>Gestión de Usuarios</ion-card-title>
+      <ion-card-title id="users-card-title">Gestión de Usuarios</ion-card-title>
     </ion-card-header>
+
     <ion-card-content>
       <div class="section-header">
         <h2>Usuarios del sistema</h2>
@@ -174,6 +189,7 @@
         </ion-button>
       </div>
 
+      <!-- Filtros -->
       <div class="filter-controls ion-margin-bottom">
         <ion-searchbar
           placeholder="Buscar por nombre, email o username"
@@ -204,25 +220,27 @@
         </ion-button>
       </div>
 
+      <!-- Estado / Total -->
       <div class="page-info" *ngIf="!loadingUsers">
         <strong>Total:</strong> {{ totalUsers }} usuario{{ totalUsers === 1 ? '' : 's' }}
       </div>
 
-      <div class="ion-text-center ion-padding" *ngIf="loadingUsers">
+      <div class="ion-text-center ion-padding" *ngIf="loadingUsers" aria-live="polite">
         <ion-spinner name="crescent"></ion-spinner>
       </div>
 
       <div *ngIf="!loadingUsers && users.length === 0" class="ag-empty-state">
-        <ion-icon name="people-outline"></ion-icon>
+        <ion-icon name="people-outline" aria-hidden="true"></ion-icon>
         <h4>No hay usuarios para mostrar</h4>
         <p>Ajusta los filtros o crea un nuevo usuario con el botón superior.</p>
       </div>
 
+      <!-- Lista de usuarios -->
       <div *ngIf="!loadingUsers && users.length > 0">
         <ion-grid>
           <ion-row>
             <ion-col size="12" sizeMd="6" sizeLg="4" *ngFor="let user of users; trackBy: trackByUserId">
-              <ion-card>
+              <ion-card class="user-card">
                 <ion-card-content>
                   <div class="user-card-header">
                     <div class="user-info">
@@ -230,10 +248,10 @@
                       <p class="user-id">ID: {{ user.id }}</p>
                     </div>
                     <div class="user-actions">
-                      <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(user)">
+                      <ion-button fill="clear" size="small" color="primary" (click)="openEditModal(user)" aria-label="Editar usuario">
                         <ion-icon name="create-outline" slot="icon-only"></ion-icon>
                       </ion-button>
-                      <ion-button fill="clear" size="small" color="danger" (click)="confirmDelete(user)">
+                      <ion-button fill="clear" size="small" color="danger" (click)="confirmDelete(user)" aria-label="Eliminar usuario">
                         <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
                       </ion-button>
                     </div>
@@ -241,14 +259,14 @@
 
                   <div class="user-details">
                     <ion-item lines="none">
-                      <ion-icon name="mail-outline" slot="start" color="medium"></ion-icon>
+                      <ion-icon name="mail-outline" slot="start" color="medium" aria-hidden="true"></ion-icon>
                       <ion-label class="ion-text-wrap">
                         {{ user.email || 'Sin correo' }}
                       </ion-label>
                     </ion-item>
 
                     <ion-item lines="none" *ngIf="user.first_name || user.last_name">
-                      <ion-icon name="person-outline" slot="start" color="medium"></ion-icon>
+                      <ion-icon name="person-outline" slot="start" color="medium" aria-hidden="true"></ion-icon>
                       <ion-label class="ion-text-wrap">
                         {{ user.first_name }} {{ user.last_name }}
                       </ion-label>
@@ -276,7 +294,13 @@
   </ion-card>
 </ion-content>
 
-<ion-modal [isOpen]="isUserModalOpen" (didDismiss)="closeUserModal()" cssClass="admin-user-modal">
+<!-- MODAL FULL-SCREEN (crear/editar) -->
+<ion-modal
+  [isOpen]="isUserModalOpen"
+  (didDismiss)="closeUserModal()"
+  (willPresent)="onUserModalWillPresent()"
+  cssClass="admin-user-modal"
+>
   <ng-template>
     <form [formGroup]="userForm" (ngSubmit)="submitUserForm()" class="admin-user-form">
       <ion-header>
@@ -300,6 +324,7 @@
                 El nombre de usuario es obligatorio.
               </ion-note>
             </ion-col>
+
             <ion-col size="12" sizeMd="6">
               <ion-item>
                 <ion-label position="stacked">Email *</ion-label>
@@ -339,11 +364,11 @@
             </ion-col>
             <ion-col size="12" sizeMd="6">
               <ion-item>
-                <ion-label position="stacked">{{ isEditMode ? 'Actualizar contrasena' : 'Contrasena *' }}</ion-label>
+                <ion-label position="stacked">{{ isEditMode ? 'Actualizar contraseña' : 'Contraseña *' }}</ion-label>
                 <ion-input type="password" formControlName="password" autocomplete="new-password"></ion-input>
               </ion-item>
               <ion-note color="danger" *ngIf="userForm.get('password')?.touched && userForm.get('password')?.invalid">
-                La contrasena debe tener al menos 6 caracteres.
+                La contraseña debe tener al menos 6 caracteres.
               </ion-note>
             </ion-col>
           </ion-row>
@@ -366,7 +391,7 @@
           </ion-buttons>
           <ion-buttons slot="end">
             <ion-button type="submit" color="primary" [disabled]="submittingUser">
-              <ion-spinner slot="start" *ngIf="submittingUser" name="dots"></ion-spinner>
+              <ion-spinner slot="start" *ngIf="submittingUser" name="dots" aria-hidden="true"></ion-spinner>
               {{ isEditMode ? 'Guardar cambios' : 'Crear usuario' }}
             </ion-button>
           </ion-buttons>
@@ -375,5 +400,3 @@
     </form>
   </ng-template>
 </ion-modal>
-
-

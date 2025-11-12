@@ -164,6 +164,12 @@ export class AdminPage implements OnInit, OnDestroy {
     this.isUserModalOpen = true;
   }
 
+  onUserModalWillPresent() {
+    this.submittingUser = false;
+    this.userForm.markAsPristine();
+    this.userForm.markAsUntouched();
+  }
+
   closeUserModal() {
     this.isUserModalOpen = false;
     this.userForm.reset();

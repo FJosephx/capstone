@@ -1,4 +1,51 @@
-<div id="container">
-  <strong>{{ name }}</strong>
-  <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+<div class="explore-container">
+  <div class="content-wrapper">
+    
+    <!-- Ícono decorativo -->
+    <div class="icon-wrapper">
+      <ion-icon name="rocket-outline"></ion-icon>
+    </div>
+
+    <!-- Título principal -->
+    <h1 class="title">{{ name }}</h1>
+
+    <!-- Descripción -->
+    <p class="description">
+      Explora los componentes de UI y descubre todas las funcionalidades disponibles
+    </p>
+
+    <!-- Botón de acción -->
+    <ion-button 
+      class="explore-btn"
+      expand="block"
+      shape="round"
+      href="https://ionicframework.com/docs/components"
+      target="_blank"
+      rel="noopener noreferrer">
+      <ion-icon slot="start" name="library-outline"></ion-icon>
+      Ver Componentes UI
+    </ion-button>
+
+    <!-- Tarjetas de características -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <ion-icon name="color-palette-outline" class="feature-icon"></ion-icon>
+        <h3>Diseño Moderno</h3>
+        <p>Interfaz intuitiva y accesible</p>
+      </div>
+
+      <div class="feature-card">
+        <ion-icon name="flash-outline" class="feature-icon"></ion-icon>
+        <h3>Rápido</h3>
+        <p>Optimizado para rendimiento</p>
+      </div>
+
+      <div class="feature-card">
+        <ion-icon name="phone-portrait-outline" class="feature-icon"></ion-icon>
+        <h3>Responsive</h3>
+        <p>Adaptado a todos los dispositivos</p>
+      </div>
+    </div>
+
+  </div>
 </div>
