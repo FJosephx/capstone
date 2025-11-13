@@ -780,3 +780,23 @@ ion-infinite-scroll {
     --max-width: 800px;
   }
 }
+
+/* ===== Eliminar bordes y outlines no deseados ===== */
+/* Reglas globales para eliminar bordes molestos en focus */
+ion-searchbar,
+ion-button,
+ion-fab-button,
+ion-input,
+ion-textarea,
+ion-select {
+  &:focus,
+  &:focus-visible,
+  &:focus-within {
+    outline: none !important;
+  }
+  
+  /* Eliminar bordes por defecto que no sean parte del diseño */
+  &:not([class*="border"]) {
+    border: none;
+  }
+}

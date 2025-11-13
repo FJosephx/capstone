@@ -1,24 +1,24 @@
 /* Login Page - Replicando diseño moderno y accesible */
 
 :host {
-  --login-bg-light: #F8F9FA;
+  --login-bg-light: #f0f3f7;         /* Mejorado: azul suave */
   --login-bg-dark: #283747;
-  --card-bg-light: #FFFFFF;
+  --card-bg-light: #fafbfc;          /* Mejorado: blanco con tinte */
   --card-bg-dark: #2C3E50;
-  --text-primary-light: #212F3D;
+  --text-primary-light: #1a2332;     /* Mejorado: más oscuro */
   --text-primary-dark: #EAECEE;
-  --text-muted-light: #85929E;
+  --text-muted-light: #5a6c7d;       /* Mejorado: más visible */
   --text-muted-dark: #B3B6B7;
   --primary-color: #5DADE2;
   --primary-dark: #5499C7;
   --secondary-color: #48C9B0;
-  --border-color-light: #E8E9EA;
+  --border-color-light: #d1d9e3;     /* Mejorado: más visible */
   --border-color-dark: #4A5F75;
 }
 
 /* Fondo principal con gradiente sutil */
 ion-content {
-  --background: linear-gradient(180deg, var(--login-bg-light) 0%, #E8F4F8 100%);
+  --background: linear-gradient(180deg, var(--login-bg-light) 0%, #d8e2ed 100%);
   
   @media (prefers-color-scheme: dark) {
     --background: linear-gradient(180deg, var(--login-bg-dark) 0%, #1C2833 100%);
@@ -101,7 +101,7 @@ ion-content {
 .login-card {
   margin: 0;
   border-radius: 1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   border: 2px solid var(--border-color-light);
   background: var(--card-bg-light);
   

@@ -1,19 +1,19 @@
 /* User Page - Diseño moderno y accesible */
 
 :host {
-  --user-bg-light: #F8F9FA;
+  --user-bg-light: #f0f3f7;          /* Mejorado: azul suave */
   --user-bg-dark: #283747;
-  --card-bg-light: #FFFFFF;
+  --card-bg-light: #fafbfc;          /* Mejorado: blanco con tinte */
   --card-bg-dark: #2C3E50;
-  --text-primary-light: #212F3D;
+  --text-primary-light: #1a2332;     /* Mejorado: más oscuro */
   --text-primary-dark: #EAECEE;
-  --text-muted-light: #85929E;
+  --text-muted-light: #5a6c7d;       /* Mejorado: más visible */
   --text-muted-dark: #B3B6B7;
   --primary-color: #5DADE2;
   --primary-dark: #5499C7;
   --secondary-color: #48C9B0;
   --accent-color: #F1948A;
-  --border-color-light: #E8E9EA;
+  --border-color-light: #d1d9e3;     /* Mejorado: más visible */
   --border-color-dark: #4A5F75;
   --success-color: #58D68D;
   --warning-color: #F5B041;
@@ -22,11 +22,17 @@
 
 /* ===== Header ===== */
 .custom-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  
   ion-toolbar {
     --background: var(--card-bg-light);
     --color: var(--text-primary-light);
     --border-color: transparent;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
     
     @media (prefers-color-scheme: dark) {
       --background: var(--card-bg-dark);
@@ -55,7 +61,7 @@
 
 /* ===== Content ===== */
 .user-content {
-  --background: linear-gradient(180deg, var(--user-bg-light) 0%, #E8F4F8 100%);
+  --background: linear-gradient(180deg, var(--user-bg-light) 0%, #d8e2ed 100%);
   --padding-top: 56px; /* Altura del header para evitar que se corte */
   
   @media (prefers-color-scheme: dark) {
@@ -84,7 +90,7 @@
   background: var(--card-bg-light);
   border-radius: 1rem;
   border: 2px solid var(--border-color-light);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
   
   @media (prefers-color-scheme: dark) {
     background: var(--card-bg-dark);
@@ -559,6 +565,8 @@
   text-transform: none;
   margin-top: 1.5rem;
   margin-bottom: 1rem;
+  border: none !important; /* Eliminar borde */
+  outline: none !important; /* Eliminar outline */
   
   @media (prefers-color-scheme: dark) {
     --background: linear-gradient(135deg, #85C1E9, #76D7C4);
@@ -572,6 +580,13 @@
   
   &:hover {
     --box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
+  }
+  
+  /* Eliminar outline al hacer focus */
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+    border: none !important;
   }
 }
 
@@ -806,16 +821,35 @@ ion-segment {
   bottom: 0; /* se apoya en el padding-bottom de ion-content */
   margin-top: var(--ag-space-lg);
   margin-bottom: calc(env(safe-area-inset-bottom) + .5rem);
-  border: 2px solid color-mix(in oklab, var(--ag-primary), white 20%);
+  border: none !important; /* Eliminar borde visible */
+  outline: none !important; /* Eliminar outline */
   --border-radius: 14px;
   font-weight: 800;
   letter-spacing: .01em;
 
   ion-icon[slot="start"] { margin-right: .25rem; }
+  
+  &:focus,
+  &:focus-visible {
+    outline: none !important;
+    border: none !important;
+  }
 }
 
 /* ===== Estados y utilidades ===== */
 :focus-visible { outline: var(--ag-focus); outline-offset: 2px; }
+
+/* Eliminar outlines y bordes no deseados globalmente */
+ion-searchbar,
+ion-button,
+ion-fab-button,
+.ai-button {
+  &:focus,
+  &:focus-visible,
+  &:focus-within {
+    outline: none !important;
+  }
+}
 
 @keyframes ag-fade-up {
   from { opacity: 0; transform: translateY(8px); }

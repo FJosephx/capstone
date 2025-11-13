@@ -1,10 +1,10 @@
-@import "./theme/typography.scss";
-@import "./theme/accessibility.scss";
-@import "./theme/components.scss";
-@import "./theme/animations.scss";
-@import "./theme/text-contrast.scss";
-@import "./theme/improved-contrast.scss";
-@import "./theme/responsive.scss";
+@use "./theme/typography" as *;
+@use "./theme/accessibility" as *;
+@use "./theme/components" as *;
+@use "./theme/animations" as *;
+@use "./theme/text-contrast" as *;
+@use "./theme/improved-contrast" as *;
+@use "./theme/responsive" as *;
 
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
