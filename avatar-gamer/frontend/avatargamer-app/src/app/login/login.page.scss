@@ -1,572 +1,252 @@
-/* Login Page - Replicando diseño moderno y accesible */
+/* Login Page - alineado al estilo oscuro del panel de operador */
 
 :host {
-  --login-bg-light: #f0f3f7;         /* Mejorado: azul suave */
-  --login-bg-dark: #283747;
-  --card-bg-light: #fafbfc;          /* Mejorado: blanco con tinte */
-  --card-bg-dark: #2C3E50;
-  --text-primary-light: #1a2332;     /* Mejorado: más oscuro */
-  --text-primary-dark: #EAECEE;
-  --text-muted-light: #5a6c7d;       /* Mejorado: más visible */
-  --text-muted-dark: #B3B6B7;
-  --primary-color: #5DADE2;
-  --primary-dark: #5499C7;
-  --secondary-color: #48C9B0;
-  --border-color-light: #d1d9e3;     /* Mejorado: más visible */
-  --border-color-dark: #4A5F75;
+  --bg-start: #0f1b2e;
+  --bg-end: #04080f;
+  --glow-start: rgba(93, 173, 226, 0.35);
+  --glow-end: rgba(72, 201, 176, 0.25);
+  --card-bg: rgba(18, 27, 44, 0.85);
+  --card-border: rgba(126, 148, 188, 0.32);
+  --text-primary: #e6f0ff;
+  --text-muted: #9bb0ce;
+  --accent: #5dade2;
+  --accent-strong: #48c9b0;
+  --danger: #ec7063;
+  --shadow: 0 18px 45px rgba(7, 16, 32, 0.55);
 }
 
-/* Fondo principal con gradiente sutil */
 ion-content {
-  --background: linear-gradient(180deg, var(--login-bg-light) 0%, #d8e2ed 100%);
-  
-  @media (prefers-color-scheme: dark) {
-    --background: linear-gradient(180deg, var(--login-bg-dark) 0%, #1C2833 100%);
-  }
+  --background: radial-gradient(circle at top, rgba(93, 173, 226, 0.18), transparent 55%),
+                  linear-gradient(180deg, var(--bg-start) 0%, var(--bg-end) 100%);
+  min-height: 100vh;
 }
 
-/* Contenedor principal - centrado vertical y horizontal */
 .login-wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  position: relative;
+  isolation: isolate;
+}
+
+.login-wrapper::before,
+.login-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 5% auto auto 5%;
+  width: clamp(180px, 40vw, 320px);
+  height: clamp(180px, 40vw, 320px);
+  background: radial-gradient(circle, var(--glow-start), transparent 70%);
+  filter: blur(10px);
+  opacity: 0.7;
+  z-index: -1;
+}
+
+.login-wrapper::after {
+  inset: auto 5% 5% auto;
+  background: radial-gradient(circle, var(--glow-end), transparent 70%);
 }
 
 .login-container {
-  width: 100%;
-  max-width: 440px;
-  margin: 0 auto;
+  width: min(420px, 100%);
 }
 
-/* ===== Sección de encabezado ===== */
 .header-section {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
 .logo-wrapper {
+  width: 84px;
+  height: 84px;
+  border-radius: 24px;
+  margin: 0 auto 1rem auto;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(140deg, rgba(93, 173, 226, 0.25), rgba(72, 201, 176, 0.15));
+  border: 1px solid rgba(133, 193, 233, 0.4);
+  box-shadow: 0 12px 25px rgba(7, 16, 32, 0.45);
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  
-  .logo-icon {
-    font-size: 3rem;
-    color: var(--primary-color);
-    
-    @media (prefers-color-scheme: dark) {
-      color: #85C1E9;
-    }
-  }
-  
-  .heart-icon {
-    position: absolute;
-    bottom: -0.25rem;
-    right: -0.25rem;
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-    
-    @media (prefers-color-scheme: dark) {
-      color: #76D7C4;
-    }
-  }
+}
+
+.logo-icon {
+  font-size: 2.75rem;
+  color: var(--accent);
+}
+
+.heart-icon {
+  position: absolute;
+  bottom: 4px;
+  right: 8px;
+  font-size: 1.1rem;
+  color: var(--accent-strong);
+  opacity: 0.9;
 }
 
 .welcome-title {
-  font-size: 1.875rem;
+  font-size: 1.9rem;
   font-weight: 700;
-  color: var(--text-primary-light);
-  margin: 0 0 0.5rem 0;
-  letter-spacing: -0.02em;
-  
-  @media (prefers-color-scheme: dark) {
-    color: var(--text-primary-light);
-  }
+  color: var(--text-primary);
+  margin: 0;
 }
 
 .welcome-subtitle {
-  font-size: 1.125rem;
-  color: var(--text-muted-light);
-  margin: 0;
-  
-  @media (prefers-color-scheme: dark) {
-    color: var(--text-muted-light);
-  }
+  margin: 0.25rem 0 0 0;
+  color: var(--text-muted);
 }
 
-/* ===== Tarjeta de login ===== */
 .login-card {
+  --background: transparent;
   margin: 0;
-  border-radius: 1rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
-  border: 2px solid var(--border-color-light);
-  background: var(--card-bg-light);
-  
-  @media (prefers-color-scheme: dark) {
-    background: var(--card-bg-dark);
-    border-color: var(--border-color-dark);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
-  }
+  border-radius: 1.25rem;
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
 }
 
 .card-header {
-  padding: 1.5rem 1.5rem 1rem 1.5rem;
+  padding: 2rem 2rem 1rem 2rem;
   text-align: center;
 }
 
 .card-title {
   font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary-light);
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0;
-  
-  @media (prefers-color-scheme: dark) {
-    color: var(--text-primary-dark);
-  }
 }
 
 .card-subtitle {
-  font-size: 1rem;
-  color: var(--text-muted-light);
-  margin-top: 0.5rem;
-  
-  @media (prefers-color-scheme: dark) {
-    color: var(--text-muted-dark);
-  }
+  margin-top: 0.4rem;
+  color: var(--text-muted);
+  letter-spacing: 0.02em;
 }
 
 .card-content {
-  padding: 0 1.5rem 1.5rem 1.5rem;
+  padding: 0 2rem 2rem 2rem;
 }
 
-/* ===== Campos del formulario ===== */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+
 .form-field {
-  margin-bottom: 1.5rem;
-  
-  &:first-of-type {
-    padding-top: 0.5rem; /* Espacio superior para el primer campo */
-  }
-  
-  &:last-of-type {
-    margin-bottom: 2rem;
-  }
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .field-label {
-  display: block;
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  color: var(--text-primary-light);
-  margin-bottom: 0.75rem;
-  
-  @media (prefers-color-scheme: dark) {
-    color: var(--text-primary-dark);
-  }
+  color: var(--text-muted);
 }
 
 .custom-input {
-  --background: var(--card-bg-light);
-  --color: var(--text-primary-light);
-  --placeholder-color: var(--text-muted-light);
+  --background: rgba(5, 10, 20, 0.35);
+  --color: var(--text-primary);
+  --placeholder-color: color-mix(in srgb, var(--text-muted), #fff 15%);
   --placeholder-opacity: 1;
   --padding-start: 1rem;
   --padding-end: 1rem;
-  --padding-top: 0.875rem;
-  --padding-bottom: 0.875rem;
-  
-  height: 3.5rem;
-  font-size: 1rem;
-  border: 2px solid var(--border-color-light);
-  border-radius: 0.75rem;
-  transition: all 0.2s ease;
-  
-  @media (prefers-color-scheme: dark) {
-    --background: rgba(255, 255, 255, 0.05);
-    --color: var(--text-primary-dark);
-    --placeholder-color: var(--text-muted-dark);
-    border-color: var(--border-color-dark);
-  }
-  
-  &:focus {
-    border-color: var(--primary-color);
-    --highlight-color-focused: var(--primary-color);
-    
-    @media (prefers-color-scheme: dark) {
-      border-color: #85C1E9;
-    }
-  }
-  
-  &.input-error {
-    border-color: #EC7063;
-  }
+  --padding-top: 0.95rem;
+  --padding-bottom: 0.95rem;
+  border: 1px solid rgba(148, 176, 214, 0.4);
+  border-radius: 0.85rem;
+  min-height: 52px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Mensajes de error */
+.custom-input:focus-within,
+.custom-input.input-error:focus-within {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(93, 173, 226, 0.22);
+}
+
+.custom-input.input-error {
+  border-color: rgba(236, 112, 99, 0.6);
+  box-shadow: 0 0 0 2px rgba(236, 112, 99, 0.15);
+}
+
 .error-message {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  font-size: 0.875rem;
-  color: #EC7063;
-  
-  .error-icon {
-    font-size: 1rem;
-    flex-shrink: 0;
-  }
+  gap: 0.35rem;
+  color: var(--danger);
+  font-size: 0.82rem;
 }
 
-/* ===== Botón de envío ===== */
+.error-icon {
+  font-size: 1rem;
+}
+
 .submit-button {
-  --background: var(--primary-color);
-  --background-hover: var(--primary-dark);
-  --background-activated: var(--primary-dark);
-  --color: #000000;
-  --border-radius: 0.75rem;
-  --padding-top: 0.875rem;
-  --padding-bottom: 0.875rem;
-  --box-shadow: 0 4px 12px rgba(93, 173, 226, 0.3);
-  
-  height: 3.5rem;
-  margin-top: 0.5rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  text-transform: none;
-  letter-spacing: 0;
-  
-  @media (prefers-color-scheme: dark) {
-    --background: #85C1E9;
-    --background-hover: #75a9ce;
-    --background-activated: #75a9ce;
-    --box-shadow: 0 4px 12px rgba(133, 193, 233, 0.3);
-  }
-  
-  &:hover {
-    --box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
-  }
+  --background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+  --box-shadow: 0 12px 28px rgba(93, 173, 226, 0.35);
+  --border-radius: 0.85rem;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  min-height: 52px;
 }
 
-/* ===== Texto de ayuda ===== */
+.submit-button::part(native) {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.submit-button:hover::part(native) {
+  transform: translateY(-1px);
+  box-shadow: 0 16px 30px rgba(93, 173, 226, 0.45);
+}
+
+.submit-button[disabled]::part(native) {
+  opacity: 0.6;
+}
+
 .help-text {
   text-align: center;
   margin-top: 1.5rem;
-  
-  p {
-    font-size: 0.875rem;
-    color: var(--text-muted-light);
-    margin: 0;
-    
-    @media (prefers-color-scheme: dark) {
-      color: var(--text-muted-dark);
-    }
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.help-link {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.help-link:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 420px) {
+  .card-header,
+  .card-content {
+    padding-inline: 1.5rem;
   }
-  
-  .help-link {
-    color: var(--primary-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    
-    @media (prefers-color-scheme: dark) {
-      color: #85C1E9;
-    }
-    
-    &:hover {
-      text-decoration: underline;
-      color: var(--primary-dark);
-      
-      @media (prefers-color-scheme: dark) {
-        color: #75a9ce;
-      }
-    }
+
+  .login-card {
+    border-radius: 1rem;
   }
 }
 
-/* ===== Accesibilidad ===== */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-
-/* ===== Responsive ===== */
 @media (min-width: 768px) {
   .login-container {
     max-width: 460px;
   }
-  
-  .welcome-title {
-    font-size: 2rem;
-  }
-  
-  .card-header {
-    padding: 2rem 2rem 1.25rem 2rem;
-  }
-  
-  .card-content {
-    padding: 0 2rem 2rem 2rem;
-  }
 }
 
-/* Dark mode */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --ag-bg: #f6f9ff;
-    --ag-surface: #ffffff;
-    --ag-text: #1e293b;
-    --ag-muted: #64748b;
-    --ag-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
-  }
-}
-
-/* Alto contraste del sistema */
-@media (forced-colors: active) {
-  :root {
-    --ag-shadow: none;
-  }
-}
-
-/* ===== Fondo y layout ===== */
-ion-content {
-  --background: linear-gradient(180deg, #fdfefe 0%, #f3f7fb 70%);
-  display: grid;
-  place-items: center;
-  padding: var(--ag-gap-lg);
-}
-
-.login-container {
-  width: 100%;
-  max-width: var(--ag-maxw);
-  margin-inline: auto;
-}
-
-/* ===== Encabezado visual ===== */
-.logo-container {
-  text-align: center;
-  margin-bottom: var(--ag-gap-lg);
-
-  .logo {
-    width: clamp(72px, 18vw, 96px);
-    height: auto;
-    filter: drop-shadow(0 4px 12px rgba(2, 6, 23, 0.15));
-    margin: 0 auto var(--ag-gap) auto;
-  }
-
-  h1 {
-    font-size: clamp(var(--ag-font-xl), 2vw + 1rem, 1.5rem);
-    line-height: var(--ag-line);
-    margin: 0 0 0.25rem 0;
-    color: var(--ag-text);
-    font-weight: 800;
-    letter-spacing: -0.01em;
-  }
-
-  p {
-    font-size: var(--ag-font-lg);
-    color: var(--ag-muted);
-    margin: 0;
-  }
-}
-
-/* ===== Tarjeta de formulario ===== */
-ion-card {
-  background: #ffffff;
-  border-radius: var(--ag-radius);
-  box-shadow: var(--ag-shadow);
-  overflow: hidden;
-  border: 1px solid color-mix(in oklab, var(--ag-text), #fff 82%);
-}
-
-ion-card-content {
-  padding: clamp(1rem, 2vw + 0.5rem, 1.25rem);
-}
-
-/* ===== Campos ===== */
-ion-list {
-  background: transparent;
-}
-
-ion-item {
-  --background: transparent;
-  --padding-start: 0;
-  --inner-padding-end: 0;
-  --highlight-height: 0;
-  margin-bottom: 0.5rem;
-  border: 1px solid color-mix(in oklab, var(--ag-text), #fff 80%);
-  border-radius: 12px;
-  transition: border-color 160ms ease;
-
-  &:focus-within {
-    border-color: var(--ag-primary);
-    outline: var(--ag-focus);
-    outline-offset: 2px;
-  }
-}
-
-ion-label {
-  font-size: var(--ag-font-base);
-  color: var(--ag-muted);
-}
-
-/* Aumenta legibilidad y tamaño táctil */
-ion-input {
-  font-size: var(--ag-font-lg);
-  color: var(--ag-text);
-  --padding-start: 14px;
-  --padding-end: 12px;
-  --padding-top: 14px;
-  --padding-bottom: 14px;
-  min-height: 52px;
-}
-
-/* Mensajes de error visibles y claros */
-.error-message {
-  font-size: 0.95rem;
-  line-height: 1.4;
-  color: var(--ag-danger);
-  margin: 0.25rem 0 0.75rem 0;
-
-  span {
-    display: inline-block;
-  }
-}
-
-/* ===== Botón primario accesible ===== */
-ion-button {
-  --border-radius: 12px;
-  --padding-start: 16px;
-  --padding-end: 16px;
-  --padding-top: 14px;
-  --padding-bottom: 14px;
-  --background: var(--ag-primary);
-  --background-activated: var(--ag-primary-600);
-  --background-hover: var(--ag-primary-600);
-  --color: var(--ag-primary-contrast);
-  font-weight: 700;
-  font-size: var(--ag-font-lg);
-  min-height: 52px;
-  letter-spacing: 0.01em;
-  box-shadow: 0 4px 14px rgba(30, 64, 175, 0.32);
-
-  &::part(native):focus {
-    outline: var(--ag-focus);
-    outline-offset: 2px;
-  }
-
-  &[disabled] {
-    opacity: 0.6 !important;
-    filter: grayscale(0.1);
-  }
-}
-
-/* ===== Toolbar (header) ===== */
-ion-header {
-  backdrop-filter: saturate(120%) blur(6px);
-}
-
-ion-toolbar[color="primary"] {
-  --background: var(--ag-surface);
-  --color: var(--ag-text);
-  --border-color: transparent;
-  border-bottom: 1px solid color-mix(in oklab, var(--ag-text), #fff 85%);
-  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.06);
-
-  ion-title {
-    font-weight: 800;
-    letter-spacing: 0.01em;
-    color: var(--ag-text);
-  }
-}
-
-/* ===== Accesibilidad extra ===== */
-
-/* Foco global bien visible para componentes internos */
-:focus-visible {
-  outline: var(--ag-focus);
-  outline-offset: 2px;
-}
-
-/* Reduce animaciones si el usuario lo pide */
 @media (prefers-reduced-motion: reduce) {
-  * {
+  *, *::before, *::after {
     animation: none !important;
     transition: none !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* ===== Responsivo ===== */
-@media (min-width: 480px) {
-  ion-card {
-    border-radius: calc(var(--ag-radius) + 4px);
-  }
-}
-
-@media (min-width: 768px) {
-  ion-content {
-    padding-block: 5vh;
-  }
-
-  .logo-container {
-    .logo {
-      width: 96px;
-    }
-  }
-}
-
-/* ===== Estados de validación mejorados (opcional si agregas clases dinámicas) ===== */
-ion-item.input-invalid {
-  border-color: var(--ag-danger);
-}
-
-ion-item.input-valid {
-  border-color: #16a34a; /* verde ok */
-}
-
-/* ===== Micro-interacciones sutiles ===== */
-ion-item,
-ion-button {
-  transition: box-shadow 160ms ease, transform 120ms ease, border-color 160ms ease;
-}
-
-ion-button:hover {
-  transform: translateY(-1px);
-}
-
-ion-button:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(30, 64, 175, 0.28);
-}
-
-/* ===== Ayudas de lectura ===== */
-.login-container {
-  /* Maximiza contraste de texto/campos en fondos complejos */
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-/* ===== Soporte para zoom del sistema ===== */
-html, body, ion-app {
-  font-size: 100%;
-  line-height: var(--ag-line);
-}
-
-/* ===== Tip extra: si agregas un botón "mostrar/ocultar" contraseña (slot="end") ===== */
-ion-item.password {
-  position: relative;
-
-  ion-button[slot="end"] {
-    --background: transparent;
-    --box-shadow: none;
-    --padding-start: 8px;
-    --padding-end: 8px;
-    min-height: 40px;
-    font-size: var(--ag-font-base);
   }
 }

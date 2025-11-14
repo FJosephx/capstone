@@ -264,9 +264,22 @@
 
       .message-bubble {
         background: linear-gradient(135deg, var(--ag-primary) 0%, var(--ag-secondary) 100%);
-        color: white;
+        color: #ffffff;
         border-radius: 1.25rem 1.25rem 0.375rem 1.25rem;
         box-shadow: 0 4px 12px rgba(93, 173, 226, 0.25);
+        
+        .message-text {
+          color: #ffffff;
+        }
+        
+        .message-footer {
+          color: rgba(255, 255, 255, 0.9);
+          
+          .message-sender,
+          .message-time {
+            color: rgba(255, 255, 255, 0.9);
+          }
+        }
       }
     }
 
@@ -274,11 +287,27 @@
       justify-content: flex-start;
 
       .message-bubble {
-        background: white;
-        color: var(--ag-text-primary);
+        background: #ffffff;
+        color: #2C3E50;
         border-radius: 1.25rem 1.25rem 1.25rem 0.375rem;
         border: 1px solid rgba(0, 0, 0, 0.08);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        
+        .message-text {
+          color: #2C3E50;
+        }
+        
+        .message-footer {
+          color: #7f8c8d;
+          
+          .message-sender {
+            color: #34495e;
+          }
+          
+          .message-time {
+            color: #95a5a6;
+          }
+        }
       }
     }
 
@@ -634,6 +663,38 @@ ion-content.video-active {
   .message-wrapper.incoming .message-bubble {
     background: rgba(255, 255, 255, 0.08);
     border-color: rgba(255, 255, 255, 0.1);
+    color: #EAECEE;
+    
+    .message-text {
+      color: #EAECEE;
+    }
+    
+    .message-footer {
+      color: rgba(234, 236, 238, 0.7);
+      
+      .message-sender {
+        color: rgba(234, 236, 238, 0.85);
+      }
+      
+      .message-time {
+        color: rgba(234, 236, 238, 0.6);
+      }
+    }
+  }
+  
+  .message-wrapper.outgoing .message-bubble {
+    .message-text {
+      color: #ffffff;
+    }
+    
+    .message-footer {
+      color: rgba(255, 255, 255, 0.9);
+      
+      .message-sender,
+      .message-time {
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
   }
 
   .chat-footer {
@@ -647,6 +708,7 @@ ion-content.video-active {
 
   .message-composer .input-wrapper .message-input {
     --background: rgba(255, 255, 255, 0.05);
+    --color: #EAECEE;
     border-color: rgba(255, 255, 255, 0.1);
 
     &:focus-within {
