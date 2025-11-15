@@ -245,6 +245,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow: hidden; /* Evita que el contenido se salga de la card */
   
   @media (prefers-color-scheme: dark) {
     background: var(--card-bg-dark);
@@ -267,6 +268,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+  min-width: 0; /* Permite que el contenido se comprima correctamente */
 }
 
 .assistant-avatar {
@@ -322,12 +324,15 @@
 .assistant-info {
   flex: 1;
   min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   
   .assistant-name {
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--text-primary-light);
-    margin: 0 0 0.5rem 0;
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -347,6 +352,9 @@
     font-weight: 600;
     background: rgba(133, 146, 158, 0.15);
     color: var(--text-muted-light);
+    align-self: flex-start; /* Evita que se estire */
+    max-width: 100%; /* Limita el ancho al contenedor */
+    white-space: nowrap; /* Evita saltos de línea */
     
     @media (prefers-color-scheme: dark) {
       color: var(--text-muted-dark);
@@ -354,6 +362,12 @@
     
     ion-icon {
       font-size: 1rem;
+      flex-shrink: 0; /* Evita que el icono se comprima */
+    }
+    
+    span {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     &.online {
