@@ -168,7 +168,6 @@ export class ChatService implements OnDestroy {
     this.connectionStateSubject.next('connecting');
 
     this.socket = io(environment.socketUrl, {
-      transports: ['websocket'],
       auth: { token },
       query: {
         userId: String(this.currentUser.id),
