@@ -27,10 +27,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
-      db:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
+      - db
+      - redis
     ports:
       - "8000:8000"
     volumes:

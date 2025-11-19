@@ -1,351 +1,780 @@
+// ==============================
+// AI Chat Page - Diseño Moderno y Accesible
+// ==============================
+
+// Header personalizado
+.custom-header {
+  --background: linear-gradient(135deg, var(--ag-primary) 0%, var(--ag-secondary) 100%);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+
+  ion-toolbar {
+    --background: transparent;
+    --color: white;
+    --padding-top: 0.5rem;
+    --padding-bottom: 0.5rem;
+  }
+
+  .back-btn {
+    --color: white;
+    font-size: 1.5rem;
+  }
+
+  ion-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: white;
+  }
+
+  .language-btn {
+    --color: white;
+    --background: rgba(255, 255, 255, 0.15);
+    --border-radius: 50%;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: 0.5rem;
+
+    ion-icon {
+      font-size: 1.5rem;
+    }
+
+    &:hover {
+      --background: rgba(255, 255, 255, 0.25);
+    }
+  }
+
+  .language-select {
+    display: none;
+  }
+}
+
+// Contenido del chat IA
+.ai-chat-content {
+  --background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+}
+
+.chat-wrapper {
+  padding: 1rem;
+  min-height: 100%;
+}
+
 .chat-container {
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  max-height: 100%;
-  overflow-y: auto;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.message {
+// Chip de fecha
+.date-chip {
   display: flex;
-  margin-bottom: 15px;
-  width: 100%;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.5rem 0 1rem;
+  animation: fadeIn 0.3s ease;
+
+  .date-chip-line {
+    flex: 1;
+    height: 1px;
+    background: var(--ag-border);
+  }
+
+  .date-chip-label {
+    padding: 0.375rem 1rem;
+    background: white;
+    border: 1px solid var(--ag-border);
+    border-radius: 2rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--ag-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  }
+}
+
+// Grupos de mensajes
+.message-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  animation: fadeUp 0.3s ease;
+}
+
+// Wrappers de mensajes
+.message-wrapper {
+  display: flex;
   align-items: flex-end;
+  gap: 0.625rem;
+
+  &.ai-wrapper {
+    justify-content: flex-start;
+  }
+
+  &.user-wrapper {
+    justify-content: flex-end;
+  }
 }
 
-.user-message {
-  justify-content: flex-end;
-}
-
-.ai-message {
-  justify-content: flex-start;
-}
-
-.avatar {
-  min-width: 32px;
-  height: 32px;
+// Avatares
+.message-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
-  background-color: #8e44ad;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+
+  ion-icon {
+    font-size: 1.5rem;
+  }
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  &.ai-avatar {
+    background: linear-gradient(135deg, var(--ag-accent) 0%, #FFC0CB 100%);
+    color: white;
+  }
+
+  &.user-avatar {
+    background: linear-gradient(135deg, var(--ag-primary) 0%, var(--ag-secondary) 100%);
+    color: white;
+  }
 }
 
-.avatar ion-icon {
-  font-size: 18px;
-  color: white;
-}
-
-.user-avatar {
-  background-color: #5851c6;
-  margin-left: 8px;
-  margin-right: 0;
-}
-
+// Burbujas de mensaje
 .message-bubble {
-  padding: 12px 16px;
-  border-radius: 18px;
   max-width: 70%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  padding: 0.875rem 1.125rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease;
+  animation: fadeUp 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &.ai-bubble {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: var(--ag-text-primary);
+  }
+
+  &.user-bubble {
+    background: linear-gradient(135deg, var(--ag-primary) 0%, var(--ag-secondary) 100%);
+    color: white;
+    border: none;
+  }
+
+  // Estilos de agrupación (tails)
+  .ai-wrapper.group-start &.ai-bubble {
+    border-top-left-radius: 0.375rem;
+  }
+
+  .ai-wrapper.group-end &.ai-bubble {
+    border-bottom-left-radius: 0.375rem;
+  }
+
+  .user-wrapper.group-start &.user-bubble {
+    border-top-right-radius: 0.375rem;
+  }
+
+  .user-wrapper.group-end &.user-bubble {
+    border-bottom-right-radius: 0.375rem;
+  }
 }
 
-.user-message .message-bubble {
-  background-color: #5851c6;
-  color: white;
-  border-bottom-right-radius: 4px;
-}
-
-.ai-message .message-bubble {
-  background-color: #2c2c2c;
-  color: #ffffff;
-  border-bottom-left-radius: 4px;
-  border-left: 3px solid #8e44ad;
-}
-
+// Nombre del remitente
 .sender-name {
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-bottom: 4px;
-  color: #a881e6;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ag-accent);
+  margin: 0 0 0.5rem 0;
+
+  ion-icon {
+    font-size: 1rem;
+  }
 }
 
+// Texto del mensaje
 .message-text {
-  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.6;
   word-wrap: break-word;
-  line-height: 1.4;
-}
-
-.message-time {
-  font-size: 0.7rem;
-  margin: 6px 0 0;
-  text-align: right;
-  opacity: 0.7;
-}
-
-.ai-message .message-time {
-  color: #b3b3b3;
-}
-
-.typing-indicator {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  min-width: 60px;
-}
-
-.dots-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 8px;
-}
-
-.typing-indicator span {
-  height: 8px;
-  width: 8px;
-  margin: 0 3px;
-  background-color: #a881e6;
-  display: block;
-  border-radius: 50%;
-  opacity: 0.8;
-}
-
-.typing-indicator span:nth-of-type(1) {
-  animation: typing 1s infinite 0.0s;
-}
-
-.typing-indicator span:nth-of-type(2) {
-  animation: typing 1s infinite 0.2s;
-}
-
-.typing-indicator span:nth-of-type(3) {
-  animation: typing 1s infinite 0.4s;
-}
-
-.error-message .message-bubble {
-  background-color: #6e2525;
-  color: white;
-  border-left: 3px solid #ff4646;
-}
-
-@keyframes typing {
-  0% {
-    transform: translateY(0px);
-    opacity: 0.4;
-  }
-  50% {
-    transform: translateY(-5px);
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(0px);
-    opacity: 0.4;
-  }
-}
-
-/* Estilos para el footer y el formulario de chat */
-ion-footer ion-grid {
-  padding: 0;
-}
-
-ion-footer ion-item {
-  --background: #2c2c2c;
-  --border-color: #444;
-  --border-radius: 20px;
-  --padding-start: 15px;
-}
-
-/* Destacar el selector de tipo de respuesta con un borde */
-.response-type-select {
-  background: #333;
-  border-radius: 8px;
-  border: 1px solid #8e44ad;
-  padding: 5px 10px;
-  --placeholder-opacity: 1;
-  --placeholder-color: white;
-  font-weight: 500;
-  color: white !important;
-  --color: white;
-  
-  /* Agregar un icono de ayuda visual */
-  &::before {
-    content: "📝";
-    margin-right: 5px;
-  }
-}
-
-ion-footer ion-input {
-  --color: white;
-  --placeholder-color: #aaa;
-}
-
-ion-footer ion-select {
-  --background: #2c2c2c;
-  --color: white;
-  max-width: 100%;
-  --placeholder-color: white;
-  color: white;
-}
-
-/* Estilos para el texto dentro del ion-select */
-ion-select::part(text) {
-  color: white;
-}
-
-ion-select::part(placeholder) {
-  color: white;
-}
-
-/* Estilos para las opciones del select */
-ion-select-option {
-  color: white;
-}
-
-/* Estilos para el label del select */
-ion-select[label] {
-  --color: white;
-}
-
-.message-input-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.message-input-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  background: #2c2c2c;
-  border-radius: 20px;
-  padding: 4px 6px 4px 10px;
-}
-
-.message-input-item {
-  flex: 1;
-  --background: transparent;
-  --inner-padding-end: 6px;
-  --inner-padding-start: 0;
-  --padding-start: 0;
-  --padding-end: 0;
-  border-radius: 18px;
-  border: none;
-}
-
-.message-input-item ion-input {
-  --padding-start: 0;
-  --padding-end: 0;
-}
-
-.mic-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  white-space: pre-wrap;
   margin: 0;
-  --padding-start: 6px;
-  --padding-end: 6px;
-  --color: var(--ion-color-primary-contrast, #ffffff);
-  border-radius: 50%;
-  min-width: 34px;
-  height: 34px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
-
-  &.recording {
-    box-shadow: inset 0 0 0 1px var(--ion-color-danger);
-  }
 }
 
-.recording-indicator {
+// Footer del mensaje
+.message-footer {
   display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--ion-color-danger);
-}
-
-.recording-indicator .dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background-color: var(--ion-color-danger);
-  animation: recording-pulse 1.2s ease-in-out infinite;
-}
-
-.voice-error {
-  display: block;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.send-button-col {
-  display: flex;
-  align-items: center;
   justify-content: flex-end;
-}
+  margin-top: 0.375rem;
 
-.send-button {
-  min-width: 52px;
-  margin-left: auto;
-  --border-radius: 18px;
-  --padding-start: 10px;
-  --padding-end: 10px;
-  height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-@keyframes recording-pulse {
-  0% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.3);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
+  .message-time {
+    font-size: 0.75rem;
+    opacity: 0.7;
   }
 }
 
-/* Fondo oscuro para la página de chat */
-ion-content {
-  --background: #121212;
-}
+// Bloque de código
+.code-block {
+  margin: 0.5rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f8f9fa;
+  border: 1px solid var(--ag-border);
 
-ion-toolbar {
-  --background: #1e1e1e;
-  --color: white;
-}
+  .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(to right, #e9ecef, #f8f9fa);
+    border-bottom: 1px solid var(--ag-border);
 
-/* Estilos para asegurar que el texto en los selects sea visible */
-:host ::ng-deep {
-  ion-select-option {
-    color: white !important;
-    --color: white !important;
-  }
-  
-  /* Estilo para el popover del selector */
-  .select-interface-popover {
-    --background: #333 !important;
-    --color: white !important;
-    
-    .popover-content {
-      background: #333 !important;
+    .code-label {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--ag-text-secondary);
+
+      ion-icon {
+        font-size: 1rem;
+      }
     }
-    
-    ion-item {
-      --color: white !important;
-      --background: #333 !important;
-      
-      &.item-radio-checked {
-        --background: #5851c6 !important;
+
+    .copy-btn {
+      --padding-start: 0.5rem;
+      --padding-end: 0.5rem;
+      --color: var(--ag-text-secondary);
+      font-size: 0.8125rem;
+      min-height: 1.75rem;
+
+      &:hover {
+        --color: var(--ag-primary);
+      }
+
+      ion-icon {
+        font-size: 0.875rem;
+      }
+    }
+  }
+
+  pre {
+    margin: 0;
+    padding: 0.875rem;
+    overflow-x: auto;
+    background: #f8f9fa;
+
+    code {
+      font-family: 'Courier New', Consolas, Monaco, monospace;
+      font-size: 0.875rem;
+      line-height: 1.5;
+      color: var(--ag-text-primary);
+    }
+  }
+}
+
+// Chips de fuentes
+.sources {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.source-chip {
+  --background: rgba(93, 173, 226, 0.1);
+  --color: var(--ag-primary);
+  border: 1px solid rgba(93, 173, 226, 0.3);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  min-height: 1.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    --background: rgba(93, 173, 226, 0.2);
+    transform: translateY(-1px);
+  }
+
+  ion-icon {
+    font-size: 0.9375rem;
+  }
+
+  ion-label {
+    font-size: 0.8125rem;
+  }
+}
+
+// Indicador de escritura
+.typing-bubble {
+  .typing-indicator {
+    display: flex;
+    gap: 0.375rem;
+    padding: 0.25rem 0;
+
+    .typing-dot {
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 50%;
+      background: var(--ag-primary);
+      animation: typing 1.4s infinite ease-in-out;
+
+      &:nth-child(1) {
+        animation-delay: 0s;
+      }
+
+      &:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.4s;
       }
     }
   }
 }
 
+// Estado vacío
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 1.25rem;
+  text-align: center;
+  animation: fadeIn 0.5s ease;
+  min-height: 400px;
+
+  .empty-icon {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 1.5rem;
+    background: linear-gradient(135deg, rgba(93, 173, 226, 0.1) 0%, rgba(72, 201, 176, 0.1) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    animation: float 3s ease-in-out infinite;
+
+    ion-icon {
+      font-size: 3rem;
+      color: var(--ag-primary);
+    }
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--ag-text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  p {
+    font-size: 0.9375rem;
+    color: var(--ag-text-secondary);
+    max-width: 400px;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .quick-suggestions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    justify-content: center;
+
+    .suggestion-chip {
+      --background: rgba(93, 173, 226, 0.1);
+      --color: var(--ag-primary);
+      border: 1px solid rgba(93, 173, 226, 0.3);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        --background: rgba(93, 173, 226, 0.2);
+        transform: translateY(-2px);
+      }
+
+      ion-icon {
+        font-size: 1.125rem;
+      }
+    }
+  }
+}
+
+// Footer del chat IA
+.ai-chat-footer {
+  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+  background: white;
+
+  ion-toolbar {
+    --background: white;
+    --padding-top: 0.75rem;
+    --padding-bottom: 0.75rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+  }
+}
+
+.message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+// Selector de respuesta
+.response-selector {
+  .response-type-select {
+    --background: var(--ag-bg-secondary);
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+    border: 1px solid var(--ag-border);
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    min-height: 2.5rem;
+  }
+}
+
+// Composer de mensaje
+.message-composer {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+
+  .input-wrapper {
+    flex: 1;
+    position: relative;
+
+    .message-input {
+      --background: var(--ag-bg-secondary);
+      --padding-start: 1.125rem;
+      --padding-end: 1.125rem;
+      --placeholder-color: var(--ag-text-secondary);
+      --placeholder-opacity: 0.7;
+      border-radius: 1.5rem;
+      border: 1px solid var(--ag-border);
+      min-height: 3rem;
+      font-size: 0.9375rem;
+      transition: all 0.2s ease;
+
+      &:focus-within {
+        --background: white;
+        border-color: var(--ag-primary);
+        box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
+      }
+    }
+  }
+
+  .voice-controls {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .voice-btn {
+      --padding-start: 0.75rem;
+      --padding-end: 0.75rem;
+      --border-radius: 50%;
+      margin: 0;
+      min-width: 2.75rem;
+      min-height: 2.75rem;
+
+      ion-icon {
+        font-size: 1.5rem;
+      }
+
+      &.recording {
+        --background: var(--ag-danger);
+        --color: white;
+        animation: pulse 1.5s infinite;
+      }
+    }
+  }
+
+  .send-btn {
+    --background: linear-gradient(135deg, var(--ag-primary) 0%, var(--ag-secondary) 100%);
+    --color: white;
+    --border-radius: 50%;
+    --padding-start: 0.875rem;
+    --padding-end: 0.875rem;
+    --box-shadow: 0 4px 12px rgba(93, 173, 226, 0.3);
+    margin: 0;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    transition: all 0.2s ease;
+
+    ion-icon {
+      font-size: 1.25rem;
+    }
+
+    &:hover:not([disabled]) {
+      transform: translateY(-2px);
+      --box-shadow: 0 6px 16px rgba(93, 173, 226, 0.4);
+    }
+
+    &:active:not([disabled]) {
+      transform: translateY(0);
+    }
+
+    &[disabled] {
+      opacity: 0.4;
+    }
+  }
+}
+
+// Indicador de grabación
+.recording-indicator {
+  position: absolute;
+  bottom: calc(100% + 0.75rem);
+  right: 0;
+  background: white;
+  border: 1px solid var(--ag-border);
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.3s ease;
+  z-index: 100;
+  white-space: nowrap;
+
+  .recording-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    .recording-dot {
+      width: 0.625rem;
+      height: 0.625rem;
+      border-radius: 50%;
+      background: var(--ag-danger);
+      animation: blink 1s infinite;
+    }
+
+    .recording-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ag-text-primary);
+    }
+  }
+}
+
+// Alertas de voz
+.voice-alerts {
+  .alert-message {
+    display: block;
+    font-size: 0.8125rem;
+    text-align: center;
+    padding: 0.25rem 0;
+  }
+}
+
+// ==============================
+// Animaciones
+// ==============================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.7;
+  }
+  30% {
+    transform: translateY(-8px);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(236, 112, 99, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(236, 112, 99, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(236, 112, 99, 0);
+  }
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+// ==============================
+// Modo Oscuro
+// ==============================
+
+@media (prefers-color-scheme: dark) {
+  .ai-chat-content {
+    --background: linear-gradient(to bottom, #1a1a1a 0%, #0f0f0f 100%);
+  }
+
+  .date-chip-label {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+    color: var(--ag-text-secondary);
+  }
+
+  .message-bubble.ai-bubble {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .code-block {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    .code-header {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    pre {
+      background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  .ai-chat-footer {
+    background: #1a1a1a;
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.3);
+
+    ion-toolbar {
+      --background: #1a1a1a;
+    }
+  }
+
+  .message-composer .input-wrapper .message-input {
+    --background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+
+    &:focus-within {
+      --background: rgba(255, 255, 255, 0.08);
+      border-color: var(--ag-primary-dark);
+    }
+  }
+
+  .response-type-select {
+    --background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .recording-indicator {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+  }
+}
+
+// ==============================
+// Responsive Design
+// ==============================
+
+@media (min-width: 768px) {
+  .chat-container {
+    padding: 1.5rem 2rem 2rem;
+  }
+
+  .message-bubble {
+    max-width: 65%;
+
+    &.ai-bubble {
+      max-width: 70%;
+    }
+  }
+
+  .message-avatar {
+    width: 3rem;
+    height: 3rem;
+
+    ion-icon {
+      font-size: 1.75rem;
+    }
+  }
+
+  .message-composer {
+    gap: 1rem;
+
+    .input-wrapper .message-input {
+      min-height: 3.5rem;
+      font-size: 1rem;
+    }
+
+    .send-btn,
+    .voice-btn {
+      min-width: 3rem;
+      min-height: 3rem;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .chat-container {
+    max-width: 1000px;
+  }
+
+  .message-bubble {
+    max-width: 60%;
+
+    &.ai-bubble {
+      max-width: 65%;
+    }
+  }
+}

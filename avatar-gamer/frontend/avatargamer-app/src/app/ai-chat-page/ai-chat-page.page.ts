@@ -1,332 +1,303 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { IonicModule, ModalController, AlertController } from '@ionic/angular';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { AIService, AIResponse } from '../services/ai.service';
-import { MicConsentComponent } from '../components/mic-consent/mic-consent.component';
-import { ConsentService } from '../services/consent.service';
+import { Component, OnInit, OnDestroy, ViewChild, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { IonContent, IonicModule } from '@ionic/angular';
+import { CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
+type ResponseLength = 'very_brief' | 'brief' | 'normal' | 'complete' | 'very_complete';
+
+interface ChatSource {
+  label?: string;
+  url: string;
+}
 interface ChatMessage {
-  text: string;
+  id: string;
   isUser: boolean;
-  timestamp: Date;
+  text: string;
+  timestamp: Date | string | number;
   error?: boolean;
+  format?: 'text' | 'code';
+  sources?: ChatSource[];
+}
+
+type TimelineItem =
+  | { type: 'date'; label: string; dateKey: string }
+  | { type: 'group'; isUser: boolean; messages: Array<ChatMessage & { groupStart?: boolean; groupEnd?: boolean }> };
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition?: any;
+    SpeechRecognition?: any;
+  }
 }
 
 @Component({
   selector: 'app-ai-chat-page',
-  templateUrl: './ai-chat-page.page.html',
-  styleUrls: ['./ai-chat-page.page.scss'],
   standalone: true,
   imports: [
-    IonicModule,
+    // Angular / Ionic
     CommonModule,
+    IonicModule,
     FormsModule,
     ReactiveFormsModule,
-    RouterModule
-  ]
+    // Pipes standalone
+    DatePipe,
+  ],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  templateUrl: './ai-chat-page.page.html',
+  styleUrls: ['./ai-chat-page.page.scss'],
 })
-export class AIChatPagePage implements OnInit, OnDestroy {
-  chatForm: FormGroup;
+export class AiChatPage implements OnInit, OnDestroy {
+  @ViewChild(IonContent, { static: false }) content?: IonContent;
+
+  chatForm!: FormGroup;
+
   messages: ChatMessage[] = [];
+  timeline: TimelineItem[] = [];
+
   isLoading = false;
-  characterName = 'sinclair';
-  responseLength = 'normal';
-  language = 'es';
 
-  speechSupported: boolean | null = null;
-  isRecording = false;
-  recognitionError = '';
-
-  private recognition: any = null;
-  private messageSnapshot = '';
-  private pendingTranscript = '';
-  private readonly microphoneConsentType = 'voice_capture';
-  private readonly microphoneConsentVersion = 'v1';
-
+  language: 'es' | 'en' = 'es';
+  responseLength: ResponseLength = 'normal';
   responseLengthOptions = [
     { value: 'very_brief', label: 'Muy breve' },
     { value: 'brief', label: 'Breve' },
     { value: 'normal', label: 'Normal' },
     { value: 'complete', label: 'Completa' },
-    { value: 'very_complete', label: 'Muy completa' }
+    { value: 'very_complete', label: 'Muy completa' },
   ];
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private aiService: AIService,
-    private modalCtrl: ModalController,
-    private consentService: ConsentService,
-    private alertCtrl: AlertController
-  ) {
-    this.chatForm = this.formBuilder.group({
-      message: ['', [Validators.required]]
-    });
-  }
+  speechSupported: boolean | null = null;
+  isRecording = false;
+  recognitionError: string | null = null;
+  private recognition: any = null;
 
-  async ngOnInit(): Promise<void> {
-    this.messages.push({
-      text: 'Hola! Soy tu asistente virtual. En que puedo ayudarte?',
-      isUser: false,
-      timestamp: new Date()
-    });
+  constructor(private fb: FormBuilder) {}
 
-    this.initSpeechRecognition();
-    await this.ensureRemoteConsentState();
+  ngOnInit(): void {
+    this.chatForm = this.fb.group({
+      message: ['', [Validators.required, Validators.minLength(1)]],
+    });
+    this.detectSpeechSupport();
   }
 
   ngOnDestroy(): void {
-    this.stopRecording();
-    this.recognition?.abort?.();
+    this.stopRecognition();
   }
 
-  async toggleRecording(): Promise<void> {
-    if (this.speechSupported !== true || !this.recognition) {
-      this.recognitionError = 'La captura de voz no es compatible con este navegador.';
-      return;
-    }
+  // -------- Mensajería --------
+  async sendMessage(): Promise<void> {
+    if (this.chatForm.invalid || this.isLoading) return;
 
-    if (this.isRecording) {
-      this.stopRecording();
-      return;
-    }
+    const text: string = (this.chatForm.value.message || '').toString().trim();
+    if (!text) return;
 
-    const hasConsent = localStorage.getItem('microphoneConsent') === 'true';
-
-    if (!hasConsent) {
-      const modal = await this.modalCtrl.create({
-        component: MicConsentComponent,
-        cssClass: 'mic-consent-modal'
-      });
-
-      await modal.present();
-      const { data: consentGranted } = await modal.onDidDismiss();
-
-      if (!consentGranted) {
-        return;
-      }
-
-      const registered = await this.registerMicrophoneConsent();
-      if (!registered) {
-        return;
-      }
-
-      localStorage.setItem('microphoneConsent', 'true');
-    }
-
-    this.startRecording();
-  }
-
-  sendMessage(): void {
-    if (this.chatForm.invalid || this.isLoading) {
-      return;
-    }
-
-    const messageText = (this.chatForm.value.message || '').trim();
-    if (!messageText) {
-      return;
-    }
-
-    this.messages.push({
-      text: messageText,
+    const userMsg: ChatMessage = {
+      id: crypto.randomUUID(),
       isUser: true,
-      timestamp: new Date()
-    });
+      text,
+      timestamp: new Date(),
+      format: this.maybeIsCode(text) ? 'code' : 'text',
+    };
+    this.messages.push(userMsg);
+    this.chatForm.reset({ message: '' });
+    this.rebuildTimeline();
+    this.scrollToBottom();
 
-    this.chatForm.reset();
     this.isLoading = true;
+    try {
+      const ai = await this.sendToAI(userMsg);
+      this.messages.push(ai);
+      this.rebuildTimeline();
+      this.scrollToBottom();
+    } catch (e) {
+      const errMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        isUser: false,
+        text: 'Ocurrió un error procesando tu solicitud.',
+        timestamp: new Date(),
+        error: true,
+      };
+      this.messages.push(errMsg);
+      this.rebuildTimeline();
+    } finally {
+      this.isLoading = false;
+    }
+  }
 
-    this.aiService.sendMessage({
-      text: messageText,
-      response_length: this.responseLength as any,
-      character_name: this.characterName,
-      language: this.language
-    }).subscribe({
-      next: (response: AIResponse) => {
-        this.messages.push({
-          text: response.reply,
-          isUser: false,
-          timestamp: new Date()
-        });
-        this.isLoading = false;
-      },
-      error: (error) => {
-        this.messages.push({
-          text: `Error: ${error.message || 'No se pudo obtener una respuesta'}`,
-          isUser: false,
-          timestamp: new Date(),
-          error: true
-        });
-        this.isLoading = false;
+  private maybeIsCode(text: string): boolean {
+    const looksLikeCodeFence = text.trim().startsWith('```') || /;\s*$/.test(text);
+    const hasBracesOrTags = /[{<>}]/.test(text) && /\n/.test(text);
+    return looksLikeCodeFence || hasBracesOrTags;
+  }
+
+  // Simulación/placeholder (reemplaza por tu servicio real)
+  private async sendToAI(userMsg: ChatMessage): Promise<ChatMessage> {
+    await new Promise((r) => setTimeout(r, 600));
+    const demo: ChatMessage = {
+      id: crypto.randomUUID(),
+      isUser: false,
+      text:
+        this.responseLength === 'very_brief'
+          ? 'Hecho.'
+          : this.responseLength === 'brief'
+          ? 'Aquí tienes un resumen breve de tu consulta.'
+          : this.responseLength === 'normal'
+          ? 'Te comparto una respuesta detallada y directa acorde a tu consulta.'
+          : this.responseLength === 'complete'
+          ? 'A continuación, una respuesta completa con consideraciones adicionales.'
+          : 'Respuesta muy completa, con pasos, ejemplos y observaciones finales.',
+      timestamp: new Date(),
+      sources: [
+        { label: 'Fuente 1', url: 'https://example.com/fuente-1' },
+        { label: 'Fuente 2', url: 'https://example.com/fuente-2' },
+      ],
+    };
+
+    if (this.maybeIsCode(userMsg.text)) {
+      demo.format = 'code';
+      demo.text = `// Ejemplo de respuesta de código
+function greet(name) {
+  return \`Hola, \${name}!\`;
+}
+
+console.log(greet('AvatarGamer'));`;
+    }
+
+    return demo;
+  }
+
+  // -------- Timeline (chips + agrupación) --------
+  private rebuildTimeline(): void {
+    const msgs = [...this.messages].sort(
+      (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+    );
+
+    const out: TimelineItem[] = [];
+    let currentDateKey = '';
+    let currentGroup: TimelineItem | null = null;
+
+    const sameDay = (d1: Date, d2: Date) =>
+      d1.getFullYear() === d2.getFullYear() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getDate() === d2.getDate();
+
+    for (let i = 0; i < msgs.length; i++) {
+      const m = msgs[i];
+      const dt = new Date(m.timestamp);
+      const dateKey = dt.toISOString().slice(0, 10);
+
+      if (dateKey !== currentDateKey) {
+        currentDateKey = dateKey;
+        const hoy = new Date();
+        let label = dt.toLocaleDateString();
+        if (sameDay(dt, hoy)) {
+          label = 'Hoy';
+        } else {
+          const ayer = new Date(hoy);
+          ayer.setDate(hoy.getDate() - 1);
+          if (sameDay(dt, ayer)) label = 'Ayer';
+        }
+        out.push({ type: 'date', label, dateKey });
+        currentGroup = null;
       }
-    });
-  }
 
-  changeResponseLength(event: any): void {
-    this.responseLength = event.detail.value;
-  }
+      if (!currentGroup || currentGroup.type !== 'group' || currentGroup.isUser !== m.isUser) {
+        if (currentGroup && currentGroup.type === 'group' && currentGroup.messages.length) {
+          currentGroup.messages[currentGroup.messages.length - 1].groupEnd = true;
+        }
+        currentGroup = { type: 'group', isUser: m.isUser, messages: [] };
+        out.push(currentGroup);
+      }
 
-  private initSpeechRecognition(): void {
-    if (typeof window === 'undefined') {
-      this.speechSupported = false;
-      return;
+      const msgExt: ChatMessage & { groupStart?: boolean; groupEnd?: boolean } = { ...m };
+      if (currentGroup.messages.length === 0) msgExt.groupStart = true;
+      currentGroup.messages.push(msgExt);
     }
 
-    const SpeechRecognition =
-      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      this.speechSupported = false;
-      return;
+    if (currentGroup && currentGroup.type === 'group' && currentGroup.messages.length) {
+      currentGroup.messages[currentGroup.messages.length - 1].groupEnd = true;
     }
 
-    this.recognition = new SpeechRecognition();
-    this.recognition.lang = 'es-ES';
-    this.recognition.interimResults = true;
-    this.recognition.continuous = false;
+    this.timeline = out;
+  }
 
-    this.recognition.onstart = () => {
-      this.isRecording = true;
-      this.recognitionError = '';
-      this.pendingTranscript = '';
-      this.messageSnapshot = this.getMessageControlValue();
+  // -------- Utilidades UI --------
+  copyCode(text: string): void {
+    if (navigator.clipboard) navigator.clipboard.writeText(text).catch(() => {});
+  }
+
+  openSource(url: string): void {
+    if (!url) return;
+    window.open(url, '_blank', 'noopener,noreferrer');
+  }
+
+  private async scrollToBottom(): Promise<void> {
+    try {
+      await this.content?.scrollToBottom(200);
+    } catch {}
+  }
+
+  // -------- Voz a texto --------
+  private detectSpeechSupport(): void {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    this.speechSupported = !!SR;
+    if (this.speechSupported) {
+      this.initRecognition(SR);
+    }
+  }
+
+  private initRecognition(SR: any): void {
+    this.recognition = new SR();
+    this.recognition.lang = this.language === 'es' ? 'es-ES' : 'en-US';
+    this.recognition.interimResults = false;
+    this.recognition.maxAlternatives = 1;
+
+    this.recognition.onresult = (event: any) => {
+      const transcript = event.results?.[0]?.[0]?.transcript || '';
+      const current = (this.chatForm.value.message || '').toString();
+      const joined = current ? `${current} ${transcript}` : transcript;
+      this.chatForm.patchValue({ message: joined.trim() });
+    };
+
+    this.recognition.onerror = (event: any) => {
+      this.recognitionError = event?.error ? `Error de voz: ${event.error}` : 'Error de captura de voz';
+      this.isRecording = false;
     };
 
     this.recognition.onend = () => {
       this.isRecording = false;
-      this.pendingTranscript = '';
-      this.messageSnapshot = this.getMessageControlValue();
     };
+  }
 
-    this.recognition.onerror = (event: any) => {
+  toggleRecording(): void {
+    if (!this.speechSupported) return;
+
+    if (this.isRecording) {
+      this.stopRecognition();
+    } else {
+      this.startRecognition();
+    }
+  }
+
+  private startRecognition(): void {
+    try {
+      this.recognitionError = null;
+      if (this.recognition) {
+        this.recognition.lang = this.language === 'es' ? 'es-ES' : 'en-US';
+        this.recognition.start();
+        this.isRecording = true;
+      }
+    } catch (e) {
+      this.recognitionError = 'No se pudo iniciar el micrófono.';
       this.isRecording = false;
-      this.pendingTranscript = '';
-      this.recognitionError = this.translateRecognitionError(event?.error);
-    };
-
-    this.recognition.onresult = (event: any) => {
-      this.handleRecognitionResult(event);
-    };
-
-    this.speechSupported = true;
+    }
   }
 
-  private startRecording(): void {
+  private stopRecognition(): void {
     try {
-      this.recognition?.start();
-    } catch (error) {
-      console.warn('No se pudo iniciar el reconocimiento de voz:', error);
-    }
-  }
-
-  private stopRecording(): void {
-    try {
-      this.recognition?.stop();
-    } catch (error) {
-      console.warn('No se pudo detener el reconocimiento de voz:', error);
-    }
-  }
-
-  private handleRecognitionResult(event: any): void {
-    let finalTranscript = '';
-    let interimTranscript = '';
-
-    for (let i = event.resultIndex; i < event.results.length; i++) {
-      const transcriptChunk = event.results[i][0]?.transcript ?? '';
-      if (event.results[i].isFinal) {
-        finalTranscript += transcriptChunk;
-      } else {
-        interimTranscript += transcriptChunk;
-      }
-    }
-
-    if (finalTranscript.trim()) {
-      const combined = [this.messageSnapshot, finalTranscript.trim()]
-        .filter(Boolean)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      this.setMessageControlValue(combined);
-      this.messageSnapshot = combined;
-      this.pendingTranscript = '';
-    } else if (interimTranscript.trim()) {
-      this.pendingTranscript = interimTranscript;
-      const combined = [this.messageSnapshot, interimTranscript.trim()]
-        .filter(Boolean)
-        .join(' ')
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      this.setMessageControlValue(combined);
-    }
-  }
-
-  private translateRecognitionError(code: string | undefined): string {
-    switch (code) {
-      case 'not-allowed':
-        return 'El navegador bloqueo el acceso al microfono. Verifica los permisos.';
-      case 'audio-capture':
-        return 'No se detecto un microfono disponible.';
-      case 'no-speech':
-        return 'No se detecto voz. Intenta nuevamente.';
-      case 'network':
-        return 'Hubo un problema de red durante la transcripcion.';
-      default:
-        return 'Ocurrio un error al transcribir el audio.';
-    }
-  }
-
-  private getMessageControlValue(): string {
-    return (this.chatForm.get('message')?.value ?? '').toString();
-  }
-
-  private setMessageControlValue(value: string): void {
-    this.chatForm.get('message')?.setValue(value);
-  }
-
-  private async ensureRemoteConsentState(): Promise<void> {
-    try {
-      const hasRemoteConsent = await this.consentService.hasConsent(
-        this.microphoneConsentType,
-        this.microphoneConsentVersion
-      );
-
-      if (hasRemoteConsent) {
-        localStorage.setItem('microphoneConsent', 'true');
-      }
-    } catch (error) {
-      console.warn('No se pudo verificar el consentimiento remoto:', error);
-    }
-  }
-
-  private async registerMicrophoneConsent(): Promise<boolean> {
-    try {
-      await this.consentService.recordConsent(
-        this.microphoneConsentType,
-        this.microphoneConsentVersion,
-        {
-          source: 'ai_chat_page',
-          recordedAt: new Date().toISOString()
-        }
-      );
-
-      return true;
-    } catch (error) {
-      console.error('Error registrando consentimiento:', error);
-      await this.presentConsentErrorAlert();
-      return false;
-    }
-  }
-
-  private async presentConsentErrorAlert(): Promise<void> {
-    const alert = await this.alertCtrl.create({
-      header: 'No se pudo guardar el consentimiento',
-      message: 'Hubo un problema al guardar el consentimiento del microfono. Intenta nuevamente mas tarde.',
-      buttons: ['OK']
-    });
-
-    await alert.present();
+      if (this.recognition) this.recognition.stop();
+    } catch {}
+    this.isRecording = false;
   }
 }

@@ -1,13 +1,11 @@
-/*
- * Avatar Gamer - Global CSS
- * ----------------------------------------------------------------------------
- * Global styling and CSS imports for the Avatar Gamer application.
- * Features modern design with improved accessibility and user experience.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
- */
+@use "./theme/typography" as *;
+@use "./theme/accessibility" as *;
+@use "./theme/components" as *;
+@use "./theme/animations" as *;
+@use "./theme/text-contrast" as *;
+@use "./theme/improved-contrast" as *;
+@use "./theme/responsive" as *;
 
-/* Font Awesome */
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 
 /* Core CSS required for Ionic components to work properly */
@@ -33,41 +31,47 @@
  */
 @import "@ionic/angular/css/palettes/dark.system.css"; /* System preference dark mode */
 
-/* Import our custom theme files */
-@import "./theme/typography.scss";
-@import "./theme/components.scss";
-@import "./theme/animations.scss";
-@import "./theme/accessibility.scss";
-@import "./theme/text-contrast.scss";
-@import "./theme/improved-contrast.scss";
-
 /* Global Base Styles */
 * {
   box-sizing: border-box;
 }
 
 html, body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  color: var(--ion-color-dark);
+  font-family: var(--ag-font-primary);
+  color: var(--ag-text);
   scroll-behavior: smooth;
   font-size: 16px;
-  line-height: 1.6;
+  line-height: var(--ag-line-height);
   letter-spacing: 0.02em;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Typography Adjustments */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'Orbitron', 'Inter', sans-serif;
+  font-family: var(--ag-font-display);
   margin-top: 0;
   margin-bottom: var(--ag-space-md);
-  line-height: 1.3;
-  color: var(--ion-color-dark);
-  font-weight: 600;
+  line-height: var(--ag-line-height-tight);
+  color: var(--ag-text);
+  font-weight: 700;
   letter-spacing: -0.02em;
 }
 
-h1 { font-size: var(--ag-font-size-xxl); }
-h2 { font-size: var(--ag-font-size-xl); }
+h1 { 
+  font-size: var(--ag-font-size-xxl); 
+  font-weight: 800;
+  background: var(--ag-gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+h2 { 
+  font-size: var(--ag-font-size-xl); 
+  color: var(--ag-primary);
+}
+
 h3 { font-size: var(--ag-font-size-lg); }
 h4 { font-size: var(--ag-font-size-md); }
 h5 { font-size: var(--ag-font-size-sm); }
@@ -75,44 +79,383 @@ h6 { font-size: var(--ag-font-size-xs); }
 
 p {
   margin-top: 0;
-  margin-bottom: var(--ag-space-sm);
-  line-height: 1.6;
+  margin-bottom: var(--ag-space-md);
+  line-height: var(--ag-line-height);
+  color: var(--ag-text);
 }
 
 a {
-  color: var(--ion-color-primary);
+  color: var(--ag-primary);
   text-decoration: none;
-  transition: color var(--ag-transition-fast);
+  transition: color var(--ag-transition-fast) var(--ag-ease);
   
   &:hover {
-    color: var(--ion-color-primary-shade);
+    color: var(--ag-primary-dark);
+    text-decoration: underline;
+  }
+  
+  &:focus-visible {
+    outline: 2px solid var(--ag-primary);
+    outline-offset: 2px;
+    border-radius: var(--ag-radius-xs);
   }
 }
 
 /* Content Container */
 .ag-container {
-  padding: var(--ag-space-md);
-  max-width: 1200px;
+  padding: var(--ag-space-lg);
+  max-width: var(--ag-maxw);
   margin: 0 auto;
+  width: 100%;
 }
 
-/* Global Styles for Select Components in Dark Mode */
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.fw-normal { font-weight: 400; }
+.fw-medium { font-weight: 500; }
+.fw-semibold { font-weight: 600; }
+.fw-bold { font-weight: 700; }
+
+.text-primary { color: var(--ag-primary); }
+.text-secondary { color: var(--ag-secondary); }
+.text-accent { color: var(--ag-accent); }
+.text-success { color: var(--ag-success); }
+.text-warning { color: var(--ag-warning); }
+.text-danger { color: var(--ag-danger); }
+.text-muted { color: var(--ag-text-muted); }
+
+/* Spacing Utilities */
+.m-0 { margin: 0; }
+.mt-sm { margin-top: var(--ag-space-sm); }
+.mt-md { margin-top: var(--ag-space-md); }
+.mt-lg { margin-top: var(--ag-space-lg); }
+.mb-sm { margin-bottom: var(--ag-space-sm); }
+.mb-md { margin-bottom: var(--ag-space-md); }
+.mb-lg { margin-bottom: var(--ag-space-lg); }
+
+.p-0 { padding: 0; }
+.pt-sm { padding-top: var(--ag-space-sm); }
+.pt-md { padding-top: var(--ag-space-md); }
+.pt-lg { padding-top: var(--ag-space-lg); }
+.pb-sm { padding-bottom: var(--ag-space-sm); }
+.pb-md { padding-bottom: var(--ag-space-md); }
+.pb-lg { padding-bottom: var(--ag-space-lg); }
+
+/* Global Styles for Ionic Components */
+ion-card {
+  background: var(--ag-surface);
+  border-radius: var(--ag-radius-lg);
+  box-shadow: var(--ag-shadow-md);
+  border: 1px solid var(--ag-border-light);
+  transition: all var(--ag-transition-normal) var(--ag-ease);
+  
+  &:hover {
+    box-shadow: var(--ag-shadow-lg);
+    transform: translateY(-2px);
+  }
+}
+
+ion-card-header {
+  padding: var(--ag-space-lg);
+  border-bottom: 1px solid var(--ag-border-light);
+}
+
+ion-card-title {
+  font-family: var(--ag-font-display);
+  font-size: var(--ag-font-size-lg);
+  font-weight: 700;
+  color: var(--ag-text);
+}
+
+ion-card-content {
+  padding: var(--ag-space-lg);
+  color: var(--ag-text);
+}
+
+/* Buttons */
+ion-button {
+  --border-radius: var(--ag-radius-md);
+  --padding-start: var(--ag-space-lg);
+  --padding-end: var(--ag-space-lg);
+  --padding-top: var(--ag-space-md);
+  --padding-bottom: var(--ag-space-md);
+  font-weight: 600;
+  font-size: var(--ag-font-size-base);
+  letter-spacing: 0.02em;
+  min-height: 48px;
+  transition: all var(--ag-transition-fast) var(--ag-ease);
+  text-transform: none;
+  
+  &:not([fill="clear"]):not([fill="outline"]) {
+    --background: var(--ag-gradient-primary);
+    --box-shadow: var(--ag-shadow-primary);
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    --box-shadow: var(--ag-shadow-lg);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+  
+  &[disabled] {
+    opacity: 0.5;
+    transform: none !important;
+  }
+}
+
+/* Inputs and Form Elements */
+ion-input, ion-textarea {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --padding-start: var(--ag-space-md);
+  --padding-end: var(--ag-space-md);
+  --padding-top: var(--ag-space-sm);
+  --padding-bottom: var(--ag-space-sm);
+  --border-radius: var(--ag-radius-md);
+  border: 2px solid var(--ag-border);
+  border-radius: var(--ag-radius-md);
+  font-size: var(--ag-font-size-base);
+  min-height: 48px;
+  transition: all var(--ag-transition-fast) var(--ag-ease);
+  
+  &:focus-within {
+    border-color: var(--ag-primary);
+    box-shadow: var(--ag-focus);
+  }
+}
+
 ion-select {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --padding-start: var(--ag-space-md);
+  --padding-end: var(--ag-space-md);
+  --padding-top: var(--ag-space-sm);
+  --padding-bottom: var(--ag-space-sm);
+  --border-radius: var(--ag-radius-md);
+  border: 2px solid var(--ag-border);
+  border-radius: var(--ag-radius-md);
+  min-height: 48px;
+  
   &::part(text) { 
-    color: white;
+    color: var(--ag-text);
   }
   
   &::part(placeholder) {
-    color: white;
+    color: var(--ag-text-muted);
   }
 }
 
-/* Fix for popover select options in dark mode */
+/* Items */
+ion-item {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --border-color: var(--ag-border-light);
+  --padding-start: var(--ag-space-md);
+  --padding-end: var(--ag-space-md);
+  --inner-padding-end: var(--ag-space-md);
+  --min-height: 52px;
+  border-radius: var(--ag-radius-md);
+  margin-bottom: var(--ag-space-sm);
+  
+  &:hover {
+    --background: var(--ag-bg-secondary);
+  }
+}
+
+ion-label {
+  color: var(--ag-text);
+  font-size: var(--ag-font-size-base);
+}
+
+/* Toolbar */
+ion-toolbar {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --border-color: var(--ag-border);
+  --padding-start: var(--ag-space-md);
+  --padding-end: var(--ag-space-md);
+  box-shadow: var(--ag-shadow-sm);
+}
+
+ion-title {
+  font-family: var(--ag-font-display);
+  font-weight: 700;
+  font-size: var(--ag-font-size-lg);
+  color: var(--ag-text);
+  letter-spacing: -0.01em;
+}
+
+/* Header */
+ion-header {
+  box-shadow: var(--ag-shadow-sm);
+}
+
+/* Content */
+ion-content {
+  --background: var(--ag-bg);
+  --color: var(--ag-text);
+}
+
+/* Footer */
+ion-footer {
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Badges */
+ion-badge {
+  --background: var(--ag-primary);
+  --color: var(--ag-on-primary);
+  --padding-start: var(--ag-space-sm);
+  --padding-end: var(--ag-space-sm);
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  border-radius: var(--ag-radius-full);
+  font-weight: 600;
+  font-size: var(--ag-font-size-xs);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Chips */
+ion-chip {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  border: 1px solid var(--ag-border);
+  border-radius: var(--ag-radius-full);
+  font-weight: 500;
+  transition: all var(--ag-transition-fast) var(--ag-ease);
+  
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--ag-shadow-sm);
+  }
+}
+
+/* Spinners */
+ion-spinner {
+  --color: var(--ag-primary);
+  width: 48px;
+  height: 48px;
+}
+
+/* Loading */
+ion-loading {
+  --background: var(--ag-surface);
+  --spinner-color: var(--ag-primary);
+}
+
+/* Toast */
+ion-toast {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --border-radius: var(--ag-radius-md);
+  --box-shadow: var(--ag-shadow-xl);
+  font-weight: 500;
+}
+
+/* Alert */
+ion-alert {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  
+  .alert-title {
+    font-family: var(--ag-font-display);
+    font-weight: 700;
+    color: var(--ag-text);
+  }
+  
+  .alert-message {
+    color: var(--ag-text-secondary);
+  }
+}
+
+/* Modal */
+ion-modal {
+  --background: var(--ag-surface);
+  --border-radius: var(--ag-radius-xl);
+  --box-shadow: var(--ag-shadow-xl);
+}
+
+/* Popover */
+ion-popover {
+  --background: var(--ag-surface);
+  --color: var(--ag-text);
+  --border-radius: var(--ag-radius-md);
+  --box-shadow: var(--ag-shadow-xl);
+}
+
+/* Fix for popover select options */
 .select-interface-option {
-  --color: white !important;
-  color: white !important;
+  --color: var(--ag-text) !important;
+  color: var(--ag-text) !important;
+  --background: var(--ag-surface);
+  --background-hover: var(--ag-bg-secondary);
 }
 
 .popover-content {
-  --background: #333 !important;
+  --background: var(--ag-surface) !important;
+}
+
+/* Scrollbar Styling (Webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ag-bg);
+  border-radius: var(--ag-radius-sm);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ag-border);
+  border-radius: var(--ag-radius-sm);
+  transition: background var(--ag-transition-fast);
+  
+  &:hover {
+    background: var(--ag-text-muted);
+  }
+}
+
+/* Selection */
+::selection {
+  background: var(--ag-primary);
+  color: var(--ag-on-primary);
+}
+
+::-moz-selection {
+  background: var(--ag-primary);
+  color: var(--ag-on-primary);
+}
+
+/* Focus Visible (Accesibilidad) */
+:focus-visible {
+  outline: 2px solid var(--ag-primary);
+  outline-offset: 2px;
+  border-radius: var(--ag-radius-xs);
+}
+
+/* Skip to Content (Accesibilidad) */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--ag-primary);
+  color: var(--ag-on-primary);
+  padding: var(--ag-space-md) var(--ag-space-lg);
+  text-decoration: none;
+  font-weight: 600;
+  border-radius: var(--ag-radius-md);
+  z-index: 100;
+  
+  &:focus {
+    top: var(--ag-space-md);
+    left: var(--ag-space-md);
+  }
 }

@@ -1,92 +1,172 @@
-<ion-header>
+<ion-header class="user-details-header">
   <ion-toolbar>
-    <ion-title>Detalles del Usuario</ion-title>
+    <ion-title>
+      <div class="header-content">
+        <ion-icon name="person-circle-outline" class="header-icon"></ion-icon>
+        <span>Detalles del Usuario</span>
+      </div>
+    </ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="dismissModal()">
-        <ion-icon name="close-outline"></ion-icon>
+      <ion-button (click)="dismissModal()" class="close-btn">
+        <ion-icon name="close-circle-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-list>
-    <ion-item *ngIf="!isEditing">
-      <ion-label>
-        <h2>{{ user.username }}</h2>
-        <ion-badge [color]="getRoleColor(user.role)">{{ user.role }}</ion-badge>
-      </ion-label>
-    </ion-item>
+<ion-content class="user-details-content">
+  <div class="content-wrapper">
+    <!-- User Profile Card -->
+    <div class="profile-card">
+      <div class="profile-header">
+        <div class="avatar-wrapper">
+          <ion-icon name="person-circle" class="avatar-icon"></ion-icon>
+          <div class="status-indicator" [class.online]="user.status === 'online'"></div>
+        </div>
+        <div class="profile-info" *ngIf="!isEditing">
+          <h2 class="username">{{ user.username }}</h2>
+          <ion-badge [color]="getRoleColor(user.role)" class="role-badge">
+            <ion-icon [name]="getRoleIcon(user.role)"></ion-icon>
+            {{ getRoleLabel(user.role) }}
+          </ion-badge>
+        </div>
+      </div>
 
-    <ion-item *ngIf="isEditing">
-      <ion-label position="stacked">Nombre de usuario</ion-label>
-      <ion-input [(ngModel)]="editedUser.username" type="text"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Email</ion-label>
-      <ion-input [readonly]="!isEditing" [(ngModel)]="editedUser.email" type="email"></ion-input>
-    </ion-item>
-
-    <ion-item>
-      <ion-label position="stacked">Rol</ion-label>
-      <ion-select [disabled]="!isEditing" [(ngModel)]="editedUser.role" interface="popover">
-        <ion-select-option value="admin">Administrador</ion-select-option>
-        <ion-select-option value="operator">Operador</ion-select-option>
-        <ion-select-option value="user">Usuario</ion-select-option>
-      </ion-select>
-    </ion-item>
-
-    <ion-item>
-      <ion-label>
-        <h2>Estado</h2>
-        <ion-badge [color]="user.status === 'online' ? 'success' : 'medium'">
-          {{ user.status }}
-        </ion-badge>
-      </ion-label>
-    </ion-item>
-
-    <!-- Información adicional -->
-    <ion-item-group>
-      <ion-item-divider>
-        <ion-label>Información adicional</ion-label>
-      </ion-item-divider>
-
-      <ion-item *ngIf="user.created_at">
-        <ion-label>
-          <p>Fecha de registro</p>
-          <h3>{{ user.created_at | date:'medium' }}</h3>
+      <!-- Edit Mode for Username -->
+      <div class="edit-field" *ngIf="isEditing">
+        <ion-label position="stacked" class="field-label">
+          <ion-icon name="person-outline"></ion-icon>
+          Nombre de usuario
         </ion-label>
-      </ion-item>
+        <ion-input 
+          [(ngModel)]="editedUser.username" 
+          type="text" 
+          class="modern-input"
+          placeholder="Ingrese nombre de usuario">
+        </ion-input>
+      </div>
+    </div>
 
-      <ion-item *ngIf="user.last_login">
-        <ion-label>
-          <p>Última conexión</p>
-          <h3>{{ user.last_login | date:'medium' }}</h3>
-        </ion-label>
-      </ion-item>
-    </ion-item-group>
-  </ion-list>
+    <!-- Information Cards -->
+    <div class="info-cards">
+      <!-- Email Card -->
+      <div class="info-card">
+        <div class="card-header">
+          <ion-icon name="mail-outline" class="card-icon"></ion-icon>
+          <span class="card-title">Correo Electrónico</span>
+        </div>
+        <ion-input 
+          [readonly]="!isEditing" 
+          [(ngModel)]="editedUser.email" 
+          type="email"
+          class="modern-input"
+          [class.readonly]="!isEditing"
+          placeholder="correo@ejemplo.com">
+        </ion-input>
+      </div>
+
+      <!-- Role Card -->
+      <div class="info-card">
+        <div class="card-header">
+          <ion-icon name="shield-outline" class="card-icon"></ion-icon>
+          <span class="card-title">Rol del Sistema</span>
+        </div>
+        <ion-select 
+          [disabled]="!isEditing" 
+          [(ngModel)]="editedUser.role" 
+          interface="popover"
+          class="modern-select"
+          [class.disabled]="!isEditing"
+          placeholder="Seleccione un rol">
+          <ion-select-option value="admin">
+            <ion-icon name="star"></ion-icon> Administrador
+          </ion-select-option>
+          <ion-select-option value="operator">
+            <ion-icon name="people"></ion-icon> Operador
+          </ion-select-option>
+          <ion-select-option value="user">
+            <ion-icon name="person"></ion-icon> Usuario
+          </ion-select-option>
+        </ion-select>
+      </div>
+
+      <!-- Status Card -->
+      <div class="info-card status-card">
+        <div class="card-header">
+          <ion-icon name="pulse-outline" class="card-icon"></ion-icon>
+          <span class="card-title">Estado Actual</span>
+        </div>
+        <div class="status-content">
+          <div class="status-indicator-large" [class.online]="user.status === 'online'"></div>
+          <span class="status-text">{{ user.status === 'online' ? 'En línea' : 'Desconectado' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Information Section -->
+    <div class="additional-info">
+      <div class="section-header">
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <h3>Información Adicional</h3>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-item" *ngIf="user.created_at">
+          <div class="info-icon-wrapper">
+            <ion-icon name="calendar-outline"></ion-icon>
+          </div>
+          <div class="info-content">
+            <p class="info-label">Fecha de Registro</p>
+            <h4 class="info-value">{{ user.created_at | date:'dd/MM/yyyy' }}</h4>
+            <p class="info-time">{{ user.created_at | date:'HH:mm' }}</p>
+          </div>
+        </div>
+
+        <div class="info-item" *ngIf="user.last_login">
+          <div class="info-icon-wrapper">
+            <ion-icon name="time-outline"></ion-icon>
+          </div>
+          <div class="info-content">
+            <p class="info-label">Última Conexión</p>
+            <h4 class="info-value">{{ user.last_login | date:'dd/MM/yyyy' }}</h4>
+            <p class="info-time">{{ user.last_login | date:'HH:mm' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>
 
-<ion-footer class="ion-padding">
-  <ion-grid>
-    <ion-row>
-      <ion-col>
-        <ion-button expand="block" (click)="toggleEdit()" [color]="isEditing ? 'medium' : 'primary'">
-          {{ isEditing ? 'Cancelar' : 'Editar' }}
-        </ion-button>
-      </ion-col>
-      <ion-col *ngIf="isEditing">
-        <ion-button expand="block" color="success" (click)="saveChanges()">
-          Guardar
-        </ion-button>
-      </ion-col>
-      <ion-col *ngIf="!isEditing">
-        <ion-button expand="block" color="danger" (click)="confirmDelete()">
-          Eliminar
-        </ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+<ion-footer class="user-details-footer">
+  <div class="footer-actions">
+    <ion-button 
+      expand="block" 
+      (click)="toggleEdit()" 
+      [color]="isEditing ? 'medium' : 'primary'"
+      class="action-btn"
+      [class.cancel-btn]="isEditing">
+      <ion-icon [name]="isEditing ? 'close-outline' : 'create-outline'" slot="start"></ion-icon>
+      {{ isEditing ? 'Cancelar' : 'Editar Información' }}
+    </ion-button>
+
+    <ion-button 
+      *ngIf="isEditing"
+      expand="block" 
+      color="success" 
+      (click)="saveChanges()"
+      class="action-btn save-btn">
+      <ion-icon name="checkmark-circle-outline" slot="start"></ion-icon>
+      Guardar Cambios
+    </ion-button>
+
+    <ion-button 
+      *ngIf="!isEditing"
+      expand="block" 
+      color="danger" 
+      (click)="confirmDelete()"
+      class="action-btn delete-btn">
+      <ion-icon name="trash-outline" slot="start"></ion-icon>
+      Eliminar Usuario
+    </ion-button>
+  </div>
 </ion-footer>

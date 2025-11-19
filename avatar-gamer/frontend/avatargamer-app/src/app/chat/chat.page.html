@@ -1,119 +1,118 @@
-<ion-header>
-  <ion-toolbar color="primary">
+<ion-header class="custom-header">
+  <ion-toolbar>
     
     <ion-buttons slot="start">
       <ion-back-button 
         [defaultHref]="userRole === 'operator' ? '/operator' : '/user'" 
-        [hidden]="isCallActive">
+        [hidden]="isCallActive"
+        class="back-btn">
       </ion-back-button>
     </ion-buttons>
     
-    <ion-title *ngIf="!contactName">
+    <!-- Header simple cuando no hay contacto -->
+    <ion-title *ngIf="!contactName && !isCallActive">
       {{ userRole === 'operator' ? 'Chat con Usuario' : 'Chat con Operador' }}
     </ion-title>
     
-    <ion-item *ngIf="contactName" lines="none" color="primary" class="contact-header">
-      <ion-avatar slot="start">
-        <ion-icon [name]="userRole === 'operator' ? 'person' : 'headset'" color="light"></ion-icon>
-      </ion-avatar>
-      <ion-label>
-        <h2>{{ contactName }}</h2>
-        <p>
-          <ion-badge [color]="contactStatus === 'online' ? 'success' : 'medium'">
-            {{ contactStatus === 'online' ? 'En línea' : 'Desconectado' }}
-          </ion-badge>
-        </p>
-      </ion-label>
-    </ion-item>
-    <ion-buttons slot="end">
+    <!-- Header con info de contacto -->
+    <div *ngIf="contactName && !isCallActive" class="contact-header">
+      <div class="contact-avatar" [class.online]="contactStatus === 'online'">
+        <ion-icon [name]="userRole === 'operator' ? 'person' : 'headset'"></ion-icon>
+        <span class="status-dot" *ngIf="contactStatus === 'online'"></span>
+      </div>
+      <div class="contact-info">
+        <h2 class="contact-name">{{ contactName }}</h2>
+        <span class="contact-status" [class.online]="contactStatus === 'online'">
+          <ion-icon [name]="contactStatus === 'online' ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+          {{ contactStatus === 'online' ? 'En línea' : 'Desconectado' }}
+        </span>
+      </div>
+    </div>
 
-      <ion-button *ngIf="!isCallActive" (click)="startVideoCall()" [disabled]="!selectedContact">
+    <!-- Header durante llamada -->
+    <ion-title *ngIf="isCallActive">
+      Videollamada con {{ contactName }}
+    </ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button *ngIf="!isCallActive" (click)="startVideoCall()" [disabled]="!selectedContact" class="video-btn">
         <ion-icon slot="icon-only" name="videocam-outline"></ion-icon>
       </ion-button>
 
-      <ion-button *ngIf="isCallActive" (click)="onCallEnded()">
+      <ion-button *ngIf="isCallActive" (click)="onCallEnded()" class="end-call-btn">
         <ion-icon slot="icon-only" name="arrow-undo-outline"></ion-icon>
       </ion-button>
-
     </ion-buttons>
     
   </ion-toolbar>
 </ion-header>
 
-<ion-content [class.video-active]="isCallActive">
+<ion-content [class.video-active]="isCallActive" class="chat-content">
   
-  <div [hidden]="isCallActive" class="ion-padding">
-    <div class="welcome-message" *ngIf="userRole">
-      <ion-card>
-        <ion-card-header>
-          <ion-card-title>
-            <span *ngIf="!contactName">{{ userRole === 'operator' ? 'Modo Operador' : 'Soporte Técnico' }}</span>
-            <span *ngIf="contactName">Conversación con {{ contactName }}</span>
-          </ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          <p *ngIf="userRole === 'operator' && contactName">
-            Estás chateando con el usuario <strong>{{ contactName }}</strong>. Tus mensajes aparecerán en azul. 
-            Puedes iniciar una videollamada con el botón en la esquina superior derecha.
-          </p>
-          <p *ngIf="userRole !== 'operator' && contactName">
-            Estás chateando con el operador <strong>{{ contactName }}</strong>. 
-            Si necesitas ayuda visual, puedes solicitar una videollamada con el botón de la esquina superior derecha.
-          </p>
-          
-          <p *ngIf="userRole === 'operator' && !contactName">
-            Estás en modo operador. Tus mensajes aparecerán en azul. 
-            Puedes iniciar una videollamada con el botón en la esquina superior derecha.
-          </p>
-          <p *ngIf="userRole !== 'operator' && !contactName">
-            Bienvenido al chat de soporte. Un operador te atenderá en breve. 
-            Si necesitas ayuda visual, puedes solicitar una videollamada.
-          </p>
-        </ion-card-content>
-      </ion-card>
+  <!-- Contenido del chat (oculto durante llamada) -->
+  <div [hidden]="isCallActive" class="chat-wrapper">
+    
+    <!-- Banner de bienvenida -->
+    <div class="welcome-banner" *ngIf="userRole && contactName">
+      <div class="banner-icon">
+        <ion-icon [name]="userRole === 'operator' ? 'chatbubbles' : 'help-circle'"></ion-icon>
+      </div>
+      <div class="banner-content">
+        <h3>{{ userRole === 'operator' ? 'Conversación con ' + contactName : 'Soporte con ' + contactName }}</h3>
+        <p *ngIf="userRole === 'operator'">
+          Ayuda al usuario con sus consultas. Puedes iniciar videollamada en cualquier momento.
+        </p>
+        <p *ngIf="userRole !== 'operator'">
+          Tu asistente está aquí para ayudarte. Solicita videollamada si necesitas ayuda visual.
+        </p>
+      </div>
     </div>
 
-    <ng-container *ngIf="connectionState$ | async as connectionState">
-      <ion-item *ngIf="connectionState !== 'connected'" lines="none" color="warning" class="connection-banner">
-        <ion-icon slot="start" name="cloud-offline"></ion-icon>
-        <ion-label>
-          <h3>
+    <!-- Banner de estado de conexión -->
+    <div *ngIf="(connectionState$ | async) as connectionState" class="connection-status">
+      <div *ngIf="connectionState !== 'connected'" class="status-banner" [attr.data-state]="connectionState">
+        <ion-icon [name]="connectionState === 'connecting' ? 'cloud-upload-outline' : 'cloud-offline-outline'"></ion-icon>
+        <div class="status-text">
+          <h4>
             {{ connectionState === 'connecting'
-              ? 'Conectando con el servidor de chat...'
-              : 'Sin conexión con el servidor de chat' }}
-          </h3>
+              ? 'Conectando con el servidor...'
+              : 'Sin conexión con el servidor' }}
+          </h4>
           <p *ngIf="connectionState === 'disconnected'">
-            Revisa tu conexión a internet o intenta nuevamente en unos instantes.
+            Revisa tu conexión a internet o intenta nuevamente.
           </p>
-        </ion-label>
-      </ion-item>
-    </ng-container>
+        </div>
+      </div>
+    </div>
 
-    <div class="chat-container" *ngIf="userProfile as profile">
-      <ng-container *ngIf="messages$ | async as messages">
-        <div *ngFor="let message of messages" class="message"
-            [ngClass]="{
-              'message-outgoing': message.senderId === profile?.id,
-              'message-incoming': message.senderId !== profile?.id
-            }">
-          <div class="message-bubble">
-            <div class="message-text">{{ message.text }}</div>
-            <div class="message-meta">
-              <span class="message-author">
-                {{ message.senderId === profile?.id ? 'Tú' : (message.senderRole === 'operator' ? 'Operador' : 'Usuario') }}
-              </span>
-              <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
-            </div>
+    <!-- Mensajes del chat -->
+    <div class="messages-container" *ngIf="userProfile as profile">
+      <div *ngFor="let message of (messages$ | async)" 
+           class="message-wrapper"
+           [class.outgoing]="message.senderId === profile?.id"
+           [class.incoming]="message.senderId !== profile?.id">
+        <div class="message-bubble">
+          <div class="message-text">{{ message.text }}</div>
+          <div class="message-footer">
+            <span class="message-sender">
+              {{ message.senderId === profile?.id ? 'Tú' : (message.senderRole === 'operator' ? 'Operador' : 'Usuario') }}
+            </span>
+            <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
           </div>
         </div>
-      </ng-container>
+      </div>
     </div>
 
+    <!-- Estado vacío -->
     <div class="empty-state" *ngIf="!selectedContact">
-      <ion-icon name="chatbubbles-outline"></ion-icon>
-      <p>Selecciona un contacto para iniciar una conversación.</p>
+      <ion-icon name="chatbubbles-outline" class="empty-icon"></ion-icon>
+      <h3>Sin conversación activa</h3>
+      <p>Selecciona un contacto para iniciar una conversación</p>
     </div>
-  </div> <div class="video-call-container" *ngIf="isCallActive">
+  </div>
+
+  <!-- Contenedor de videollamada -->
+  <div class="video-container" *ngIf="isCallActive">
     <app-jitsi-call
       [roomName]="currentRoomName"
       [displayName]="currentDisplayName"
@@ -123,14 +122,30 @@
 
 </ion-content>
 
-<ion-footer [hidden]="isCallActive">
+<ion-footer [hidden]="isCallActive" class="chat-footer">
   <ion-toolbar>
-    <div class="input-container">
-      <ion-button (click)="showQuickResponses()" fill="clear" [disabled]="!selectedContact">
-       <ion-icon slot="icon-only" name="list-outline"></ion-icon>
+    <div class="message-composer">
+      
+      <!-- Botón de respuestas rápidas -->
+      <ion-button 
+        fill="clear" 
+        class="quick-response-btn"
+        (click)="showQuickResponses()" 
+        [disabled]="!selectedContact">
+        <ion-icon slot="icon-only" name="list-outline"></ion-icon>
       </ion-button>
 
-      <ion-input placeholder="Escribe un mensaje..." [(ngModel)]="newMessage" [disabled]="!selectedContact"></ion-input>
+      <!-- Input de mensaje -->
+      <div class="input-wrapper">
+        <ion-input 
+          placeholder="Escribe un mensaje..." 
+          [(ngModel)]="newMessage" 
+          [disabled]="!selectedContact"
+          class="message-input">
+        </ion-input>
+      </div>
+
+      <!-- Controles de voz -->
       <div class="voice-controls">
         <ion-button
           fill="clear"
@@ -139,27 +154,39 @@
           (click)="toggleRecording()"
           [color]="isRecording ? 'danger' : 'medium'"
           [class.recording]="isRecording"
-          aria-label="Activar microfono">
+          class="voice-btn"
+          aria-label="Activar micrófono">
           <ion-icon [name]="isRecording ? 'mic' : 'mic-outline'"></ion-icon>
         </ion-button>
+        
+        <!-- Indicador de grabación -->
         <div class="recording-indicator" *ngIf="isRecording">
-          <div class="pulse-ring"></div>
-          <div class="recording-status">
-            <span class="dot"></span>
-            <span class="label">Grabando audio...</span>
-            <span class="time">{{ recordingDuration }}</span>
+          <div class="pulse-animation"></div>
+          <div class="recording-info">
+            <span class="recording-dot"></span>
+            <span class="recording-label">Grabando</span>
+            <span class="recording-duration">{{ recordingDuration }}</span>
           </div>
         </div>
       </div>
-      <ion-button (click)="sendMessage()" [disabled]="!newMessage || !selectedContact">
-        <ion-icon name="send"></ion-icon>
+
+      <!-- Botón de enviar -->
+      <ion-button 
+        class="send-btn"
+        (click)="sendMessage()" 
+        [disabled]="!newMessage || !selectedContact">
+        <ion-icon name="send" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
-    <ion-note color="danger" class="voice-error" *ngIf="recognitionError">
-      {{ recognitionError }}
-    </ion-note>
-    <ion-note color="medium" class="voice-error" *ngIf="speechSupported === false">
-      Tu navegador no admite la captura de voz.
-    </ion-note>
+    
+    <!-- Mensajes de error -->
+    <div class="voice-alerts">
+      <ion-note color="danger" *ngIf="recognitionError" class="alert-message">
+        {{ recognitionError }}
+      </ion-note>
+      <ion-note color="medium" *ngIf="speechSupported === false" class="alert-message">
+        Tu navegador no admite la captura de voz.
+      </ion-note>
+    </div>
   </ion-toolbar>
 </ion-footer>

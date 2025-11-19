@@ -1,5 +1,6 @@
+// src/environments/environment.prod.ts
 export const environment = {
-  production: false,
-  apiUrl: 'http://localhost:8000/api/v1',  // Reemplazado con tu dirección IP local
-  socketUrl: 'http://localhost:8000'  // Ajusta esta URL al host/puerto del servidor Socket.IO
+  production: true,
+  apiUrl: 'https://capstone-steel-delta.vercel.app/api/v1',
+  socketUrl: 'https://capstone-steel-delta.vercel.app'
 };

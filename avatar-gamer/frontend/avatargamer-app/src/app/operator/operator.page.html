@@ -1,141 +1,180 @@
-<ion-header [translucent]="true" class="ion-no-border">
-  <ion-toolbar color="primary">
-    <ion-title class="ion-text-center">Panel de Operador</ion-title>
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title>Panel de Operador</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="logout()" class="logout-btn">
         <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding operator-page">
-  
-  <ion-card class="welcome-card">
-    <ion-card-header>
-      <ion-icon name="headset-outline" color="primary"></ion-icon>
-      <ion-card-title>Bienvenido, {{ userProfile?.username }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Aquí puedes gestionar tus usuarios y solicitudes.
-    </ion-card-content>
-  </ion-card>
+<ion-content [fullscreen]="true" class="operator-content">
+  <div class="content-wrapper">
+    <div class="intro-grid">
+      <!-- Card de bienvenida mejorado -->
+      <div class="welcome-section">
+        <div class="welcome-header">
+          <div class="icon-container">
+            <ion-icon name="headset-outline" class="welcome-icon"></ion-icon>
+          </div>
+          <div class="welcome-text">
+            <h1 class="welcome-title">Hola, {{ userProfile?.username }}</h1>
+            <p class="welcome-subtitle">Gestiona tus usuarios y solicitudes</p>
+          </div>
+        </div>
+      </div>
 
-  <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="ios" class="ion-margin-bottom">
-    <ion-segment-button value="linked">
-      <ion-icon name="people-outline" layout="start"></ion-icon>
-      <ion-label>Mis Usuarios</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="pending">
-      <ion-icon name="paper-plane-outline" layout="start"></ion-icon>
-      <ion-label>Solicitudes</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+      <!-- Tabs mejorados -->
+      <div class="tabs-wrapper">
+        <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="md" class="custom-segment">
+          <ion-segment-button value="linked" class="segment-btn">
+            <div class="segment-content">
+              <ion-icon name="people-outline"></ion-icon>
+              <span>Mis Usuarios</span>
+            </div>
+          </ion-segment-button>
+          <ion-segment-button value="pending" class="segment-btn">
+            <div class="segment-content">
+              <ion-icon name="paper-plane-outline"></ion-icon>
+              <span>Solicitudes</span>
+            </div>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+    </div>
 
-  <div *ngIf="activeTab === 'linked'">
-    <ion-list class="item-list" [inset]="true">
-      <ion-list-header>
-        <ion-label>Usuarios Vinculados</ion-label>
-        <ion-button fill="clear" size="small" (click)="loadLinkedUsers()" [disabled]="isLoading">
+    <!-- Tab: Usuarios Vinculados -->
+    <div *ngIf="activeTab === 'linked'" class="tab-content">
+      
+      <!-- Header con acciones -->
+      <div class="section-header">
+        <h2 class="section-title">Usuarios Vinculados</h2>
+        <ion-button fill="clear" size="small" (click)="loadLinkedUsers()" [disabled]="isLoading" class="refresh-btn">
           <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
         </ion-button>
-      </ion-list-header>
+      </div>
 
-      <ion-item>
-        <ion-select [(ngModel)]="selectedUserType" (ionChange)="filterUsers()" interface="popover" placeholder="Filtrar por tipo">
-          <ion-select-option value="all">Todos</ion-select-option>
-          <ion-select-option value="admin">Administradores</ion-select-option>
-          <ion-select-option value="operator">Operadores</ion-select-option>
-          <ion-select-option value="user">Usuarios</ion-select-option>
-        </ion-select>
-      </ion-item>
-      
-      <ion-searchbar [(ngModel)]="searchTerm" 
-                     (ionInput)="filterUsers()"
-                     placeholder="Buscar usuarios"
-                     animated="true">
-      </ion-searchbar>
-      
-      <ion-grid class="user-grid">
-        <ion-row>
-          <ion-col size="12" size-sm="6" size-md="4" *ngFor="let user of filteredUsers">
-            <ion-card class="user-card" (click)="showUserDetails(user)">
-              <ion-card-header>
-                <ion-avatar>
-                  <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'" 
-                           [color]="user.status === 'online' ? 'success' : 'medium'">
-                  </ion-icon>
-                </ion-avatar>
-                <ion-card-title>{{ user.username }}</ion-card-title>
-                <ion-badge [color]="getRoleColor(user.role)">{{ user.role }}</ion-badge>
-              </ion-card-header>
-              
-              <ion-card-content>
-                <p class="user-email">{{ user.email }}</p>
-                <p class="user-status">
-                  <ion-badge [color]="user.status === 'online' ? 'success' : 'medium'">
-                    {{ user.status }}
-                  </ion-badge>
-                </p>
-                
-                <ion-buttons class="action-buttons">
-                  <ion-button fill="clear" (click)="startChatWithUser(user); $event.stopPropagation()">
-                    <ion-icon name="chatbubbles-outline" color="primary"></ion-icon>
-                  </ion-button>
-                  <ion-button fill="clear" (click)="unlinkUser(user); $event.stopPropagation()">
-                    <ion-icon name="trash" color="danger"></ion-icon>
-                  </ion-button>
-                </ion-buttons>
-              </ion-card-content>
-            </ion-card>
-          </ion-col>
-        </ion-row>
-      </ion-grid>
-      
-      <ion-item *ngIf="!isLoading && filteredUsers.length === 0" lines="none" class="empty-item">
-        <ion-icon name="people-outline" slot="start"></ion-icon>
-        <ion-label>No se encontraron usuarios.</ion-label>
-      </ion-item>
+      <!-- Filtros -->
+      <div class="filters-container">
+        <div class="filter-select">
+          <ion-select [(ngModel)]="selectedUserType" (ionChange)="filterUsers()" 
+                      interface="popover" placeholder="Filtrar por tipo"
+                      class="custom-select">
+            <ion-select-option value="all">Todos</ion-select-option>
+            <ion-select-option value="admin">Administradores</ion-select-option>
+            <ion-select-option value="operator">Operadores</ion-select-option>
+            <ion-select-option value="user">Usuarios</ion-select-option>
+          </ion-select>
+        </div>
+        
+        <ion-searchbar [(ngModel)]="searchTerm" 
+                       (ionInput)="filterUsers()"
+                       placeholder="Buscar usuarios..."
+                       animated="true"
+                       class="custom-searchbar">
+        </ion-searchbar>
+      </div>
 
-
-      
-    </ion-list>
-  </div>
-  
-  <div *ngIf="activeTab === 'pending'">
-    <ion-list class="item-list" [inset]="true">
-      <ion-list-header>
-        <ion-label>Solicitudes Enviadas</ion-label>
-        <ion-button fill="clear" size="small" (click)="loadLinkRequests()" [disabled]="isLoading">
-          <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
-        </ion-button>
-      </ion-list-header>
-
-      <ion-item *ngIf="isLoading" lines="none" class="loading-item">
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="loading-state">
         <ion-spinner name="crescent"></ion-spinner>
-        <ion-label>Cargando solicitudes...</ion-label>
-      </ion-item>
+        <p>Cargando usuarios...</p>
+      </div>
       
-      <ion-item *ngIf="!isLoading && linkRequests.length === 0" lines="none" class="empty-item">
-        <ion-icon name="paper-plane-outline" slot="start"></ion-icon>
-        <ion-label>No tienes solicitudes enviadas.</ion-label>
-      </ion-item>
+      <!-- Grid de usuarios -->
+      <div *ngIf="!isLoading" class="users-grid">
+        <div class="user-card" *ngFor="let user of filteredUsers" (click)="showUserDetails(user)">
+          <div class="user-main">
+            <div class="user-avatar" [class.online]="user.status === 'online'">
+              <ion-icon [name]="user.status === 'online' ? 'person' : 'person-outline'"></ion-icon>
+              <span class="status-indicator" *ngIf="user.status === 'online'"></span>
+            </div>
+            <div class="user-details">
+              <div class="user-title-row">
+                <div class="user-name-group">
+                  <h3 class="user-name">{{ user.username }}</h3>
+                  <span class="user-badge" [attr.data-role]="user.role">{{ user.role }}</span>
+                </div>
+                <div class="user-actions" (click)="$event.stopPropagation()">
+                  <ion-button fill="clear" size="small" (click)="startChatWithUser(user)" class="icon-btn chat-btn" aria-label="Iniciar chat">
+                    <ion-icon name="chatbubbles-outline"></ion-icon>
+                  </ion-button>
+                  <ion-button fill="clear" size="small" (click)="unlinkUser(user)" class="icon-btn delete-btn" aria-label="Eliminar usuario">
+                    <ion-icon name="trash-outline"></ion-icon>
+                  </ion-button>
+                </div>
+              </div>
+              <p class="user-email">{{ user.email }}</p>
+              <div class="user-status-tag" [class.online]="user.status === 'online'">
+                <ion-icon [name]="user.status === 'online' ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+                <span>{{ user.status === 'online' ? 'En línea' : 'Desconectado' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && filteredUsers.length === 0" class="empty-state">
+        <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+        <h3>No hay usuarios</h3>
+        <p>No se encontraron usuarios vinculados</p>
+      </div>
+    </div>
+    
+    <!-- Tab: Solicitudes Pendientes -->
+    <div *ngIf="activeTab === 'pending'" class="tab-content">
+      
+      <!-- Header con acciones -->
+      <div class="section-header">
+        <h2 class="section-title">Solicitudes Enviadas</h2>
+        <ion-button fill="clear" size="small" (click)="loadLinkRequests()" [disabled]="isLoading" class="refresh-btn">
+          <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+        </ion-button>
+      </div>
 
-      <ion-item *ngFor="let request of linkRequests" class="request-item">
-        <ion-icon name="person-add-outline" slot="start" color="dark"></ion-icon>
-        <ion-label>
-          <h2>{{ request.user_username }}</h2>
-          <p>Enviada: {{ request.created_at | date:'short' }}</p>
-        </ion-label>
-        <ion-badge slot="end" [color]="getStatusColor(request.status)">
-          {{ getStatusText(request.status) }}
-        </ion-badge>
-      </ion-item>
-    </ion-list>
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando solicitudes...</p>
+      </div>
+      
+      <!-- Lista de solicitudes -->
+      <div *ngIf="!isLoading && linkRequests.length > 0" class="requests-list">
+        <div class="request-item" *ngFor="let request of linkRequests">
+          <div class="request-icon">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+          <div class="request-info">
+            <h3 class="request-username">{{ request.user_username }}</h3>
+            <p class="request-date">Enviada: {{ request.created_at | date:'short' }}</p>
+          </div>
+          <div class="request-status" [attr.data-status]="request.status">
+            {{ getStatusText(request.status) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && linkRequests.length === 0" class="empty-state">
+        <ion-icon name="paper-plane-outline" class="empty-icon"></ion-icon>
+        <h3>Sin solicitudes</h3>
+        <p>No tienes solicitudes enviadas</p>
+      </div>
+    </div>
+    
+    <!-- Botón de IA -->
+    <ion-button expand="block" class="ai-button" (click)="navigateToAIChat()">
+      <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+      <span>Hablar con Asistente Virtual</span>
+    </ion-button>
+
   </div>
   
+  <!-- FAB para agregar contacto -->
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-    <ion-fab-button (click)="openAddContactModal()">
+    <ion-fab-button (click)="openAddContactModal()" class="custom-fab">
       <ion-icon name="person-add-outline"></ion-icon>
     </ion-fab-button>
   </ion-fab>
@@ -144,18 +183,5 @@
     <ion-icon name="sparkles-outline" slot="start"></ion-icon>
     Hablar con Asistente Virtual
   </ion-button>
-<!-- ====== Sección Videollamada y Control de Robot ====== -->
-<div *ngIf="activeCallUser" class="video-call-section">
-  
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Videollamada con {{ activeCallUser.username }}</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <div id="jitsi-container"></div>
-    </ion-card-content>
-  </ion-card>
 
-  </div>
-
-  </ion-content>
+</ion-content>

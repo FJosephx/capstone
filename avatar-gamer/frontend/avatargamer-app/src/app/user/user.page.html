@@ -1,114 +1,133 @@
-<ion-header [translucent]="true" class="ion-no-border">
-  <ion-toolbar color="primary">
-    <ion-title class="ion-text-center">Mi Asistencia</ion-title>
+<ion-header [translucent]="true" class="custom-header">
+  <ion-toolbar>
+    <ion-title>Mi Asistencia</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="logout()">
+      <ion-button (click)="logout()" class="logout-btn">
         <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" class="ion-padding user-page">
-  
-  <ion-card class="welcome-card">
-    <ion-card-header>
-      <ion-icon name="happy-outline" color="primary"></ion-icon>
-      <ion-card-title>¡Hola, {{ userProfile?.username }}!</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      Toca a tu asistente para iniciar un chat o videollamada.
-    </ion-card-content>
-  </ion-card>
+<ion-content [fullscreen]="true" class="user-content">
+  <div class="content-wrapper">
+    
+    <!-- Card de bienvenida mejorado -->
+    <div class="welcome-section">
+      <div class="welcome-header">
+        <div class="icon-container">
+          <ion-icon name="happy-outline" class="welcome-icon"></ion-icon>
+        </div>
+        <div class="welcome-text">
+          <h1 class="welcome-title">¡Hola, {{ userProfile?.username }}!</h1>
+          <p class="welcome-subtitle">Toca tu asistente para iniciar chat o videollamada</p>
+        </div>
+      </div>
+    </div>
 
-  <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="ios" class="ion-margin-bottom">
-    <ion-segment-button value="linked">
-      <ion-icon name="people-outline" layout="start"></ion-icon>
-      <ion-label>Mis Asistentes</ion-label>
-    </ion-segment-button>
-    <ion-segment-button value="requests">
-      <ion-icon name="mail-outline" layout="start"></ion-icon>
-      <ion-label>Solicitudes</ion-label>
-    </ion-segment-button>
-  </ion-segment>
+    <!-- Tabs mejorados -->
+    <ion-segment [(ngModel)]="activeTab" (ionChange)="segmentChanged($event)" mode="md" class="custom-segment">
+      <ion-segment-button value="linked" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="people-outline"></ion-icon>
+          <span>Mis Asistentes</span>
+        </div>
+      </ion-segment-button>
+      <ion-segment-button value="requests" class="segment-btn">
+        <div class="segment-content">
+          <ion-icon name="mail-outline"></ion-icon>
+          <span>Solicitudes</span>
+        </div>
+      </ion-segment-button>
+    </ion-segment>
 
-  <div class="assistant-list" *ngIf="activeTab === 'linked'">
-    <ion-item *ngIf="isLoading" lines="none" class="loading-item">
-      <ion-spinner name="crescent"></ion-spinner>
-      <ion-label>Cargando asistentes...</ion-label>
-    </ion-item>
-
-    <ion-item *ngIf="!isLoading && linkedOperators.length === 0" lines="none" class="empty-item">
-      <ion-icon name="alert-circle-outline" slot="start"></ion-icon>
-      <ion-label>Aún no tienes asistentes vinculados.</ion-label>
-    </ion-item>
-
-    <ion-card 
-      *ngFor="let operator of linkedOperators" 
-      class="assistant-card" 
-      (click)="startChatWithOperator(operator)" 
-      button>
+    <!-- Tab: Asistentes Vinculados -->
+    <div *ngIf="activeTab === 'linked'" class="tab-content">
       
-      <ion-item lines="none">
-        <ion-avatar slot="start">
-          <ion-icon name="person-circle" [color]="operator.status === 'online' ? 'success' : 'medium'"></ion-icon>
-        </ion-avatar>
-        
-        <ion-label>
-          <h2>{{ operator.username || 'Asistente' }}</h2>
-          <ion-badge [color]="operator.status === 'online' ? 'success' : 'medium'">
-            {{ operator.status === 'online' ? 'En línea' : 'Desconectado' }}
-          </ion-badge>
-        </ion-label>
-
-        <ion-button slot="end" fill="outline" shape="round">
-          <ion-icon slot="start" name="chatbubbles-outline"></ion-icon>
-          Hablar
-        </ion-button>
-      </ion-item>
-    </ion-card>
-  </div>
-
-  <div class="requests-list" *ngIf="activeTab === 'requests'">
-    <ion-list>
-      <ion-item *ngIf="isLoading" lines="none" class="loading-item">
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="loading-state">
         <ion-spinner name="crescent"></ion-spinner>
-        <ion-label>Cargando solicitudes...</ion-label>
-      </ion-item>
+        <p>Cargando asistentes...</p>
+      </div>
+      
+      <!-- Lista de asistentes -->
+      <div *ngIf="!isLoading && linkedOperators.length > 0" class="assistants-grid">
+        <div class="assistant-card" *ngFor="let operator of linkedOperators" (click)="startChatWithOperator(operator)">
+          <div class="assistant-card-header">
+            <div class="assistant-avatar" [class.online]="operator.status === 'online'">
+              <ion-icon name="person-circle"></ion-icon>
+              <span class="status-indicator" *ngIf="operator.status === 'online'"></span>
+            </div>
+            <div class="assistant-info">
+              <h3 class="assistant-name">{{ operator.username || 'Asistente' }}</h3>
+              <div class="assistant-status" [class.online]="operator.status === 'online'">
+                <ion-icon [name]="operator.status === 'online' ? 'radio-button-on' : 'radio-button-off'"></ion-icon>
+                <span>{{ operator.status === 'online' ? 'En línea' : 'Desconectado' }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="assistant-card-footer">
+            <ion-button expand="block" class="chat-btn">
+              <ion-icon name="chatbubbles-outline" slot="start"></ion-icon>
+              <span>Hablar Ahora</span>
+            </ion-button>
+          </div>
+        </div>
+      </div>
 
-      <ion-item *ngIf="!isLoading && pendingRequests.length === 0" lines="none" class="empty-item">
-        <ion-icon name="mail-outline" slot="start"></ion-icon>
-        <ion-label>No tienes solicitudes pendientes.</ion-label>
-      </ion-item>
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && linkedOperators.length === 0" class="empty-state">
+        <ion-icon name="people-outline" class="empty-icon"></ion-icon>
+        <h3>Sin asistentes</h3>
+        <p>Aún no tienes asistentes vinculados. Revisa tus solicitudes pendientes.</p>
+      </div>
+    </div>
+    
+    <!-- Tab: Solicitudes Pendientes -->
+    <div *ngIf="activeTab === 'requests'" class="tab-content">
+      
+      <!-- Loading state -->
+      <div *ngIf="isLoading" class="loading-state">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Cargando solicitudes...</p>
+      </div>
+      
+      <!-- Lista de solicitudes -->
+      <div *ngIf="!isLoading && pendingRequests.length > 0" class="requests-list">
+        <div class="request-item" *ngFor="let request of pendingRequests">
+          <div class="request-icon">
+            <ion-icon name="person-add-outline"></ion-icon>
+          </div>
+          <div class="request-info">
+            <h3 class="request-username">{{ request.operator_username }}</h3>
+            <p class="request-message" *ngIf="request.message">{{ request.message }}</p>
+            <p class="request-date">Recibida: {{ request.created_at | date:'short' }}</p>
+          </div>
+          <div class="request-actions">
+            <ion-button fill="clear" size="small" (click)="respondToRequest(request, 'approved')" class="approve-btn">
+              <ion-icon name="checkmark-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+            <ion-button fill="clear" size="small" (click)="respondToRequest(request, 'rejected')" class="reject-btn">
+              <ion-icon name="close-circle" slot="icon-only"></ion-icon>
+            </ion-button>
+          </div>
+        </div>
+      </div>
 
-      <ion-item-sliding *ngFor="let request of pendingRequests">
-        <ion-item class="request-item">
-          <ion-icon name="person-add-outline" slot="start" color="primary"></ion-icon>
-          <ion-label>
-            <h2>{{ request.operator_username }}</h2>
-            <p *ngIf="request.message">{{ request.message }}</p>
-            <p>Recibida: {{ request.created_at | date:'short' }}</p>
-          </ion-label>
-          <ion-badge slot="end" [color]="getStatusColor(request.status)">
-            {{ getStatusText(request.status) }}
-          </ion-badge>
-        </ion-item>
+      <!-- Empty state -->
+      <div *ngIf="!isLoading && pendingRequests.length === 0" class="empty-state">
+        <ion-icon name="mail-outline" class="empty-icon"></ion-icon>
+        <h3>Sin solicitudes</h3>
+        <p>No tienes solicitudes pendientes en este momento</p>
+      </div>
+    </div>
+    
+    <!-- Botón de IA -->
+    <ion-button expand="block" class="ai-button" (click)="navigateToAIChat()">
+      <ion-icon name="sparkles-outline" slot="start"></ion-icon>
+      <span>Hablar con Asistente Virtual</span>
+    </ion-button>
 
-        <ion-item-options side="end">
-          <ion-item-option color="success" (click)="respondToRequest(request, 'approved')">
-            <ion-icon slot="icon-only" name="checkmark"></ion-icon>
-          </ion-item-option>
-          <ion-item-option color="danger" (click)="respondToRequest(request, 'rejected')">
-            <ion-icon slot="icon-only" name="close"></ion-icon>
-          </ion-item-option>
-        </ion-item-options>
-      </ion-item-sliding>
-    </ion-list>
   </div>
-
-  <ion-button class="ai-button" expand="block" fill="outline" (click)="navigateToAIChat()">
-    <ion-icon name="sparkles-outline" slot="start"></ion-icon>
-    Hablar con Asistente Virtual
-  </ion-button>
-  
-  </ion-content>
+</ion-content>

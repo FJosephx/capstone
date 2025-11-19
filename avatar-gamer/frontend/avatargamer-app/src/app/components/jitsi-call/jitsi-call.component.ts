@@ -1,10 +1,11 @@
 import { Component, Input, OnInit, ElementRef, OnDestroy, Output, EventEmitter} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 
 @Component({
   selector: 'app-jitsi-call',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IonicModule],
   templateUrl: './jitsi-call.component.html',
   styleUrls: ['./jitsi-call.component.scss']
 })
@@ -16,6 +17,8 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Output() callEnded = new EventEmitter<void>();
 
   private api: any;
+  isLoading: boolean = false;  // Desactivado por defecto para no bloquear
+  showInfoBanner: boolean = false;  // Desactivado por defecto
   public logs: Array<any> = [];
   public showConsole = true;
   private windowListener = (e: any) => {
@@ -48,7 +51,7 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
         disableDeepLinking: true,
-        disableModeratorIndicator: true, // 🚀 evita el mensaje de “waiting for moderator”
+        disableModeratorIndicator: true, // 🚀 evita el mensaje de "waiting for moderator"
         enableLobby: false,               // 🚀 desactiva la sala de espera
         requireDisplayName: false,
         toolbarButtons: this.showControls
@@ -77,8 +80,11 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     this.api.addEventListener('readyToClose', () => {
       console.log('Meeting ended');
       this.callEnded.emit(); // 🟢 Notifica al padre que la llamada terminó
-      // No es necesario el dispose() aquí, lo hará el ngOnDestroy
     });
+  }
+
+  dismissBanner() {
+    this.showInfoBanner = false;
   }
 
   ngOnDestroy() {

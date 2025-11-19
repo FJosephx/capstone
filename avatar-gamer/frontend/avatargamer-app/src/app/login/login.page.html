@@ -1,47 +1,82 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Iniciar Sesión</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true">
+  <div class="login-wrapper">
+    <div class="login-container">
+      <!-- Logo y encabezado -->
+      <div class="header-section">
+        <div class="logo-wrapper">
+          <ion-icon name="people-outline" class="logo-icon"></ion-icon>
+          <ion-icon name="heart" class="heart-icon"></ion-icon>
+        </div>
+        <h1 class="welcome-title">Bienvenido a AvatarGamer</h1>
+        <p class="welcome-subtitle">Conectando personas con apoyo</p>
+      </div>
 
-<ion-content [fullscreen]="true" class="ion-padding">
-  <div class="login-container">
-    <div class="logo-container">
-      <ion-img src="assets/icon/icon.png" alt="Avatar Gamer Logo" class="logo"></ion-img>
-      <h1>Avatar Gamer</h1>
-      <p>Plataforma de acompañamiento digital</p>
-    </div>
-    
-    <form [formGroup]="loginForm" (ngSubmit)="login()">
-      <ion-card>
-        <ion-card-content>
-          <ion-list>
-            <ion-item>
-              <ion-label position="floating">Usuario</ion-label>
-              <ion-input type="text" formControlName="username" autocomplete="username"></ion-input>
-            </ion-item>
-            <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error-message">
-              <span *ngIf="loginForm.get('username')?.errors?.['required']">Usuario es obligatorio</span>
+      <!-- Formulario de login -->
+      <ion-card class="login-card">
+        <ion-card-header class="card-header">
+          <ion-card-title class="card-title">Iniciar Sesión</ion-card-title>
+          <ion-card-subtitle class="card-subtitle">Ingresa tus datos para continuar</ion-card-subtitle>
+        </ion-card-header>
+
+        <ion-card-content class="card-content">
+          <form [formGroup]="loginForm" (ngSubmit)="login()">
+            <!-- Campo Usuario -->
+            <div class="form-field">
+              <label class="field-label" for="username">Usuario</label>
+              <ion-input
+                id="username"
+                type="text"
+                placeholder="Ingresa tu usuario"
+                formControlName="username"
+                autocomplete="username"
+                class="custom-input"
+                [class.input-error]="loginForm.get('username')?.invalid && loginForm.get('username')?.touched"
+              ></ion-input>
+              <div *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.touched" class="error-message">
+                <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+                <span>Usuario es obligatorio</span>
+              </div>
             </div>
-            
-            <ion-item>
-              <ion-label position="floating">Contraseña</ion-label>
-              <ion-input type="password" formControlName="password" autocomplete="current-password"></ion-input>
-            </ion-item>
-            <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
-              <span *ngIf="loginForm.get('password')?.errors?.['required']">Contraseña es obligatoria</span>
-              <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 4 caracteres</span>
+
+            <!-- Campo Contraseña -->
+            <div class="form-field">
+              <label class="field-label" for="password">Contraseña</label>
+              <ion-input
+                id="password"
+                type="password"
+                placeholder="Ingresa tu contraseña"
+                formControlName="password"
+                autocomplete="current-password"
+                class="custom-input"
+                [class.input-error]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+              ></ion-input>
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="error-message">
+                <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+                <span *ngIf="loginForm.get('password')?.errors?.['required']">Contraseña es obligatoria</span>
+                <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 4 caracteres</span>
+              </div>
             </div>
-          </ion-list>
-          
-          <div class="ion-padding-top">
-            <ion-button expand="block" color="primary" type="submit" [disabled]="isSubmitting">
-              <ion-icon name="log-in-outline" slot="start"></ion-icon>
-              Iniciar Sesión
+
+            <!-- Botón de envío -->
+            <ion-button
+              expand="block"
+              type="submit"
+              class="submit-button"
+              [disabled]="isSubmitting"
+            >
+              {{ isSubmitting ? 'Ingresando...' : 'Iniciar Sesión' }}
             </ion-button>
-          </div>
+          </form>
         </ion-card-content>
       </ion-card>
-    </form>
+
+      <!-- Texto de ayuda -->
+      <div class="help-text">
+        <p>
+          ¿Necesitas ayuda? 
+          <a href="#" (click)="showContactInfo($event)" class="help-link">Contáctanos</a>
+        </p>
+      </div>
+    </div>
   </div>
 </ion-content>

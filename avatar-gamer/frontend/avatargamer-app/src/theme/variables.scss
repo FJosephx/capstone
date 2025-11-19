@@ -1,254 +1,341 @@
-/* Avatar Gamer Theme Variables
- * --------------------------------------------------
- * For more information on theme variables, see:
- * https://ionicframework.com/docs/theming/variables
- */
+/* ===========================
+   Avatar Gamer – Theme Tokens (Modernizados)
+   =========================== */
 
-// Custom Colors
+/* --- Paleta de Colores Moderna (Soft & Accesible) --- */
 :root {
-  --ag-primary: #6200EA;         // Primary brand color - más vibrante
-  --ag-primary-shade: #4A00B8;   // Darker variant
-  --ag-primary-tint: #7C4DFF;    // Lighter variant
-  
-  --ag-secondary: #00B0FF;       // Secondary brand color
-  --ag-secondary-shade: #0091EA; // Darker variant
-  --ag-secondary-tint: #40C4FF;   // Lighter variant
-  
-  --ag-accent: #FF6D00;          // Accent color - naranja más visible
-  --ag-accent-shade: #F57C00;    // Darker variant
-  --ag-accent-tint: #FFB74D;     // Lighter variant
-  
-  --ag-success: #00C853;         // Success messages - verde más vibrante
-  --ag-warning: #FFD740;         // Warnings - amarillo más brillante
-  --ag-danger: #D50000;          // Error/danger - rojo más profundo
-  
-  --ag-light: #FFFFFF;           // Light surfaces - blanco puro
-  --ag-medium: #757575;          // Medium text/icons - gris más oscuro
-  --ag-dark: #000000;            // Dark text - negro puro
+  /* Colores Primarios Suaves */
+  --ag-primary: #5DADE2;              /* Soft Blue - Principal */
+  --ag-primary-dark: #3498DB;         /* Hover/Active */
+  --ag-primary-light: #85C1E9;        /* Light variant */
+  --ag-on-primary: #ffffff;
 
-  // Background Colors
-  --ag-background-light: #FFFFFF;
-  --ag-background-dark: #121212;
+  /* Colores Secundarios */
+  --ag-secondary: #48C9B0;            /* Gentle Teal */
+  --ag-secondary-dark: #45B876;       /* Hover */
+  --ag-secondary-light: #76D7C4;      /* Light variant */
+  --ag-on-secondary: #ffffff;
+
+  /* Colores de Acento */
+  --ag-accent: #F1948A;               /* Warm Coral */
+  --ag-accent-dark: #EC7063;          /* Hover */
+  --ag-accent-light: #F5B7B1;         /* Light variant */
+  --ag-on-accent: #ffffff;
+
+  /* Colores Semánticos */
+  --ag-success: #58D68D;              /* Verde suave */
+  --ag-success-dark: #45b876;
+  --ag-success-light: #7DCEA0;
   
-  // Spacing - Using T-shirt sizing for consistency
-  --ag-space-xs: 4px;            // Extra small spacing
-  --ag-space-sm: 8px;            // Small spacing
-  --ag-space-md: 16px;           // Medium spacing
-  --ag-space-lg: 24px;           // Large spacing
-  --ag-space-xl: 32px;           // Extra large spacing
-  --ag-space-xxl: 48px;          // Double extra large spacing
+  --ag-warning: #F5B041;              /* Amarillo/naranja suave */
+  --ag-warning-dark: #F39C12;
+  --ag-warning-light: #F8C471;
   
-  // Border Radius
-  --ag-border-radius-sm: 8px;    // Small radius
-  --ag-border-radius-md: 12px;   // Medium radius
-  --ag-border-radius-lg: 16px;   // Large radius - Used for cards
-  --ag-border-radius-xl: 24px;   // Extra large radius
+  --ag-danger: #EC7063;               /* Rojo suave */
+  --ag-danger-dark: #E74C3C;
+  --ag-danger-light: #F1948A;
+
+  --ag-info: #5DADE2;                 /* Azul informativo */
+  --ag-info-dark: #3498DB;
+  --ag-info-light: #85C1E9;
+
+  /* Superficies y Fondos - MEJORADOS para mejor contraste */
+  --ag-bg: #f0f3f7;                   /* Fondo principal con tono azul suave */
+  --ag-bg-secondary: #e3e8ef;         /* Fondo secundario más visible */
+  --ag-surface: #fafbfc;              /* Superficie de cards con leve tinte */
+  --ag-surface-elevated: #ffffff;     /* Superficie elevada */
   
-  // Font Family
-  --ag-font-primary: 'Inter', sans-serif;
-  --ag-font-display: 'Orbitron', 'Inter', sans-serif;
+  /* Texto - MEJORADO para mejor legibilidad */
+  --ag-text: #1a2332;                 /* Texto principal más oscuro */
+  --ag-text-secondary: #5a6c7d;       /* Texto secundario con mejor contraste */
+  --ag-text-muted: #7a8a9b;           /* Texto apagado más visible */
+  --ag-text-on-dark: #ecf0f1;         /* Texto sobre oscuro */
+
+  /* Bordes y Divisores - MEJORADOS */
+  --ag-border: #d1d9e3;               /* Borde más visible */
+  --ag-border-light: #dfe5ed;         /* Borde claro con mejor contraste */
+  --ag-divider: rgba(0, 0, 0, 0.12);  /* Divisor más visible */
+
+  /* Gradientes Modernos - MEJORADOS */
+  --ag-gradient-primary: linear-gradient(135deg, #5DADE2, #48C9B0);
+  --ag-gradient-secondary: linear-gradient(135deg, #48C9B0, #45B876);
+  --ag-gradient-accent: linear-gradient(135deg, #F1948A, #EC7063);
+  --ag-gradient-user: linear-gradient(135deg, #5DADE2, #3498DB);
+  --ag-gradient-ai: linear-gradient(135deg, #48C9B0, #45B876);
+  --ag-gradient-card: linear-gradient(135deg, rgba(93, 173, 226, 0.08), rgba(72, 201, 176, 0.08));
+  --ag-gradient-bg: linear-gradient(180deg, #f0f3f7 0%, #e3e8ef 100%);
+
+  /* Tipografía */
+  --ag-font-primary: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --ag-font-display: 'Orbitron', 'Inter', system-ui, sans-serif;
+  --ag-font-mono: 'Fira Code', 'Courier New', monospace;
   
-  // Font Sizes
-  --ag-font-size-xs: 0.75rem;    // 12px
-  --ag-font-size-sm: 0.875rem;   // 14px
-  --ag-font-size-md: 1rem;       // 16px
-  --ag-font-size-lg: 1.125rem;   // 18px
-  --ag-font-size-xl: 1.25rem;    // 20px
-  --ag-font-size-xxl: 1.5rem;    // 24px
+  /* Tamaños de Fuente */
+  --ag-font-size-xs: 0.75rem;        /* 12px */
+  --ag-font-size-sm: 0.875rem;       /* 14px */
+  --ag-font-size-base: 1rem;         /* 16px */
+  --ag-font-size-md: 1.125rem;       /* 18px */
+  --ag-font-size-lg: 1.25rem;        /* 20px */
+  --ag-font-size-xl: 1.5rem;         /* 24px */
+  --ag-font-size-xxl: 2rem;          /* 32px */
+  --ag-font-size-xxxl: 2.5rem;       /* 40px */
   
-  // Font Weights
-  --ag-font-weight-regular: 400;
-  --ag-font-weight-medium: 500;
-  --ag-font-weight-bold: 700;
+  --ag-line-height: 1.6;
+  --ag-line-height-tight: 1.3;
+  --ag-line-height-relaxed: 1.8;
+
+  /* Espaciado */
+  --ag-space-xs: 0.25rem;            /* 4px */
+  --ag-space-sm: 0.5rem;             /* 8px */
+  --ag-space-md: 1rem;               /* 16px */
+  --ag-space-lg: 1.5rem;             /* 24px */
+  --ag-space-xl: 2rem;               /* 32px */
+  --ag-space-xxl: 3rem;              /* 48px */
+
+  /* Border Radius */
+  --ag-radius-xs: 0.25rem;           /* 4px */
+  --ag-radius-sm: 0.5rem;            /* 8px */
+  --ag-radius-md: 0.75rem;           /* 12px */
+  --ag-radius-lg: 1rem;              /* 16px */
+  --ag-radius-xl: 1.5rem;            /* 24px */
+  --ag-radius-full: 9999px;          /* Circular completo */
+
+  /* Sombras - MEJORADAS para mejor visibilidad */
+  --ag-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --ag-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.12);
+  --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+  --ag-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.2);
   
-  // Shadows
-  --ag-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
-  --ag-shadow-md: 0 4px 8px rgba(0, 0, 0, 0.12);
-  --ag-shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.14);
+  /* Sombras de Color */
+  --ag-shadow-primary: 0 4px 16px rgba(93, 173, 226, 0.35);
+  --ag-shadow-secondary: 0 4px 16px rgba(72, 201, 176, 0.35);
+  --ag-shadow-accent: 0 4px 16px rgba(241, 148, 138, 0.35);
+  --ag-shadow-success: 0 4px 16px rgba(88, 214, 141, 0.35);
+  --ag-shadow-danger: 0 4px 16px rgba(236, 112, 99, 0.35);
+
+  /* Focus y Estados */
+  --ag-focus: 0 0 0 4px rgba(93, 173, 226, 0.25);
+  --ag-focus-ring: 4px;
+
+  /* Transiciones */
+  --ag-transition-fast: 120ms;
+  --ag-transition-normal: 240ms;
+  --ag-transition-slow: 360ms;
+  --ag-ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --ag-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ag-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ag-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-Index Scale */
+  --ag-z-base: 1;
+  --ag-z-dropdown: 1000;
+  --ag-z-sticky: 1020;
+  --ag-z-fixed: 1030;
+  --ag-z-modal-backdrop: 1040;
+  --ag-z-modal: 1050;
+  --ag-z-popover: 1060;
+  --ag-z-tooltip: 1070;
+
+  /* Anchos Máximos */
+  --ag-max-width-xs: 20rem;          /* 320px */
+  --ag-max-width-sm: 24rem;          /* 384px */
+  --ag-max-width-md: 28rem;          /* 448px */
+  --ag-max-width-lg: 32rem;          /* 512px */
+  --ag-max-width-xl: 36rem;          /* 576px */
+  --ag-max-width-2xl: 42rem;         /* 672px */
+  --ag-max-width-3xl: 48rem;         /* 768px */
+  --ag-max-width-4xl: 56rem;         /* 896px */
+  --ag-max-width-5xl: 64rem;         /* 1024px */
+  --ag-max-width-6xl: 72rem;         /* 1152px */
+  --ag-max-width-7xl: 80rem;         /* 1280px */
+  --ag-max-width-full: 100%;
   
-  // Transitions
-  --ag-transition-fast: 0.15s ease;
-  --ag-transition-medium: 0.25s ease;
-  --ag-transition-slow: 0.35s ease;
-  
-  // Touch target minimum size (accessibility)
-  --ag-touch-target: 44px;
+  --ag-maxw: 1080px;                 /* Ancho máximo contenedor */
 }
 
-/* Ionic Overrides - Light Mode */
+/* --- Mapear Variables a Ionic --- */
 :root {
+  /* Primary */
   --ion-color-primary: var(--ag-primary);
-  --ion-color-primary-rgb: 94, 53, 177;
-  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-rgb: 93, 173, 226;
+  --ion-color-primary-contrast: var(--ag-on-primary);
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: var(--ag-primary-shade);
-  --ion-color-primary-tint: var(--ag-primary-tint);
+  --ion-color-primary-shade: var(--ag-primary-dark);
+  --ion-color-primary-tint: var(--ag-primary-light);
 
+  /* Secondary */
   --ion-color-secondary: var(--ag-secondary);
-  --ion-color-secondary-rgb: 0, 176, 255;
-  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-rgb: 72, 201, 176;
+  --ion-color-secondary-contrast: var(--ag-on-secondary);
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: var(--ag-secondary-shade);
-  --ion-color-secondary-tint: var(--ag-secondary-tint);
+  --ion-color-secondary-shade: var(--ag-secondary-dark);
+  --ion-color-secondary-tint: var(--ag-secondary-light);
 
+  /* Tertiary */
   --ion-color-tertiary: var(--ag-accent);
-  --ion-color-tertiary-rgb: 255, 64, 129;
-  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-rgb: 241, 148, 138;
+  --ion-color-tertiary-contrast: var(--ag-on-accent);
   --ion-color-tertiary-contrast-rgb: 255, 255, 255;
-  --ion-color-tertiary-shade: var(--ag-accent-shade);
-  --ion-color-tertiary-tint: var(--ag-accent-tint);
+  --ion-color-tertiary-shade: var(--ag-accent-dark);
+  --ion-color-tertiary-tint: var(--ag-accent-light);
 
+  /* Success */
   --ion-color-success: var(--ag-success);
-  --ion-color-success-rgb: 0, 230, 118;
-  --ion-color-success-contrast: #000000;
-  --ion-color-success-contrast-rgb: 0, 0, 0;
-  --ion-color-success-shade: #00c967;
-  --ion-color-success-tint: #1ae984;
+  --ion-color-success-rgb: 88, 214, 141;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: var(--ag-success-dark);
+  --ion-color-success-tint: var(--ag-success-light);
 
+  /* Warning */
   --ion-color-warning: var(--ag-warning);
-  --ion-color-warning-rgb: 255, 214, 0;
-  --ion-color-warning-contrast: #000000;
-  --ion-color-warning-contrast-rgb: 0, 0, 0;
-  --ion-color-warning-shade: #e0bc00;
-  --ion-color-warning-tint: #ffda1a;
+  --ion-color-warning-rgb: 245, 176, 65;
+  --ion-color-warning-contrast: #ffffff;
+  --ion-color-warning-contrast-rgb: 255, 255, 255;
+  --ion-color-warning-shade: var(--ag-warning-dark);
+  --ion-color-warning-tint: var(--ag-warning-light);
 
+  /* Danger */
   --ion-color-danger: var(--ag-danger);
-  --ion-color-danger-rgb: 255, 23, 68;
+  --ion-color-danger-rgb: 236, 112, 99;
   --ion-color-danger-contrast: #ffffff;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
-  --ion-color-danger-shade: #e0143c;
-  --ion-color-danger-tint: #ff2e57;
+  --ion-color-danger-shade: var(--ag-danger-dark);
+  --ion-color-danger-tint: var(--ag-danger-light);
 
-  --ion-color-light: var(--ag-light);
-  --ion-color-light-rgb: 250, 250, 250;
-  --ion-color-light-contrast: var(--ag-dark);
-  --ion-color-light-contrast-rgb: 33, 33, 33;
-  --ion-color-light-shade: #dcdcdc;
-  --ion-color-light-tint: #fbfbfb;
+  /* Light */
+  --ion-color-light: #ECF0F1;
+  --ion-color-light-rgb: 236, 240, 241;
+  --ion-color-light-contrast: #2C3E50;
+  --ion-color-light-contrast-rgb: 44, 62, 80;
+  --ion-color-light-shade: #d0d4d5;
+  --ion-color-light-tint: #eef2f3;
 
-  --ion-color-medium: var(--ag-medium);
-  --ion-color-medium-rgb: 158, 158, 158;
-  --ion-color-medium-contrast: #000000;
-  --ion-color-medium-contrast-rgb: 0, 0, 0;
-  --ion-color-medium-shade: #8b8b8b;
-  --ion-color-medium-tint: #a8a8a8;
+  /* Medium */
+  --ion-color-medium: #95a5a6;
+  --ion-color-medium-rgb: 149, 165, 166;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #849192;
+  --ion-color-medium-tint: #a0afb0;
 
-  --ion-color-dark: var(--ag-dark);
-  --ion-color-dark-rgb: 33, 33, 33;
+  /* Dark */
+  --ion-color-dark: #2C3E50;
+  --ion-color-dark-rgb: 44, 62, 80;
   --ion-color-dark-contrast: #ffffff;
   --ion-color-dark-contrast-rgb: 255, 255, 255;
-  --ion-color-dark-shade: #1d1d1d;
-  --ion-color-dark-tint: #383838;
+  --ion-color-dark-shade: #273746;
+  --ion-color-dark-tint: #415162;
 
-  /* Basic Theme Settings */
-  --ion-background-color: var(--ag-background-light);
-  --ion-background-color-rgb: 255, 255, 255;
-  
-  --ion-text-color: var(--ag-dark);
-  --ion-text-color-rgb: 33, 33, 33;
-  
-  --ion-font-family: var(--ag-font-primary);
-  
-  /* Card-specific styles */
-  --ion-card-border-radius: var(--ag-border-radius-lg);
-  --ion-card-box-shadow: var(--ag-shadow-md);
+  /* Backgrounds */
+  --ion-background-color: var(--ag-bg);
+  --ion-background-color-rgb: 248, 249, 250;
+  --ion-text-color: var(--ag-text);
+  --ion-text-color-rgb: 44, 62, 80;
+
+  /* Toolbar */
+  --ion-toolbar-background: var(--ag-surface);
+  --ion-toolbar-color: var(--ag-text);
+  --ion-toolbar-border-color: var(--ag-border);
+
+  /* Borders */
+  --ion-border-color: var(--ag-border);
+  --ion-item-border-color: var(--ag-border-light);
 }
 
-/* Dark Mode Theme */
-.dark-theme {
-  /* Optimización de colores primarios para mejor contraste */
-  --ion-color-primary: #B388FF; /* Violeta más brillante y saturado */
-  --ion-color-primary-rgb: 179, 136, 255;
-  --ion-color-primary-contrast: #000000;
-  --ion-color-primary-contrast-rgb: 0, 0, 0;
-  --ion-color-primary-shade: #9E77FF;
-  --ion-color-primary-tint: #C5A3FF;
-
-  /* Colores secundarios con mayor luminosidad */
-  --ion-color-secondary: #84FFFF; /* Cian brillante para mejor visibilidad */
-  --ion-color-secondary-rgb: 132, 255, 255;
-  --ion-color-secondary-contrast: #000000;
-  --ion-color-secondary-contrast-rgb: 0, 0, 0;
-  --ion-color-secondary-shade: #69F0F0;
-  --ion-color-secondary-tint: #A1FFFF;
-  
-  /* Ajustes de fondo y texto */
-  --ion-background-color: #121212; /* Fondo negro suave */
-  --ion-background-color-rgb: 18, 18, 18;
-  
-  --ion-text-color: #f0f0f0; /* Texto casi blanco para mejor lectura */
-  --ion-text-color-rgb: 240, 240, 240;
-  
-  /* Colores de elementos UI */
-  --ion-border-color: #333333; /* Bordes más visibles */
-  
-  --ion-card-background: #1e1e1e;
-  
-  --ion-item-background: #1c1c1c;
-  
-  --ion-toolbar-background: #0d0d0d;
-  --ion-toolbar-border-color: #0d0d0d;
-  
-  --ion-tab-bar-background: #0d0d0d;
-  --ion-tab-bar-color: #f0f0f0; /* Texto casi blanco */
-  --ion-tab-bar-color-selected: var(--ion-color-primary);
-  
-  /* Sombras mejoradas para mejor visibilidad en modo oscuro */
-  --ion-card-box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-  
-  /* Variables personalizadas para textos específicos */
-  --ag-text-high-contrast: #ffffff; /* Para texto de alta importancia */
-  --ag-text-medium-contrast: #e0e0e0; /* Para texto normal */
-  --ag-text-low-contrast: #b0b0b0; /* Para texto secundario */
-}
-
-/* Enable Dark Mode by Default */
+/* --- Dark Mode (Prefer Color Scheme) --- */
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Colores primarios optimizados para modo oscuro */
-    --ion-color-primary: #9575cd; /* Más brillante para mejor visibilidad */
-    --ion-color-primary-rgb: 149, 117, 205;
-    --ion-color-primary-contrast: #000000; /* Contraste mejorado */
-    --ion-color-primary-contrast-rgb: 0, 0, 0;
-    --ion-color-primary-shade: #8367b4;
-    --ion-color-primary-tint: #a083d2;
+    /* Superficies Oscuras */
+    --ag-bg: #0f1419;
+    --ag-bg-secondary: #1a1f2e;
+    --ag-surface: #1a2332;
+    --ag-surface-elevated: #242d3d;
 
-    /* Colores secundarios con mayor luminosidad */
-    --ion-color-secondary: #40c4ff; /* Color más brillante */
-    --ion-color-secondary-rgb: 64, 196, 255;
+    /* Texto en Dark Mode */
+    --ag-text: #ecf0f1;
+    --ag-text-secondary: #bdc3c7;
+    --ag-text-muted: #95a5a6;
+
+    /* Bordes en Dark Mode */
+    --ag-border: rgba(255, 255, 255, 0.12);
+    --ag-border-light: rgba(255, 255, 255, 0.08);
+    --ag-divider: rgba(255, 255, 255, 0.1);
+
+    /* Colores ajustados para Dark Mode */
+    --ag-primary-light: #85C1E9;
+    --ag-secondary-light: #76D7C4;
+    --ag-accent-light: #F5B7B1;
+
+    /* Sombras más sutiles en Dark */
+    --ag-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --ag-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --ag-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --ag-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+    --ag-shadow-xl: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+    /* Gradiente de fondo oscuro */
+    --ag-gradient-bg: linear-gradient(180deg, #1a1a2e 0%, #16213e 100%);
+
+    /* Ionic Dark Mode */
+    --ion-background-color: var(--ag-bg);
+    --ion-background-color-rgb: 15, 20, 25;
+    --ion-text-color: var(--ag-text);
+    --ion-text-color-rgb: 236, 240, 241;
     
-    /* Ajustes de fondo */
-    --ion-background-color: var(--ag-background-dark);
-    --ion-background-color-rgb: 18, 18, 18;
+    --ion-toolbar-background: var(--ag-surface);
+    --ion-toolbar-color: var(--ag-text);
     
-    /* Textos con mayor legibilidad */
-    --ion-text-color: #f0f0f0; /* Texto casi blanco para mejor lectura */
-    --ion-text-color-rgb: 240, 240, 240;
-    
-    /* Bordes más distinguibles */
-    --ion-border-color: #333333;
-    
-    /* Fondos de componentes */
-    --ion-card-background: #1e1e1e;
-    --ion-item-background: #1c1c1c;
-    --ion-toolbar-background: #0d0d0d;
-    --ion-toolbar-border-color: #0d0d0d;
-    
-    /* Navegación */
-    --ion-tab-bar-background: #0d0d0d;
-    --ion-tab-bar-color: #f0f0f0;
-    --ion-tab-bar-color-selected: var(--ion-color-primary);
-    
-    /* Variables personalizadas para textos */
-    --ag-text-high-contrast: #ffffff; /* Para texto de alta importancia */
-    --ag-text-medium-contrast: #e0e0e0; /* Para texto normal */
-    --ag-text-low-contrast: #b0b0b0; /* Para texto secundario */
-    
-    /* Modificadores para etiquetas y badges */
-    --ion-color-medium: #a0a0a0; /* Un tono medio más visible en dark mode */
-    --ion-color-medium-contrast: #000000;
+    --ion-border-color: var(--ag-border);
+    --ion-item-border-color: var(--ag-border-light);
+
+    /* Card en Dark Mode */
+    --ion-card-background: var(--ag-surface);
   }
 }
 
-/* Import fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap');
+/* --- Alto Contraste (Accesibilidad) --- */
+@media (prefers-contrast: high) {
+  :root {
+    --ag-border: #000000;
+    --ag-shadow-sm: none;
+    --ag-shadow-md: none;
+    --ag-shadow-lg: 0 0 0 2px currentColor;
+  }
+}
+
+@media (prefers-contrast: high) and (prefers-color-scheme: dark) {
+  :root {
+    --ag-border: #ffffff;
+    --ag-text: #ffffff;
+    --ag-bg: #000000;
+    --ag-surface: #1a1a1a;
+  }
+}
+
+/* --- Motion Reducido (Accesibilidad) --- */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --ag-transition-fast: 0ms;
+    --ag-transition-normal: 0ms;
+    --ag-transition-slow: 0ms;
+  }
+  
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* --- Utilidades Globales --- */
+html, body, ion-app {
+  font-size: 100%;
+  line-height: var(--ag-line-height);
+  font-family: var(--ag-font-primary);
+}
+
+* {
+  box-sizing: border-box;
+}

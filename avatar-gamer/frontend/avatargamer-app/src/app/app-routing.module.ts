@@ -36,7 +36,7 @@ const routes: Routes = [
   },
   {
     path: 'ai-chat',
-    loadComponent: () => import('./ai-chat-page/ai-chat-page.page').then(m => m.AIChatPagePage)
+    loadComponent: () => import('./ai-chat-page/ai-chat-page.page').then(m => m.AiChatPage)
   },
 ];
 @NgModule({
