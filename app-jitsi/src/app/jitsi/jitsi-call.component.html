@@ -1,1 +1,27 @@
-<div id="jaas-container" style="width: 100%; height: 100vh;"></div>
+<div class="jitsi-wrapper">
+  <!-- Contenedor donde se monta Jitsi -->
+  <div id="jaas-container" style="width: 100%; height: 100vh;"></div>
+
+  <!-- Controles del robot flotando sobre el video -->
+  <div class="controls-overlay">
+    <app-robot-controls [robotId]="robotId"></app-robot-controls>
+  </div>
+
+  <!-- Consola de comandos -->
+  <div class="console-panel" *ngIf="showConsole">
+    <div class="console-header">
+      <span>Consola de comandos</span>
+      <button ion-button size="small" (click)="logs = []">Limpiar</button>
+      <button ion-button size="small" (click)="showConsole = false">Ocultar</button>
+    </div>
+    <div class="console-body">
+      <div *ngFor="let l of logs" class="console-line">
+        <small>{{ l.timestamp }} -</small>
+        <span *ngIf="l.type === 'sent'"> SENT cmd={{ l.command }} → {{ l.url }}</span>
+        <span *ngIf="l.type === 'response'"> RESP cmd={{ l.command }} → {{ l.res | json }}</span>
+        <span *ngIf="l.type === 'error'"> ERROR cmd={{ l.command }} → {{ l.err | json }}</span>
+      </div>
+    </div>
+  </div>
+
+</div>

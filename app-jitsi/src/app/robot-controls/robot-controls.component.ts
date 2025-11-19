@@ -1,15 +1,25 @@
-import { Component } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { JitsiCallComponent } from '../jitsi/jitsi-call.component';
+import { IonicModule } from '@ionic/angular';      // 👈 IMPORTANTE
+import { RobotControlService } from '../services/robot-control.service';
 
 @Component({
   selector: 'app-robot-controls',
   standalone: true,
-  imports: [IonicModule, CommonModule, JitsiCallComponent],
+  imports: [CommonModule, IonicModule],            // 👈 AQUÍ TAMBIÉN
   templateUrl: './robot-controls.component.html',
   styleUrls: ['./robot-controls.component.scss'],
 })
 export class RobotControlsComponent {
-  roomName = 'avatar-gamer-demo';
+  @Input() robotId = 1;
+
+  constructor(private robotControl: RobotControlService) {}
+
+  startPress(cmd: number) {
+    this.robotControl.sendCommand(cmd);
+  }
+
+  endPress() {
+    this.robotControl.sendCommand(6);
+  }
 }

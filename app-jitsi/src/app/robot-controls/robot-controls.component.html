@@ -1,5 +1,53 @@
-<ion-content>
-  <div class="video">
-    <app-jitsi-call [roomName]="'avatar-gamer-demo'" [displayName]="'Operador'" [showControls]="true"></app-jitsi-call>
+<div class="robot-controls">
+  <div class="row center">
+    <ion-button
+      shape="round"
+      (mousedown)="startPress(1)"
+      (mouseup)="endPress()"
+      (touchstart)="startPress(1)"
+      (touchend)="endPress()">
+      ▲
+    </ion-button>
   </div>
-</ion-content>
+
+  <div class="row">
+    <ion-button
+      shape="round"
+      (mousedown)="startPress(2)"
+      (mouseup)="endPress()"
+      (touchstart)="startPress(2)"
+      (touchend)="endPress()">
+      ◀
+    </ion-button>
+
+    <ion-button
+      shape="round"
+      color="medium"
+      (mousedown)="startPress(6)"
+      (mouseup)="endPress()"
+      (touchstart)="startPress(6)"
+      (touchend)="endPress()">
+      ⏹
+    </ion-button>
+
+    <ion-button
+      shape="round"
+      (mousedown)="startPress(3)"
+      (mouseup)="endPress()"
+      (touchstart)="startPress(3)"
+      (touchend)="endPress()">
+      ▶
+    </ion-button>
+  </div>
+
+  <div class="row center">
+    <ion-button
+      shape="round"
+      (mousedown)="startPress(5)"
+      (mouseup)="endPress()"
+      (touchstart)="startPress(5)"
+      (touchend)="endPress()">
+      ▼
+    </ion-button>
+  </div>
+</div>

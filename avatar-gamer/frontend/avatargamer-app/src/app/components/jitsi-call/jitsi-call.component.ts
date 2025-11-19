@@ -16,11 +16,21 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Output() callEnded = new EventEmitter<void>();
 
   private api: any;
+  public logs: Array<any> = [];
+  public showConsole = true;
+  private windowListener = (e: any) => {
+    // escuchar eventos personalizados "robot-command" si existen
+    if (e && e.detail) {
+      this.addLog({ type: 'external', payload: e.detail, timestamp: new Date().toISOString() });
+    }
+  };
 
   constructor(private el: ElementRef) {}
 
   ngOnInit() {
     this.startMeeting();
+    // escuchar eventos personalizados desde la ventana (por ejemplo: comandos del robot)
+    window.addEventListener('robot-command', this.windowListener as EventListener);
   }
 
   startMeeting() {
@@ -76,5 +86,11 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
       this.api.dispose();
       this.api = null; // 🟢 Limpia la referencia
     }
+    window.removeEventListener('robot-command', this.windowListener as EventListener);
+  }
+
+  private addLog(entry: any) {
+    this.logs.push(entry);
+    if (this.logs.length > 200) this.logs.shift();
   }
 }

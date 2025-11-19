@@ -1,10 +1,22 @@
-import { Component, Input, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+// 👇 IMPORTA el componente de controles
+import { RobotControlsComponent } from '../robot-controls/robot-controls.component';
+import { RobotControlService } from '../services/robot-control.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-jitsi-call',
   standalone: true,
-  imports: [CommonModule],
+  // 👇 agrega RobotControlsComponent a imports
+  imports: [CommonModule, RobotControlsComponent],
   templateUrl: './jitsi-call.component.html',
   styleUrls: ['./jitsi-call.component.scss']
 })
@@ -13,12 +25,24 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Input() displayName!: string;
   @Input() showControls: boolean = true;
 
-  private api: any;
+  // 👇 id del robot (puedes hacerlo @Input si quieres cambiarlo desde afuera)
+  @Input() robotId: number = 1;
 
-  constructor(private el: ElementRef) {}
+  private api: any;
+  public logs: Array<any> = [];
+  private eventsSub: Subscription | null = null;
+  public showConsole = true;
+
+  constructor(private el: ElementRef, private robotSvc: RobotControlService) {}
 
   ngOnInit() {
     this.startMeeting();
+    // Suscribirse a eventos de comandos para mostrar en la consola
+    this.eventsSub = this.robotSvc.events$.subscribe((e) => {
+      // Mantener sólo los últimos 200 eventos para no crecer indefinidamente
+      this.logs.push(e);
+      if (this.logs.length > 200) this.logs.shift();
+    });
   }
 
   startMeeting() {
@@ -35,8 +59,8 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
         disableDeepLinking: true,
-        disableModeratorIndicator: true, // 🚀 evita el mensaje de “waiting for moderator”
-        enableLobby: false,               // 🚀 desactiva la sala de espera
+        disableModeratorIndicator: true,
+        enableLobby: false,
         requireDisplayName: false,
         toolbarButtons: this.showControls
           ? ['microphone', 'camera', 'hangup', 'tileview', 'chat']
@@ -59,7 +83,6 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
 
     this.api = new (window as any).JitsiMeetExternalAPI(domain, options);
 
-    // 🔹 Maneja cierre de la llamada
     this.api.addEventListener('readyToClose', () => {
       console.log('Meeting ended');
     });
@@ -69,5 +92,6 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     if (this.api) {
       this.api.dispose();
     }
+    if (this.eventsSub) this.eventsSub.unsubscribe();
   }
 }

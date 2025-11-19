@@ -6,3 +6,21 @@
   align-items: center;
   justify-content: center;
 }
+.console-panel {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  width: 360px;
+  max-height: 60vh;
+  background: rgba(0,0,0,0.75);
+  color: #fff;
+  border-radius: 8px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  font-family: monospace;
+  font-size: 12px;
+}
+.console-header { display:flex; gap:8px; align-items:center; padding:8px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+.console-body { overflow: auto; padding:8px; }
+.console-line { padding: 4px 0; border-bottom: 1px dashed rgba(255,255,255,0.02); }
