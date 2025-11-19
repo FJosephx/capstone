@@ -168,12 +168,15 @@ export class ChatService implements OnDestroy {
     this.connectionStateSubject.next('connecting');
 
     this.socket = io(environment.socketUrl, {
+      transports: ['polling'],     // 👈 solo HTTP polling
+      upgrade: false,              // 👈 no intentes hacer upgrade a websocket
       auth: { token },
       query: {
         userId: String(this.currentUser.id),
         role: this.currentUser.role
       }
     });
+
 
     this.socket.on('connect', () => {
       this.connectionStateSubject.next('connected');
