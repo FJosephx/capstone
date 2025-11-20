@@ -179,6 +179,8 @@ export class ChatService implements OnDestroy {
 
 
     this.socket.on('connect', () => {
+      // TEMPORARY DEBUG
+      alert('Socket CONNECTED! ID: ' + this.socket?.id);
       this.connectionStateSubject.next('connected');
 
       if (this.activeContact) {
@@ -186,7 +188,9 @@ export class ChatService implements OnDestroy {
       }
     });
 
-    this.socket.on('disconnect', () => {
+    this.socket.on('disconnect', (reason) => {
+      // TEMPORARY DEBUG
+      alert('Socket DISCONNECTED: ' + reason);
       this.connectionStateSubject.next('disconnected');
     });
 
