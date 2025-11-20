@@ -192,6 +192,8 @@ export class ChatService implements OnDestroy {
 
     this.socket.on('connect_error', (error: Error) => {
       console.error('Socket connection error', error);
+      // TEMPORARY DEBUG: Alert the error to see it on mobile
+      alert('Socket Error: ' + error.message);
       this.connectionStateSubject.next('disconnected');
     });
 
@@ -350,7 +352,7 @@ export class ChatService implements OnDestroy {
       } else {
         message.read = true;
       }
-      
+
       this.messagesSubject.next([...currentMessages, message]);
     }
   }
