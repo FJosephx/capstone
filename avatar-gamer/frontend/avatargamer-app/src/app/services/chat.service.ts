@@ -168,8 +168,8 @@ export class ChatService implements OnDestroy {
     this.connectionStateSubject.next('connecting');
 
     this.socket = io(environment.socketUrl, {
-      transports: ['websocket', 'polling'],
-      upgrade: true,
+      transports: ['polling'],     // 👈 solo HTTP polling
+      upgrade: false,              // 👈 no intentes hacer upgrade a websocket
       auth: { token },
       query: {
         userId: String(this.currentUser.id),
@@ -179,8 +179,6 @@ export class ChatService implements OnDestroy {
 
 
     this.socket.on('connect', () => {
-      // TEMPORARY DEBUG
-      alert('Socket CONNECTED! ID: ' + this.socket?.id);
       this.connectionStateSubject.next('connected');
 
       if (this.activeContact) {
@@ -188,16 +186,12 @@ export class ChatService implements OnDestroy {
       }
     });
 
-    this.socket.on('disconnect', (reason) => {
-      // TEMPORARY DEBUG
-      alert('Socket DISCONNECTED: ' + reason);
+    this.socket.on('disconnect', () => {
       this.connectionStateSubject.next('disconnected');
     });
 
     this.socket.on('connect_error', (error: Error) => {
       console.error('Socket connection error', error);
-      // TEMPORARY DEBUG: Alert the error to see it on mobile
-      alert('Socket Error: ' + error.message);
       this.connectionStateSubject.next('disconnected');
     });
 

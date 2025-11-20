@@ -67,7 +67,6 @@ export class Auth {
       }
     } catch (error) {
       console.error('Error loading stored token:', error);
-      alert('Auth Error: ' + JSON.stringify(error));
     }
   }
 
