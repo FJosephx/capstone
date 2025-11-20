@@ -31,7 +31,7 @@ export class Auth {
   private readonly API_URL = environment.apiUrl;
   private readonly TOKEN_KEY = 'auth_tokens';
   private readonly USER_KEY = 'user_profile';
-  
+
   private currentUserSubject = new BehaviorSubject<UserProfile | null>(null);
   public currentUser = this.currentUserSubject.asObservable();
 
@@ -56,17 +56,18 @@ export class Auth {
 
   async loadStoredToken() {
     if (!this._storage) return;
-    
+
     try {
       const tokens = await this._storage.get(this.TOKEN_KEY);
       const user = await this._storage.get(this.USER_KEY);
-      
+
       if (tokens && user) {
         this.currentUserSubject.next(user);
         this._isLoggedIn.next(true);
       }
     } catch (error) {
       console.error('Error loading stored token:', error);
+      alert('Auth Error: ' + JSON.stringify(error));
     }
   }
 
@@ -91,7 +92,7 @@ export class Auth {
         this.currentUserSubject.next(user);
         this._isLoggedIn.next(true);
         await this._storage?.set(this.USER_KEY, user);
-        
+
         // Guardar también en localStorage para acceso rápido
         localStorage.setItem('user_profile', JSON.stringify(user));
       }
@@ -105,15 +106,15 @@ export class Auth {
 
   async refreshToken() {
     if (!this._storage) return of(false);
-    
+
     try {
       const tokens = await this._storage.get(this.TOKEN_KEY);
-      
+
       if (tokens?.refresh) {
-        const response = await this.http.post<{ access: string }>(`${this.API_URL}/auth/token/refresh`, { 
-          refresh: tokens.refresh 
+        const response = await this.http.post<{ access: string }>(`${this.API_URL}/auth/token/refresh`, {
+          refresh: tokens.refresh
         }).toPromise();
-        
+
         if (response?.access) {
           tokens.access = response.access;
           await this._storage.set(this.TOKEN_KEY, tokens);
@@ -130,7 +131,7 @@ export class Auth {
 
   async getAccessToken(): Promise<string | null> {
     if (!this._storage) return null;
-    
+
     try {
       const tokens = await this._storage.get(this.TOKEN_KEY);
       return tokens?.access || null;
@@ -142,31 +143,31 @@ export class Auth {
 
   async saveTokens(tokens: AuthResponse) {
     if (!this._storage) return;
-    
+
     const tokensToSave = {
       access: tokens.access,
       refresh: tokens.refresh
     };
-    
+
     await this._storage.set(this.TOKEN_KEY, tokensToSave);
     this._isLoggedIn.next(true);
   }
 
   async logout() {
     if (!this._storage) return;
-    
+
     // Limpiar token y datos de usuario del almacenamiento
     await this._storage.remove(this.TOKEN_KEY);
     await this._storage.remove(this.USER_KEY);
-    
+
     // Reiniciar todos los estados
     this.currentUserSubject.next(null);
     this._isLoggedIn.next(false);
-    
+
     // Limpiar cualquier otro dato en memoria que pueda estar guardado
     localStorage.clear(); // Limpiar localStorage por si acaso
     sessionStorage.clear(); // Limpiar sessionStorage por si acaso
-    
+
     // No navegamos aquí - lo haremos desde los componentes
   }
 
@@ -178,7 +179,7 @@ export class Auth {
   isAdmin(): boolean {
     const user = this.currentUserSubject.value;
     console.log('Checking isAdmin():', user);
-    
+
     // Considera que el usuario es administrador si su username es "admin"
     // O si su rol es explícitamente "admin"
     return user?.username === 'admin' || user?.role === 'admin';
@@ -187,7 +188,7 @@ export class Auth {
   isOperator(): boolean {
     const user = this.currentUserSubject.value;
     console.log('Checking isOperator():', user);
-    
+
     // Usuario es operador si su rol es "operator"
     return user?.role === 'operator';
   }
@@ -195,7 +196,7 @@ export class Auth {
   // Helper para verificar si el token ha expirado
   isTokenExpired(token: string): boolean {
     if (!token) return true;
-    
+
     try {
       const tokenData = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = tokenData.exp * 1000; // Convertir a milisegundos
