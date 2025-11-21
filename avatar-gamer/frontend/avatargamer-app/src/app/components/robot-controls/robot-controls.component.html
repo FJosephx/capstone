@@ -1,4 +1,58 @@
 <div class="robot-controls">
+  <div class="mode-selector">
+    <ion-segment [(ngModel)]="controlMode" mode="md">
+      <ion-segment-button value="api">
+        <ion-label>API HTTP</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="bluetooth">
+        <ion-label>Bluetooth</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </div>
+
+  <div class="bluetooth-panel" *ngIf="controlMode === 'bluetooth'">
+    <ng-container *ngIf="bluetoothStatus$ | async as btStatus">
+      <div class="status-row">
+        <ion-chip [color]="statusColor(btStatus)">
+          <ion-icon name="bluetooth" color="light"></ion-icon>
+          <ion-label>{{ statusLabels[btStatus] }}</ion-label>
+        </ion-chip>
+        <ion-text color="medium" *ngIf="btStatus === 'connected'">
+          <small>Listo para enviar comandos</small>
+        </ion-text>
+      </div>
+
+      <ion-note color="medium" *ngIf="btStatus === 'unsupported'">
+        Este navegador no soporta Web Bluetooth. Usa Chrome o Edge en un sitio HTTPS.
+      </ion-note>
+
+      <div class="bluetooth-actions" *ngIf="btStatus !== 'unsupported'">
+        <ion-button
+          size="small"
+          (click)="connectBluetooth()"
+          [disabled]="bluetoothBusy || btStatus === 'connected'">
+          <ion-spinner slot="start" *ngIf="bluetoothBusy"></ion-spinner>
+          Conectar
+        </ion-button>
+        <ion-button
+          size="small"
+          color="medium"
+          fill="outline"
+          (click)="disconnectBluetooth()"
+          [disabled]="btStatus !== 'connected'">
+          Desconectar
+        </ion-button>
+      </div>
+    </ng-container>
+
+    <ion-text color="danger" *ngIf="(bluetoothErrors$ | async) as btError">
+      <small>{{ btError }}</small>
+    </ion-text>
+    <ion-text color="danger" *ngIf="lastCommandError">
+      <small>{{ lastCommandError }}</small>
+    </ion-text>
+  </div>
+
   <div class="row center">
     <ion-button
       shape="round"

@@ -4,6 +4,38 @@
   gap: 8px;
   align-items: center;
   justify-content: center;
+  width: 100%;
+}
+
+.mode-selector,
+.bluetooth-panel {
+  width: 100%;
+}
+
+.mode-selector {
+  ion-segment {
+    width: 100%;
+  }
+}
+
+.bluetooth-panel {
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bluetooth-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .row {
