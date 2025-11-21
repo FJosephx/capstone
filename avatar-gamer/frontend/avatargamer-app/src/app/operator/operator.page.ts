@@ -240,9 +240,15 @@ export class OperatorPage implements OnInit, OnDestroy {
 
   // 🟢 AHORA INICIA CHAT + VIDEOLLAMADA
   startChatWithUser(user: LinkedUser) {
-    console.log('Iniciando chat y videollamada con usuario:', user);
-    this.activeCallUser = user;
-    setTimeout(() => this.launchJitsi(user.username), 300);
+    console.log('Iniciando chat con usuario:', user);
+
+    localStorage.setItem('selectedUser', JSON.stringify({
+      id: user.id,
+      username: user.username,
+      status: user.status
+    }));
+
+    this.router.navigate(['/chat']);
   }
 
   launchJitsi(username: string) {
