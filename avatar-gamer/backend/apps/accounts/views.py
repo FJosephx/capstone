@@ -9,8 +9,7 @@ from rest_framework import status, permissions
 from .serializers import (
     LoginSerializer, UserListItemSerializer, LinkCreateSerializer,
     LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer,
-    AdminUserSerializer, UserConsentSerializer, UserConsentCreateSerializer,
-    CheckLinkView
+    AdminUserSerializer, UserConsentSerializer, UserConsentCreateSerializer
 )
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
