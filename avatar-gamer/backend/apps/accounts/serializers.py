@@ -235,6 +235,15 @@ class LinkRequestUpdateSerializer(serializers.Serializer):
     
     def update(self, instance, validated_data):
         status = validated_data.get('status')
+        
+        # Si se aprueba, eliminar otras solicitudes aprobadas para evitar error de unicidad
+        if status == LinkRequestStatus.APPROVED:
+            LinkRequest.objects.filter(
+                operator=instance.operator, 
+                user=instance.user, 
+                status=LinkRequestStatus.APPROVED
+            ).delete()
+
         instance.status = status
         instance.save()
         
