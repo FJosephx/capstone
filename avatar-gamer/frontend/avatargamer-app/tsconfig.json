@@ -22,7 +22,12 @@
       "es2018", 
       "dom"
     ],
-    "useDefineForClassFields": false
+    "useDefineForClassFields": false,
+    "paths": {
+      "capacitor-bluetooth-serial": [
+        "src/app/plugins/bluetooth-serial.plugin.ts"
+      ]
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

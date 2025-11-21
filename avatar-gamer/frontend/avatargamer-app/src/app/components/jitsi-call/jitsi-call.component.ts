@@ -1,11 +1,15 @@
-import { Component, Input, OnInit, ElementRef, OnDestroy, Output, EventEmitter} from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, ToastController } from '@ionic/angular';
+import { Subscription } from 'rxjs';
+import { RobotControlService } from '../../services/robot-control.service';
+import { RobotControlsComponent } from '../robot-controls/robot-controls.component';
+import { BluetoothSerialService } from '../../services/bluetooth-serial.service';
 
 @Component({
   selector: 'app-jitsi-call',
   standalone: true,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonicModule, RobotControlsComponent],
   templateUrl: './jitsi-call.component.html',
   styleUrls: ['./jitsi-call.component.scss']
 })
@@ -13,27 +17,33 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Input() roomName!: string;
   @Input() displayName!: string;
   @Input() showControls: boolean = true;
+  @Input() robotId: number = 1;
+  @Input() isOperator: boolean = false;
 
   @Output() callEnded = new EventEmitter<void>();
 
   private api: any;
-  isLoading: boolean = false;  // Desactivado por defecto para no bloquear
-  showInfoBanner: boolean = false;  // Desactivado por defecto
   public logs: Array<any> = [];
   public showConsole = true;
-  private windowListener = (e: any) => {
-    // escuchar eventos personalizados "robot-command" si existen
-    if (e && e.detail) {
-      this.addLog({ type: 'external', payload: e.detail, timestamp: new Date().toISOString() });
-    }
-  };
+  private eventsSub?: Subscription;
+  isConnectingBt = false;
 
-  constructor(private el: ElementRef) {}
+  constructor(
+    private el: ElementRef,
+    private robotSvc: RobotControlService,
+    private btSvc: BluetoothSerialService,
+    private toast: ToastController
+  ) {}
 
   ngOnInit() {
+    this.robotSvc.setRobotId(this.robotId);
     this.startMeeting();
-    // escuchar eventos personalizados desde la ventana (por ejemplo: comandos del robot)
-    window.addEventListener('robot-command', this.windowListener as EventListener);
+    if (this.isOperator) {
+      this.eventsSub = this.robotSvc.events$.subscribe((e) => {
+        this.logs.push(e);
+        if (this.logs.length > 200) this.logs.shift();
+      });
+    }
   }
 
   startMeeting() {
@@ -51,8 +61,8 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
         disableDeepLinking: true,
-        disableModeratorIndicator: true, // 🚀 evita el mensaje de "waiting for moderator"
-        enableLobby: false,               // 🚀 desactiva la sala de espera
+        disableModeratorIndicator: true,
+        enableLobby: false,
         requireDisplayName: false,
         toolbarButtons: this.showControls
           ? ['microphone', 'camera', 'hangup', 'tileview', 'chat', 'desktop']
@@ -76,27 +86,52 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
 
     this.api = new (window as any).JitsiMeetExternalAPI(domain, options);
 
-    // 🔹 Maneja cierre de la llamada
     this.api.addEventListener('readyToClose', () => {
-      console.log('Meeting ended');
-      this.callEnded.emit(); // 🟢 Notifica al padre que la llamada terminó
+      this.callEnded.emit();
     });
   }
 
-  dismissBanner() {
-    this.showInfoBanner = false;
+  async connectBluetooth() {
+    this.isConnectingBt = true;
+    try {
+      const devices = await this.btSvc.listDevices();
+      const selected = devices?.[0];
+      let address = selected?.address || selected?.id;
+
+      if (!address) {
+        const manual = prompt('Ingresa la direcci\u00f3n MAC del Arduino (ej: 00:11:22:33:44:55)');
+        if (!manual) {
+          this.isConnectingBt = false;
+          return;
+        }
+        address = manual;
+      }
+
+      await this.btSvc.connect(address);
+      await this.presentToast('Bluetooth conectado con el Arduino', 'success');
+    } catch (err: any) {
+      await this.presentToast(`No se pudo conectar: ${err?.message || err}`, 'danger');
+      console.error('Bluetooth connect error', err);
+    } finally {
+      this.isConnectingBt = false;
+    }
+  }
+
+  private async presentToast(message: string, color: 'success' | 'danger' | 'medium' = 'medium') {
+    const t = await this.toast.create({
+      message,
+      duration: 2500,
+      color,
+      position: 'top'
+    });
+    await t.present();
   }
 
   ngOnDestroy() {
     if (this.api) {
       this.api.dispose();
-      this.api = null; // 🟢 Limpia la referencia
+      this.api = null;
     }
-    window.removeEventListener('robot-command', this.windowListener as EventListener);
-  }
-
-  private addLog(entry: any) {
-    this.logs.push(entry);
-    if (this.logs.length > 200) this.logs.shift();
+    this.eventsSub?.unsubscribe();
   }
 }
