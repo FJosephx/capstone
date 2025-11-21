@@ -116,6 +116,9 @@
     <app-jitsi-call
       [roomName]="currentRoomName"
       [displayName]="currentDisplayName"
+      [robotId]="robotIdForCall"
+      [isOperator]="userRole === 'operator'"
+      [showControls]="userRole === 'operator'"
       (callEnded)="onCallEnded()">
     </app-jitsi-call>
   </div>

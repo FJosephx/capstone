@@ -37,6 +37,7 @@ export class ChatPage implements OnInit, OnDestroy {
   isRecording = false;
   recognitionError = '';
   userRole: string = '';
+  robotIdForCall = 1;
   selectedContact: ChatContact | null = null;
   contactName: string = '';
   contactStatus: string = '';

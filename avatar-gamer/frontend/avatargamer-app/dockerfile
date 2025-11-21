@@ -16,4 +16,4 @@ EXPOSE 8100
 # --host 0.0.0.0   => expone dentro del contenedor
 # --external       => permite acceder desde la red/host
 # --no-open        => no abre navegador
-CMD ["ionic", "serve", "--host=0.0.0.0", "--port=8100", "--external", "--no-open"]
+CMD ["ionic", "serve", "--host=0.0.0.0", "--port=8100", "--external", "--no-open", "--disable-host-check"]

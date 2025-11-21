@@ -1,10 +1,22 @@
-import { Component, Input, OnInit, ElementRef, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnInit,
+  ElementRef,
+  OnDestroy
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
+
+// 👇 IMPORTA el componente de controles
+import { RobotControlsComponent } from '../robot-controls/robot-controls.component';
+import { RobotControlService } from '../services/robot-control.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-jitsi-call',
   standalone: true,
-  imports: [CommonModule],
+  // 👇 agrega RobotControlsComponent a imports
+  imports: [CommonModule, RobotControlsComponent],
   templateUrl: './jitsi-call.component.html',
   styleUrls: ['./jitsi-call.component.scss']
 })
@@ -13,35 +25,25 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Input() displayName!: string;
   @Input() showControls: boolean = true;
 
-  private api: any;
+  // 👇 id del robot (puedes hacerlo @Input si quieres cambiarlo desde afuera)
+  @Input() robotId: number = 1;
 
-  constructor(private el: ElementRef) {}
+  private api: any;
+  public logs: Array<any> = [];
+  private eventsSub: Subscription | null = null;
+  public showConsole = true;
+
+  constructor(private el: ElementRef, private robotSvc: RobotControlService) {}
 
   ngOnInit() {
     this.enterFullscreen();
     this.startMeeting();
-  }
-
-  private enterFullscreen() {
-    // Intentar entrar en modo pantalla completa del navegador
-    const element = this.el.nativeElement;
-    
-    if (element.requestFullscreen) {
-      element.requestFullscreen().catch((err: any) => {
-        console.log('No se pudo entrar en pantalla completa:', err);
-      });
-    } else if ((element as any).webkitRequestFullscreen) {
-      (element as any).webkitRequestFullscreen();
-    } else if ((element as any).mozRequestFullScreen) {
-      (element as any).mozRequestFullScreen();
-    } else if ((element as any).msRequestFullscreen) {
-      (element as any).msRequestFullscreen();
-    }
-
-    // Ocultar la barra de direcciones en móviles
-    if (window.innerHeight < window.innerWidth) {
-      window.scrollTo(0, 1);
-    }
+    // Suscribirse a eventos de comandos para mostrar en la consola
+    this.eventsSub = this.robotSvc.events$.subscribe((e) => {
+      // Mantener sólo los últimos 200 eventos para no crecer indefinidamente
+      this.logs.push(e);
+      if (this.logs.length > 200) this.logs.shift();
+    });
   }
 
   startMeeting() {
@@ -58,8 +60,8 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
         startWithAudioMuted: false,
         startWithVideoMuted: false,
         disableDeepLinking: true,
-        disableModeratorIndicator: true, // 🚀 evita el mensaje de "waiting for moderator"
-        enableLobby: false,               // 🚀 desactiva la sala de espera
+        disableModeratorIndicator: true,
+        enableLobby: false,
         requireDisplayName: false,
         prejoinPageEnabled: false,        // 🚀 desactiva la página de pre-ingreso
         enableWelcomePage: false,         // 🚀 desactiva la página de bienvenida
@@ -99,7 +101,6 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
 
     this.api = new (window as any).JitsiMeetExternalAPI(domain, options);
 
-    // 🔹 Maneja cierre de la llamada
     this.api.addEventListener('readyToClose', () => {
       console.log('Meeting ended');
     });
@@ -109,18 +110,6 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     if (this.api) {
       this.api.dispose();
     }
-    
-    // Salir de pantalla completa al destruir el componente
-    if (document.fullscreenElement) {
-      document.exitFullscreen().catch((err: any) => {
-        console.log('Error al salir de pantalla completa:', err);
-      });
-    } else if ((document as any).webkitExitFullscreen) {
-      (document as any).webkitExitFullscreen();
-    } else if ((document as any).mozCancelFullScreen) {
-      (document as any).mozCancelFullScreen();
-    } else if ((document as any).msExitFullscreen) {
-      (document as any).msExitFullscreen();
-    }
+    if (this.eventsSub) this.eventsSub.unsubscribe();
   }
 }

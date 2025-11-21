@@ -1,5 +1,14 @@
-<ion-content class="ion-padding home">
-  <h1>Avatar Gamer</h1>
-  <ion-button expand="block" routerLink="/robot">Modo Robot</ion-button>
-  <ion-button expand="block" routerLink="/robot-controls">Modo Operador</ion-button>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Avatar Gamer - Operador</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+  <app-jitsi-call
+    [roomName]="roomName"
+    [displayName]="displayName"
+    [showControls]="true"
+    [robotId]="robotId">
+  </app-jitsi-call>
 </ion-content>

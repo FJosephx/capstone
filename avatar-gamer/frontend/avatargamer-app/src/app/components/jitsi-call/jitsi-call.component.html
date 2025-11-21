@@ -1,35 +1,35 @@
-<div class="jitsi-call-wrapper">
-  
-  <!-- Overlay de carga -->
-  <div class="loading-overlay" *ngIf="isLoading">
-    <div class="loading-content">
-      <div class="loading-spinner">
-        <ion-spinner name="crescent"></ion-spinner>
-      </div>
-      <h3>Conectando videollamada...</h3>
-      <p>Por favor espera un momento</p>
-    </div>
+<div class="jitsi-wrapper">
+  <div id="jaas-container"></div>
+
+  <div class="controls-overlay" *ngIf="isOperator">
+    <app-robot-controls [robotId]="robotId"></app-robot-controls>
   </div>
 
-  <!-- Contenedor de Jitsi -->
-  <div id="jaas-container" class="jaas-container"></div>
-
-  <!-- Banner de información (se oculta después de unos segundos) -->
-  <div class="info-banner" *ngIf="showInfoBanner">
-    <div class="info-content">
-      <ion-icon name="information-circle-outline"></ion-icon>
-      <div class="info-text">
-        <span class="info-title">Videollamada iniciada</span>
-        <span class="info-desc">Usa los controles en pantalla para gestionar audio y vídeo</span>
-      </div>
-      <ion-button 
-        fill="clear" 
-        size="small" 
-        (click)="dismissBanner()"
-        class="dismiss-btn">
-        <ion-icon name="close" slot="icon-only"></ion-icon>
-      </ion-button>
-    </div>
+  <div class="bt-overlay" *ngIf="!isOperator">
+    <ion-button
+      expand="block"
+      shape="round"
+      color="primary"
+      [disabled]="isConnectingBt"
+      (click)="connectBluetooth()">
+      <ion-icon name="bluetooth" slot="start"></ion-icon>
+      {{ isConnectingBt ? 'Conectando...' : 'Conectar Arduino por Bluetooth' }}
+    </ion-button>
   </div>
 
+  <div class="console-panel" *ngIf="isOperator && showConsole">
+    <div class="console-header">
+      <span>Consola de comandos</span>
+      <ion-button size="small" fill="clear" (click)="logs = []">Limpiar</ion-button>
+      <ion-button size="small" fill="clear" (click)="showConsole = false">Ocultar</ion-button>
+    </div>
+    <div class="console-body">
+      <div *ngFor="let l of logs" class="console-line">
+        <small>{{ l.timestamp }} -</small>
+        <span *ngIf="l.type === 'sent'"> SENT cmd={{ l.command }} @ {{ l.url }}</span>
+        <span *ngIf="l.type === 'response'"> RESP cmd={{ l.command }} => {{ l.res | json }}</span>
+        <span *ngIf="l.type === 'error'"> ERROR cmd={{ l.command }} => {{ l.err | json }}</span>
+      </div>
+    </div>
+  </div>
 </div>

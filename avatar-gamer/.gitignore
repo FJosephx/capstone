@@ -33,7 +33,7 @@ backend/.venv/Lib/site-packages/
 
 AndroidManifest.xml
 AndroidManifest.xml.orig
-
+package-lock.json
 frontend/capacitor.build.gradle
 frontend/capacitor.settings.gradle
 frontend/avatargamer-app/node_modules

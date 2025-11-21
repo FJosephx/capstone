@@ -10,6 +10,9 @@ import { FormsModule } from '@angular/forms';
 import { SharedModule } from '../shared/shared.module';
 import { Subscription } from 'rxjs';
 import { ChatService, PresenceUpdate } from '../services/chat.service';
+import { HttpClient } from '@angular/common/http';
+
+declare var JitsiMeetExternalAPI: any;
 
 @Component({
   selector: 'app-operator',
@@ -30,6 +33,11 @@ export class OperatorPage implements OnInit, OnDestroy {
   searchTerm: string = '';
   private presenceSubscription?: Subscription;
 
+  // 🟢 NUEVO
+  activeCallUser: LinkedUser | null = null;
+  private jitsi: any;
+  private apiUrl = 'https://www.triskeledu.cl/MisterRoboto/apirest/set_command/1';
+
   constructor(
     private auth: Auth, 
     private router: Router,
@@ -38,11 +46,11 @@ export class OperatorPage implements OnInit, OnDestroy {
     private loadingCtrl: LoadingController,
     private userLinkService: UserLinkService,
     private chatService: ChatService,
-    private toastCtrl: ToastController
-  ) { }
+    private toastCtrl: ToastController,
+    private http: HttpClient
+  ) {}
 
   ngOnInit() {
-    // Cargar información del usuario autenticado
     this.auth.currentUser.subscribe(user => {
       this.userProfile = user;
       this.loadLinkedUsers();
@@ -68,14 +76,11 @@ export class OperatorPage implements OnInit, OnDestroy {
 
   async loadLinkedUsers() {
     if (this.activeTab !== 'linked') return;
-    
     this.isLoading = true;
     this.error = null;
     
     try {
       const response = await this.userLinkService.getLinkedUsers().toPromise();
-      
-      // Normalizar estado segun datos del backend
       this.linkedUsers = response?.results?.map(user => ({
         ...user,
         status: user.status ?? (user.is_online ? 'online' : 'offline')
@@ -83,8 +88,6 @@ export class OperatorPage implements OnInit, OnDestroy {
       
       // Inicializar usuarios filtrados
       this.filterUsers();
-      
-      console.log('Usuarios vinculados:', this.linkedUsers);
     } catch (error) {
       console.error('Error al cargar usuarios vinculados:', error);
       this.error = 'No se pudieron cargar los usuarios vinculados';
@@ -93,23 +96,16 @@ export class OperatorPage implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Navega a la página del chat con IA
-   */
   navigateToAIChat() {
-    console.log('Navegando a AI Chat');
     this.router.navigateByUrl('/ai-chat');
   }
 
-  // 🟢 AÑADIDO: Este es el método que faltaba y que el HTML está llamando.
-  // Simplemente llama a tu función 'loadPendingRequests' que ya existe.
   loadLinkRequests() {
     this.loadPendingRequests();
   }
 
   async loadPendingRequests() {
     if (this.activeTab !== 'pending') return;
-    
     this.isLoading = true;
     this.error = null;
     
@@ -133,7 +129,6 @@ export class OperatorPage implements OnInit, OnDestroy {
     
     const { data } = await modal.onDidDismiss();
     if (data && data.success) {
-      // Si la solicitud se ha creado correctamente, cambiar a la pestaña de pendientes
       this.activeTab = 'pending';
       this.loadPendingRequests();
     }
@@ -144,10 +139,7 @@ export class OperatorPage implements OnInit, OnDestroy {
       header: 'Confirmar',
       message: `¿Estás seguro que deseas desvincular a ${user.username}?`,
       buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
+        { text: 'Cancelar', role: 'cancel' },
         {
           text: 'Desvincular',
           handler: async () => {
@@ -159,7 +151,6 @@ export class OperatorPage implements OnInit, OnDestroy {
             try {
               await this.userLinkService.unlinkUser(user.id).toPromise();
               this.linkedUsers = this.linkedUsers.filter(u => u.id !== user.id);
-              
               const successAlert = await this.alertCtrl.create({
                 header: 'Éxito',
                 message: 'Usuario desvinculado correctamente',
@@ -168,7 +159,6 @@ export class OperatorPage implements OnInit, OnDestroy {
               await successAlert.present();
             } catch (error) {
               console.error('Error al desvincular usuario:', error);
-              
               const errorAlert = await this.alertCtrl.create({
                 header: 'Error',
                 message: 'No se pudo desvincular al usuario',
@@ -245,24 +235,45 @@ export class OperatorPage implements OnInit, OnDestroy {
 
   async logout() {
     await this.auth.logout();
-    
-    // Navegamos a la página de login y forzamos recarga para asegurar estado limpio
-    // Esto recargará completamente la aplicación
     window.location.href = '/login';
   }
 
+  // 🟢 AHORA INICIA CHAT + VIDEOLLAMADA
   startChatWithUser(user: LinkedUser) {
-    console.log('Iniciando chat con usuario:', user);
-    
-    // Guardar información del usuario seleccionado en localStorage para mantenerla entre páginas
-    localStorage.setItem('selectedUser', JSON.stringify({
-      id: user.id,
-      username: user.username,
-      status: user.status
-    }));
-    
-    // Navegar a la página de chat
-    this.router.navigate(['/chat']);
+    console.log('Iniciando chat y videollamada con usuario:', user);
+    this.activeCallUser = user;
+    setTimeout(() => this.launchJitsi(user.username), 300);
+  }
+
+  launchJitsi(username: string) {
+    const domain = 'meet.jit.si';
+    const options = {
+      roomName: `AvatarGamer_${username}`,
+      width: '100%',
+      height: 500,
+      parentNode: document.querySelector('#jitsi-container'),
+      interfaceConfigOverwrite: {
+        TOOLBAR_BUTTONS: ['microphone', 'camera', 'hangup', 'tileview'],
+      },
+    };
+
+    this.jitsi = new JitsiMeetExternalAPI(domain, options);
+    console.log('🎥 Videollamada iniciada con', username);
+  }
+
+  enviarComando(cmd: string) {
+    this.http.post(this.apiUrl, { command: cmd }).subscribe({
+      next: () => console.log(`✅ Comando ${cmd} enviado a Triskeledu`),
+      error: (err) => console.error('❌ Error enviando comando', err)
+    });
+  }
+
+  endCall() {
+    if (this.jitsi) {
+      this.jitsi.dispose();
+      this.jitsi = null;
+    }
+    this.activeCallUser = null;
   }
 
   private listenPresenceUpdates(): void {
@@ -273,21 +284,15 @@ export class OperatorPage implements OnInit, OnDestroy {
   }
 
   private async handlePresenceUpdate(update: PresenceUpdate): Promise<void> {
-    if (update.role !== 'user') {
-      return;
-    }
+    if (update.role !== 'user') return;
 
     const index = this.linkedUsers.findIndex(user => user.id === update.userId);
-    if (index === -1) {
-      return;
-    }
+    if (index === -1) return;
 
     const previousStatus = this.linkedUsers[index].status === 'online' ? 'online' : 'offline';
     const newStatus: 'online' | 'offline' = update.isOnline ? 'online' : 'offline';
 
-    if (previousStatus === newStatus && update.username === undefined) {
-      return;
-    }
+    if (previousStatus === newStatus && update.username === undefined) return;
 
     const updatedUser: LinkedUser = {
       ...this.linkedUsers[index],
@@ -314,9 +319,6 @@ export class OperatorPage implements OnInit, OnDestroy {
       color: 'success',
       position: 'top'
     });
-
     await toast.present();
   }
-
-
 }
