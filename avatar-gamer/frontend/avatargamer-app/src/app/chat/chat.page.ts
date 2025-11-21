@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Subscription } from 'rxjs';
 // 👇 LÍNEA MODIFICADA: Se añadió ModalController y AlertButton
-import { AlertController, ModalController, AlertButton } from '@ionic/angular';
+import { AlertController, ModalController, AlertButton, IonContent } from '@ionic/angular';
+import { ViewChild } from '@angular/core';
 import { ChatContact, ChatService, PresenceUpdate } from '../services/chat.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -54,13 +55,15 @@ export class ChatPage implements OnInit, OnDestroy {
   currentRoomName = '';
   currentDisplayName = '';
 
+  @ViewChild(IonContent) content!: IonContent;
+
   constructor(
     private chatService: ChatService,
     private auth: Auth,
     private alertCtrl: AlertController,
     private modalCtrl: ModalController,
     private consentService: ConsentService
-  ) {}
+  ) { }
 
   async ngOnInit(): Promise<void> {
     try {
@@ -72,6 +75,11 @@ export class ChatPage implements OnInit, OnDestroy {
       this.listenPresenceUpdates();
       this.initSpeechRecognition();
       await this.ensureRemoteConsentState();
+
+      // Suscribirse a los mensajes para hacer scroll automático
+      this.messages$.subscribe(() => {
+        this.scrollToBottom();
+      });
     } catch (error) {
       console.error('Error obteniendo perfil:', error);
     }
@@ -91,6 +99,13 @@ export class ChatPage implements OnInit, OnDestroy {
 
     this.chatService.sendMessage(this.newMessage);
     this.newMessage = '';
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    setTimeout(() => {
+      this.content?.scrollToBottom(300);
+    }, 100);
   }
 
   async toggleRecording(): Promise<void> {
@@ -105,7 +120,7 @@ export class ChatPage implements OnInit, OnDestroy {
     }
 
     const hasConsent = localStorage.getItem('microphoneConsent') === 'true';
-    
+
     if (!hasConsent) {
       const modal = await this.modalCtrl.create({
         component: MicConsentComponent,
@@ -318,9 +333,9 @@ export class ChatPage implements OnInit, OnDestroy {
     // 1. Generar un nombre de sala único pero consistente
     const userId = this.userProfile.id;
     const contactId = this.selectedContact.id;
-    
+
     const sortedIds = [userId, contactId].sort();
-    
+
     // 2. Asignar los valores a las propiedades de la clase
     this.currentRoomName = `avatar-gamer-call-${sortedIds[0]}-${sortedIds[1]}`;
     this.currentDisplayName = this.userProfile.username || `Usuario ${this.userProfile.id}`;
