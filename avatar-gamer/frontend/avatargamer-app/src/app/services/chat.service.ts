@@ -1,6 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Subject, Subscription } from 'rxjs';
 import { io, Socket } from 'socket.io-client';
+import { Capacitor } from '@capacitor/core';
 
 import { environment } from '../../environments/environment';
 import { Auth, UserProfile } from './auth';
@@ -167,15 +168,28 @@ export class ChatService implements OnDestroy {
 
     this.connectionStateSubject.next('connecting');
 
-    this.socket = io(environment.socketUrl, {
-      transports: ['polling'],     // 👈 solo HTTP polling
-      upgrade: false,              // 👈 no intentes hacer upgrade a websocket
+    const isAndroid = Capacitor.getPlatform() === 'android';
+    // En Android usamos la IP directa para evitar problemas con Vercel y usar WebSockets reales
+    const url = isAndroid ? 'http://3.15.175.16' : environment.socketUrl;
+
+    const options: any = {
       auth: { token },
       query: {
         userId: String(this.currentUser.id),
         role: this.currentUser.role
       }
-    });
+    };
+
+    if (isAndroid) {
+      options.transports = ['websocket'];
+      options.upgrade = true;
+    } else {
+      // Para Web (Vercel) seguimos usando polling
+      options.transports = ['polling'];
+      options.upgrade = false;
+    }
+
+    this.socket = io(url, options);
 
 
     this.socket.on('connect', () => {
