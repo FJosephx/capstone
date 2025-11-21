@@ -5,6 +5,8 @@ import { Subscription } from 'rxjs';
 import { RobotControlService } from '../../services/robot-control.service';
 import { RobotControlsComponent } from '../robot-controls/robot-controls.component';
 import { BluetoothSerialService } from '../../services/bluetooth-serial.service';
+import { Capacitor } from '@capacitor/core';
+import { BluetoothControlService, BluetoothGattConfig } from '../../services/bluetooth-control.service';
 
 @Component({
   selector: 'app-jitsi-call',
@@ -27,11 +29,17 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   public showConsole = true;
   private eventsSub?: Subscription;
   isConnectingBt = false;
+  private readonly isNativePlatform = Capacitor.isNativePlatform();
+  private readonly webGattConfig: BluetoothGattConfig = {
+    serviceUuid: '0000ffe0-0000-1000-8000-00805f9b34fb',
+    characteristicUuid: '0000ffe1-0000-1000-8000-00805f9b34fb'
+  };
 
   constructor(
     private el: ElementRef,
     private robotSvc: RobotControlService,
     private btSvc: BluetoothSerialService,
+    private webBluetooth: BluetoothControlService,
     private toast: ToastController
   ) {}
 
@@ -94,6 +102,17 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   async connectBluetooth() {
     this.isConnectingBt = true;
     try {
+      if (!this.isNativePlatform) {
+        if (!this.webBluetooth.isSupported) {
+          await this.presentToast('Este navegador no soporta Web Bluetooth. Usa Chrome/Edge en HTTPS o un dispositivo Android.', 'danger');
+          return;
+        }
+
+        await this.webBluetooth.connect(this.webGattConfig);
+        await this.presentToast('Conexión Bluetooth del navegador lista', 'success');
+        return;
+      }
+
       const devices = await this.btSvc.listDevices();
       const selected = devices?.[0];
       let address = selected?.address || selected?.id;
@@ -101,14 +120,13 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
       if (!address) {
         const manual = prompt('Ingresa la direcci\u00f3n MAC del Arduino (ej: 00:11:22:33:44:55)');
         if (!manual) {
-          this.isConnectingBt = false;
           return;
         }
         address = manual;
       }
 
       await this.btSvc.connect(address);
-      await this.presentToast('Bluetooth conectado con el Arduino', 'success');
+      await this.presentToast('Bluetooth (Android) conectado con el Arduino', 'success');
     } catch (err: any) {
       await this.presentToast(`No se pudo conectar: ${err?.message || err}`, 'danger');
       console.error('Bluetooth connect error', err);
