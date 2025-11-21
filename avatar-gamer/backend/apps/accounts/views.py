@@ -9,7 +9,8 @@ from rest_framework import status, permissions
 from .serializers import (
     LoginSerializer, UserListItemSerializer, LinkCreateSerializer,
     LinkRequestSerializer, LinkRequestCreateSerializer, LinkRequestUpdateSerializer,
-    AdminUserSerializer, UserConsentSerializer, UserConsentCreateSerializer
+    AdminUserSerializer, UserConsentSerializer, UserConsentCreateSerializer,
+    CheckLinkView
 )
 from .auth_utils import is_locked, register_attempt, register_fail, register_success
 from django.contrib.auth import authenticate
@@ -595,6 +596,26 @@ class UserConsentView(APIView):
                 return parts[0]
         return request.META.get('REMOTE_ADDR')
 
+
+class CheckLinkView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        operator_id = request.query_params.get('operator_id')
+        user_id = request.query_params.get('user_id')
+
+        if not operator_id or not user_id:
+            return Response(
+                {"error": "operator_id and user_id are required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        exists = OperatorUserLink.objects.filter(
+            operator_id=operator_id, 
+            user_id=user_id
+        ).exists()
+
+        return Response({"exists": exists})
 
 # Vista para interactuar con la IA
 class AIAssistantView(APIView):

@@ -3,7 +3,9 @@ from .views import (
     LoginView, AdminPing, OperatorPing, LinkUserView, UnlinkUserView, LinkedUsersView,
     LinkRequestCreateView, LinkRequestOperatorListView, LinkRequestUserListView,
     LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView,
-    AIAssistantView, AdminUserListCreateView, AdminUserDetailView, AdminMetricsView, UserConsentView
+    LinkRequestDetailView, LinkRequestResponseView, LinkedOperatorsView, OperatorDetailView,
+    AIAssistantView, AdminUserListCreateView, AdminUserDetailView, AdminMetricsView, UserConsentView,
+    CheckLinkView
 )
 
 urlpatterns = [
@@ -25,6 +27,7 @@ urlpatterns = [
     # Nuevas rutas para operadores vinculados (para usuarios)
     path('users/operators', LinkedOperatorsView.as_view()),  # GET /api/v1/users/operators
     path('users/operators/<int:operator_id>', OperatorDetailView.as_view()),  # GET /api/v1/users/operators/<id>
+    path('users/check-link', CheckLinkView.as_view()),  # GET /api/v1/users/check-link
     path('admin/users', AdminUserListCreateView.as_view()),  # GET/POST /api/v1/admin/users
     path('admin/users/<int:user_id>', AdminUserDetailView.as_view()),  # PUT/PATCH/DELETE /api/v1/admin/users/<id>
     path('admin/metrics', AdminMetricsView.as_view()),  # GET /api/v1/admin/metrics

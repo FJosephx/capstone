@@ -53,26 +53,26 @@ export class UserPage implements OnInit, OnDestroy {
     this.auth.currentUser.subscribe(user => {
       this.userProfile = user;
       console.log('Usuario en panel usuario:', user);
-      
+
       // Mostrar alerta si el rol no coincide con la vista
       if (user && user.role !== 'user') {
         console.warn('Usuario con rol', user.role, 'en vista de usuario');
       }
-      
+
       this.loadLinkedOperators();
       this.loadPendingRequests();
     });
-    
+
     // Configurar actualización periódica de operadores vinculados
     this.startPeriodicUpdates();
     this.listenPresenceUpdates();
   }
-  
+
   ngOnDestroy() {
     this.stopPeriodicUpdates();
     this.presenceSubscription?.unsubscribe();
   }
-  
+
   startPeriodicUpdates() {
     // Actualizar cada 30 segundos
     this.refreshInterval = setInterval(() => {
@@ -82,7 +82,7 @@ export class UserPage implements OnInit, OnDestroy {
       }
     }, 30000); // 30 segundos
   }
-  
+
   stopPeriodicUpdates() {
     if (this.refreshInterval) {
       clearInterval(this.refreshInterval);
@@ -91,7 +91,7 @@ export class UserPage implements OnInit, OnDestroy {
 
   segmentChanged(event: any) {
     this.activeTab = event.detail.value;
-    
+
     if (this.activeTab === 'linked') {
       console.log('Cambiando a pestaña de operadores vinculados');
       this.loadLinkedOperators();
@@ -108,17 +108,17 @@ export class UserPage implements OnInit, OnDestroy {
   async loadLinkedOperators() {
     // Removemos esta validación para permitir la recarga forzada después de aprobar
     // if (this.activeTab !== 'linked') return;
-    
+
     this.isLoading = true;
     this.error = null;
-    
+
     try {
       console.log('[UserPage] Solicitando operadores vinculados...');
       const response = await this.userLinkService.getLinkedOperators().toPromise();
       console.log('[UserPage] Respuesta de operadores vinculados:', response);
       console.log('[UserPage] URL solicitada:', `${environment.apiUrl}/users/operators`);
       console.log('[UserPage] Usuario actual:', this.userProfile);
-      
+
       if (response && response.results && response.results.length > 0) {
         this.linkedOperators = response.results.map(operator => {
           const status: 'online' | 'offline' = operator.status ?? (operator.is_online ? 'online' : 'offline');
@@ -128,90 +128,24 @@ export class UserPage implements OnInit, OnDestroy {
             role: operator.role || 'operator'
           };
         });
-        
+
         console.log('[UserPage] Operadores vinculados procesados:', this.linkedOperators);
         console.log('[UserPage] Número de operadores vinculados:', this.linkedOperators.length);
       } else {
         console.log('[UserPage] No se encontraron operadores vinculados en la respuesta principal');
-        
-        // Si no hay operadores en la respuesta principal, intentar buscar en solicitudes aprobadas
-        try {
-          console.log('[UserPage] Buscando en solicitudes aprobadas...');
-          const approvedRequests = await this.userLinkService.getReceivedLinkRequests('approved').toPromise();
-          console.log('[UserPage] Solicitudes aprobadas:', approvedRequests);
-          
-        if (approvedRequests && approvedRequests.results && approvedRequests.results.length > 0) {
-          const operatorsFromRequests: LinkedOperator[] = [];
-            
-            for (const req of approvedRequests.results) {
-              console.log(`[UserPage] Procesando solicitud aprobada ID: ${req.id} de operador ID: ${req.operator}`);
-              // Para cada solicitud aprobada, obtener los datos del operador
-              try {
-                console.log(`[UserPage] Solicitando datos del operador ${req.operator}...`);
-                const operatorData = await this.userLinkService.getOperatorById(req.operator).toPromise();
-                console.log(`[UserPage] Datos del operador ${req.operator}:`, operatorData);
-                
-                if (operatorData) {
-                  operatorsFromRequests.push({
-                    ...operatorData,
-                    status: operatorData.status ?? (operatorData.is_online ? 'online' : 'offline'),
-                    role: operatorData.role || 'operator'
-                  });
-                  console.log(`[UserPage] Operador ${req.operator} agregado a la lista`);
-                } else {
-                  // Si no se puede obtener datos completos, usar los básicos de la solicitud
-                  console.log(`[UserPage] No se obtuvieron datos completos del operador ${req.operator}, usando datos básicos`);
-                operatorsFromRequests.push({
-                  id: req.operator,
-                  username: req.operator_username || `operador${req.operator}`,
-                  email: `${req.operator_username || 'operador' + req.operator}@example.com`,
-                  first_name: 'Operador',
-                  last_name: `#${req.operator}`,
-                  role: 'operator',
-                  is_online: false,
-                  status: 'offline' as const
-                });
-                }
-              } catch (error) {
-                console.error(`[UserPage] Error al obtener datos del operador ${req.operator}:`, error);
-                // Añadir datos básicos si no se pueden obtener los completos
-                console.log(`[UserPage] Agregando datos básicos para operador ${req.operator} debido al error`);
-                operatorsFromRequests.push({
-                  id: req.operator,
-                  username: req.operator_username || `operador${req.operator}`,
-                  email: `${req.operator_username || 'operador' + req.operator}@example.com`,
-                  first_name: 'Operador',
-                  last_name: `#${req.operator}`,
-                  role: 'operator',
-                  is_online: false,
-                  status: 'offline' as 'offline'
-                });
-              }
-            }
-            
-            this.linkedOperators = operatorsFromRequests;
-            console.log('[UserPage] Operadores obtenidos de solicitudes aprobadas:', this.linkedOperators);
-            console.log('[UserPage] Número de operadores encontrados en solicitudes:', this.linkedOperators.length);
-          } else {
-            console.log('[UserPage] No se encontraron solicitudes aprobadas');
-            this.linkedOperators = [];
-          }
-        } catch (reqError) {
-          console.error('[UserPage] Error al verificar solicitudes aprobadas:', reqError);
-          this.linkedOperators = [];
-        }
+        this.linkedOperators = [];
       }
     } catch (error: any) {
       console.error('Error al cargar operadores vinculados:', error);
-      
+
       if (error.error && error.error.detail) {
         console.error('Detalle del error:', error.error.detail);
       }
-      
+
       if (error.status) {
         console.error('Código de estado HTTP:', error.status);
       }
-      
+
       this.error = 'No se pudieron cargar los operadores vinculados';
       this.linkedOperators = [];
     } finally {
@@ -226,7 +160,7 @@ export class UserPage implements OnInit, OnDestroy {
     console.log('Navegando a AI Chat');
     this.router.navigateByUrl('/ai-chat');
   }
-  
+
   /**
    * Carga las solicitudes pendientes desde el backend
    * @returns Promise que se resuelve cuando se han cargado las solicitudes
@@ -234,24 +168,24 @@ export class UserPage implements OnInit, OnDestroy {
   async loadPendingRequests() {
     // Removemos esta validación para permitir la recarga forzada después de aprobar
     // if (this.activeTab !== 'requests') return;
-    
+
     this.isLoading = true;
     this.error = null;
-    
+
     try {
       console.log('[UserPage] Solicitando solicitudes pendientes de vinculación...');
       const response = await this.userLinkService.getReceivedLinkRequests('pending').toPromise();
       console.log('[UserPage] Respuesta de solicitudes pendientes:', response);
-      
+
       this.pendingRequests = response?.results || [];
       console.log('[UserPage] Número de solicitudes pendientes:', this.pendingRequests.length);
-      
+
       // Si hay solicitudes, mostrar IDs para depuración
       if (this.pendingRequests.length > 0) {
         console.log('[UserPage] IDs de solicitudes pendientes:',
           this.pendingRequests.map(req => `ID: ${req.id}, Operador: ${req.operator} (${req.operator_username})`));
       }
-      
+
       return response;
     } catch (error) {
       console.error('[UserPage] Error al cargar solicitudes recibidas:', error);
@@ -271,25 +205,25 @@ export class UserPage implements OnInit, OnDestroy {
   async respondToRequest(request: LinkRequest, status: 'approved' | 'rejected') {
     console.log(`[UserPage] Respondiendo a solicitud ID: ${request.id} con estado: ${status}`);
     console.log(`[UserPage] Detalles de la solicitud:`, request);
-    
+
     const loading = await this.loadingCtrl.create({
       message: status === 'approved' ? 'Aprobando solicitud...' : 'Rechazando solicitud...'
     });
     await loading.present();
-    
+
     try {
       // Verificar si la solicitud ya está en un estado final
       if (request.status !== 'pending') {
         console.error(`[UserPage] Error: La solicitud ya está en estado ${request.status}. No se puede cambiar a ${status}.`);
         throw new Error(`La solicitud ya está en estado ${request.status}. No se puede cambiar a ${status}.`);
       }
-      
+
       // Verificar si la solicitud está inactiva
       if (request.is_active === false) {
         console.error(`[UserPage] Error: La solicitud ID ${request.id} está inactiva y no puede ser procesada.`);
         throw new Error('Esta solicitud ya no está activa. No se puede procesar.');
       }
-      
+
       // Si se va a aprobar, verificar primero si ya existe un enlace
       if (status === 'approved') {
         try {
@@ -312,27 +246,27 @@ export class UserPage implements OnInit, OnDestroy {
         first_name: 'Operador',
         last_name: `#${request.operator}`
       };
-      
+
       console.log('Información del operador extraída de la solicitud:', operatorData);
-      
+
       // Responder a la solicitud
       const response = await this.userLinkService.respondToLinkRequest(request.id, status).toPromise();
       console.log('Respuesta de aceptación/rechazo:', response);
-      
+
       // Actualizar la lista de solicitudes
       await this.loadPendingRequests();
-      
+
       // Si se aprobó, también actualizar operadores vinculados
       if (status === 'approved') {
         console.log('[UserPage] Solicitud aprobada, agregando operador a la lista');
-        
+
         // Aumentamos el tiempo de espera para asegurar que el backend ha procesado completamente el cambio
         console.log('[UserPage] Esperando a que el backend procese el cambio...');
         await new Promise(resolve => setTimeout(resolve, 1000));
-        
+
         // Cambiar a la pestaña de operadores vinculados y forzar una recarga
         this.activeTab = 'linked';
-        
+
         // Registrar el operador de la solicitud en un array temporal para depuración
         const temporaryOperator: LinkedOperator = {
           id: request.operator,
@@ -344,35 +278,35 @@ export class UserPage implements OnInit, OnDestroy {
           first_name: 'Operador',
           last_name: `#${request.operator}`
         };
-        
+
         console.log('[UserPage] Operador de la solicitud aprobada:', temporaryOperator);
-        
+
         // Recargar explícitamente la lista de operadores vinculados desde el backend
         console.log('[UserPage] Recargando operadores vinculados desde el backend...');
         await this.loadLinkedOperators();
-        
+
         // Si no se encontraron operadores en la recarga, agregar temporalmente el de la solicitud
         if (this.linkedOperators.length === 0) {
           console.log('[UserPage] No se encontraron operadores en la recarga, agregando temporalmente el operador de la solicitud');
           this.linkedOperators = [temporaryOperator];
         }
       }
-      
+
       const alert = await this.alertCtrl.create({
         header: 'Éxito',
-        message: status === 'approved' 
-          ? 'Has aprobado la solicitud. El operador ahora está vinculado.' 
+        message: status === 'approved'
+          ? 'Has aprobado la solicitud. El operador ahora está vinculado.'
           : 'Has rechazado la solicitud.',
         buttons: ['OK']
       });
-      
+
       await alert.present();
     } catch (error: any) {
       console.error('Error al responder a la solicitud:', error);
-      
+
       // Mensaje de error personalizado según el tipo de error
       let errorMessage = 'No se pudo procesar la respuesta';
-      
+
       if (error.status === 500) {
         // Error específico para solicitudes que probablemente ya tienen un enlace
         if (request.id === 4) {
@@ -385,7 +319,7 @@ export class UserPage implements OnInit, OnDestroy {
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       const alert = await this.alertCtrl.create({
         header: 'Error',
         message: errorMessage,
@@ -398,7 +332,7 @@ export class UserPage implements OnInit, OnDestroy {
   }
 
   getStatusColor(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'pending': return 'warning';
       case 'approved': return 'success';
       case 'accepted': return 'success';  // Para compatibilidad con versiones anteriores
@@ -406,9 +340,9 @@ export class UserPage implements OnInit, OnDestroy {
       default: return 'medium';
     }
   }
-  
+
   getStatusText(status: string): string {
-    switch(status) {
+    switch (status) {
       case 'pending': return 'Pendiente';
       case 'approved': return 'Aprobada';
       case 'accepted': return 'Aprobada';  // Para compatibilidad con versiones anteriores
@@ -419,22 +353,22 @@ export class UserPage implements OnInit, OnDestroy {
 
   async logout() {
     await this.auth.logout();
-    
+
     // Navegamos a la página de login y forzamos recarga para asegurar estado limpio
     // Esto recargará completamente la aplicación
     window.location.href = '/login';
   }
-  
+
   startChatWithOperator(operator: LinkedOperator) {
     console.log('Iniciando chat con operador:', operator);
-    
+
     // Guardar información del operador seleccionado en localStorage para mantenerla entre páginas
     localStorage.setItem('selectedOperator', JSON.stringify({
       id: operator.id,
       username: operator.username,
       status: operator.status
     }));
-    
+
     // Navegar a la página de chat
     this.router.navigate(['/chat']);
   }

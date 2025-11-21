@@ -240,10 +240,10 @@ class LinkRequestUpdateSerializer(serializers.Serializer):
         
         # Si se aprueba, crear el vínculo
         if status == LinkRequestStatus.APPROVED:
-            OperatorUserLink.objects.create(
+            OperatorUserLink.objects.get_or_create(
                 operator=instance.operator,
                 user=instance.user,
-                link_request=instance
+                defaults={'link_request': instance}
             )
         
         return instance
