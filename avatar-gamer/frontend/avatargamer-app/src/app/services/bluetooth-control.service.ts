@@ -1,3 +1,5 @@
+/// <reference types="web-bluetooth" />
+
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
