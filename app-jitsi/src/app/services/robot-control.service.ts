@@ -3,6 +3,17 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Subject, Observable } from 'rxjs';
 
+export type RobotEventType = 'sent' | 'response' | 'error';
+
+export interface RobotEvent {
+  type: RobotEventType;
+  command: number;
+  url?: string;
+  res?: unknown;
+  err?: unknown;
+  timestamp: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -15,8 +26,8 @@ export class RobotControlService {
   private robotId = 1;
 
   // Subject público para que la UI pueda suscribirse y mostrar la "consola"
-  private eventsSubject = new Subject<any>();
-  public events$: Observable<any> = this.eventsSubject.asObservable();
+  private eventsSubject = new Subject<RobotEvent>();
+  public events$: Observable<RobotEvent> = this.eventsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
 

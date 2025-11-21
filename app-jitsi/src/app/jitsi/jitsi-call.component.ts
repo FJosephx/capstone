@@ -9,7 +9,10 @@ import { CommonModule } from '@angular/common';
 
 // 👇 IMPORTA el componente de controles
 import { RobotControlsComponent } from '../robot-controls/robot-controls.component';
-import { RobotControlService } from '../services/robot-control.service';
+import {
+  RobotControlService,
+  RobotEvent
+} from '../services/robot-control.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -29,7 +32,7 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   @Input() robotId: number = 1;
 
   private api: any;
-  public logs: Array<any> = [];
+  public logs: RobotEvent[] = [];
   private eventsSub: Subscription | null = null;
   public showConsole = true;
 
@@ -39,9 +42,9 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     this.enterFullscreen();
     this.startMeeting();
     // Suscribirse a eventos de comandos para mostrar en la consola
-    this.eventsSub = this.robotSvc.events$.subscribe((e) => {
+    this.eventsSub = this.robotSvc.events$.subscribe((event: RobotEvent) => {
       // Mantener sólo los últimos 200 eventos para no crecer indefinidamente
-      this.logs.push(e);
+      this.logs.push(event);
       if (this.logs.length > 200) this.logs.shift();
     });
   }
@@ -106,6 +109,38 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     });
   }
 
+  private enterFullscreen(): void {
+    if (typeof document === 'undefined') return;
+
+    const doc = this.el.nativeElement?.ownerDocument ?? document;
+    const target: FullscreenCapableElement =
+      doc.documentElement || this.el.nativeElement;
+
+    if (doc.fullscreenElement) return;
+
+    const requestFullscreen =
+      target.requestFullscreen ||
+      target.webkitRequestFullscreen ||
+      target.mozRequestFullScreen ||
+      target.msRequestFullscreen;
+
+    if (!requestFullscreen) {
+      console.warn('Fullscreen API no disponible en este navegador');
+      return;
+    }
+
+    try {
+      const maybePromise = requestFullscreen.call(target);
+      if (maybePromise && typeof (maybePromise as Promise<void>).catch === 'function') {
+        (maybePromise as Promise<void>).catch((err) =>
+          console.warn('No fue posible activar fullscreen', err)
+        );
+      }
+    } catch (err) {
+      console.warn('No fue posible activar fullscreen', err);
+    }
+  }
+
   ngOnDestroy() {
     if (this.api) {
       this.api.dispose();
@@ -113,3 +148,9 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
     if (this.eventsSub) this.eventsSub.unsubscribe();
   }
 }
+
+type FullscreenCapableElement = HTMLElement & {
+  webkitRequestFullscreen?: () => Promise<void> | void;
+  mozRequestFullScreen?: () => Promise<void> | void;
+  msRequestFullscreen?: () => Promise<void> | void;
+};
