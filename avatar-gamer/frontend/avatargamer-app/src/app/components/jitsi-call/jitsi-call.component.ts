@@ -27,6 +27,7 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   private api: any;
   public logs: Array<any> = [];
   public showConsole = true;
+  public showRobotControls = true;
   private eventsSub?: Subscription;
   isConnectingBt = false;
   private readonly isNativePlatform = Capacitor.isNativePlatform();

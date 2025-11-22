@@ -1,7 +1,19 @@
 <div class="jitsi-wrapper">
   <div id="jaas-container"></div>
 
-  <div class="controls-overlay" *ngIf="isOperator">
+  <!-- Botón para mostrar/ocultar controles del robot -->
+  <div class="toggle-controls-btn" *ngIf="isOperator">
+    <ion-button 
+      fill="solid" 
+      shape="round" 
+      size="small"
+      [color]="showRobotControls ? 'primary' : 'medium'"
+      (click)="showRobotControls = !showRobotControls">
+      <ion-icon [name]="showRobotControls ? 'eye-off-outline' : 'eye-outline'" slot="icon-only"></ion-icon>
+    </ion-button>
+  </div>
+
+  <div class="controls-overlay" *ngIf="isOperator && showRobotControls">
     <app-robot-controls [robotId]="robotId"></app-robot-controls>
   </div>
 
