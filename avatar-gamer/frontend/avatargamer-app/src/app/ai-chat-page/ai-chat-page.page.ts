@@ -3,6 +3,8 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { IonContent, IonicModule } from '@ionic/angular';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AIService, AIRequest, AIResponse } from '../services/ai.service';
+import { firstValueFrom } from 'rxjs';
 
 type ResponseLength = 'very_brief' | 'brief' | 'normal' | 'complete' | 'very_complete';
 
@@ -72,7 +74,10 @@ export class AiChatPage implements OnInit, OnDestroy {
   recognitionError: string | null = null;
   private recognition: any = null;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private aiService: AIService
+  ) {}
 
   ngOnInit(): void {
     this.chatForm = this.fb.group({
@@ -131,40 +136,44 @@ export class AiChatPage implements OnInit, OnDestroy {
     return looksLikeCodeFence || hasBracesOrTags;
   }
 
-  // Simulación/placeholder (reemplaza por tu servicio real)
   private async sendToAI(userMsg: ChatMessage): Promise<ChatMessage> {
-    await new Promise((r) => setTimeout(r, 600));
-    const demo: ChatMessage = {
-      id: crypto.randomUUID(),
-      isUser: false,
-      text:
-        this.responseLength === 'very_brief'
-          ? 'Hecho.'
-          : this.responseLength === 'brief'
-          ? 'Aquí tienes un resumen breve de tu consulta.'
-          : this.responseLength === 'normal'
-          ? 'Te comparto una respuesta detallada y directa acorde a tu consulta.'
-          : this.responseLength === 'complete'
-          ? 'A continuación, una respuesta completa con consideraciones adicionales.'
-          : 'Respuesta muy completa, con pasos, ejemplos y observaciones finales.',
-      timestamp: new Date(),
-      sources: [
-        { label: 'Fuente 1', url: 'https://example.com/fuente-1' },
-        { label: 'Fuente 2', url: 'https://example.com/fuente-2' },
-      ],
-    };
+    try {
+      // Preparar la petición
+      const request: AIRequest = {
+        text: userMsg.text,
+        response_length: this.responseLength,
+        character_name: 'sinclair',
+        language: this.language
+      };
 
-    if (this.maybeIsCode(userMsg.text)) {
-      demo.format = 'code';
-      demo.text = `// Ejemplo de respuesta de código
-function greet(name) {
-  return \`Hola, \${name}!\`;
-}
+      // Llamar al servicio real de IA
+      const response: AIResponse = await firstValueFrom(
+        this.aiService.sendMessage(request)
+      );
 
-console.log(greet('AvatarGamer'));`;
+      // Verificar que la respuesta sea válida
+      if (!response || !response.reply) {
+        throw new Error('Respuesta inválida de la IA');
+      }
+
+      // Crear mensaje de respuesta
+      const aiMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        isUser: false,
+        text: response.reply,
+        timestamp: new Date(),
+        format: this.maybeIsCode(response.reply) ? 'code' : 'text',
+      };
+
+      return aiMessage;
+
+    } catch (error: any) {
+      console.error('Error al comunicarse con la IA:', error);
+      
+      // Mensaje de error más descriptivo
+      const errorMsg = error?.message || 'Error desconocido';
+      throw new Error(`No se pudo obtener respuesta de la IA: ${errorMsg}`);
     }
-
-    return demo;
   }
 
   // -------- Timeline (chips + agrupación) --------
