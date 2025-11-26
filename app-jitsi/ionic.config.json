@@ -1,7 +1,0 @@
-{
-  "name": "app-jitsi",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
