@@ -65,7 +65,7 @@
 /* ===== Content ===== */
 .operator-content {
   --background: linear-gradient(180deg, var(--operator-bg-light) 0%, #d8e2ed 100%); /* Mejorado */
-  --padding-top: 56px; /* Altura del header para evitar que se corte */
+  --padding-top: calc(env(safe-area-inset-top) + 24px);
   
   @media (prefers-color-scheme: dark) {
     --background: linear-gradient(180deg, var(--operator-bg-dark) 0%, #1C2833 100%);
@@ -76,7 +76,7 @@
   padding: var(--layout-gap);
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: clamp(1.25rem, 4vw, 2rem); /* Espacio adicional después del header */
+  padding-top: clamp(0.5rem, 2vw, 1.25rem);
   padding-bottom: 80px; // Espacio para FAB
   display: flex;
   flex-direction: column;
@@ -129,6 +129,7 @@
 .welcome-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: clamp(0.75rem, 2vw, 1.25rem);
   padding: var(--card-padding);
   background: var(--card-bg-light);
@@ -181,6 +182,23 @@
     @media (prefers-color-scheme: dark) {
       color: var(--text-muted-dark);
     }
+  }
+}
+
+.logout-inline {
+  margin-left: auto;
+  align-self: flex-start;
+  --border-radius: 999px;
+  --padding-start: 0.75rem;
+  --padding-end: 0.75rem;
+  --background: transparent;
+  --color: var(--text-primary-light);
+  --border-color: color-mix(in srgb, var(--text-primary-light), #ffffff 60%);
+  font-weight: 600;
+
+  @media (prefers-color-scheme: dark) {
+    --color: var(--text-primary-dark);
+    --border-color: color-mix(in srgb, var(--text-primary-dark), #000 60%);
   }
 }
 
@@ -891,7 +909,7 @@ ion-fab-button.custom-fab {
 /* ===== Responsive ===== */
 @media (max-width: 767px) {
   .operator-content {
-    --padding-top: 52px; /* Header más compacto en móvil */
+    --padding-top: calc(env(safe-area-inset-top) + 20px);
   }
   
   .content-wrapper {
@@ -920,6 +938,12 @@ ion-fab-button.custom-fab {
     .welcome-icon {
       font-size: 1.75rem;
     }
+  }
+
+  .logout-inline {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
   }
   
   .welcome-text {

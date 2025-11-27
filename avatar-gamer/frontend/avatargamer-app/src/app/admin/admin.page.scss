@@ -4,44 +4,30 @@
   color: var(--ag-text);
 }
 
-ion-content {
+.admin-content {
   --background: linear-gradient(180deg, #fdfefe 0%, #f3f6fb 65%);
-  --padding-top: 56px; /* Espacio para el header fijo */
+  --padding-top: calc(env(safe-area-inset-top) + 24px);
+  padding: clamp(1rem, 2vw, 1.5rem);
 }
+
 @media (prefers-color-scheme: dark) {
-  ion-content {
+  .admin-content {
     --background: linear-gradient(180deg, var(--ag-bg), color-mix(in oklab, var(--ag-bg), #0f172a 12%));
-  }
-}
-
-/* ===== Header ===== */
-ion-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-  
-  ion-toolbar[color="primary"] {
-    --background: var(--ag-surface);
-    --color: var(--ag-text);
-    --border-color: transparent;
-    border-bottom: 1px solid var(--ion-border-color);
-    box-shadow: 0 8px 20px rgba(15, 23, 42, .08);
-
-    ion-title { font-weight: 800; letter-spacing: .01em; color: var(--ag-text); }
-    ion-button {
-      --color: var(--ag-primary);
-      --background: transparent;
-      --box-shadow: none;
-      min-height: 44px;
-    }
   }
 }
 
 /* ===== Encabezado de página ===== */
 .admin-header {
   margin-bottom: var(--ag-space-md, 1rem);
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+
+  .admin-header__text {
+    flex: 1;
+    min-width: 200px;
+  }
 
   h1 {
     margin: 0 0 .25rem;
@@ -56,6 +42,35 @@ ion-header {
     margin: 0;
     color: var(--ag-muted);
     font-size: 1rem;
+  }
+
+  .logout-inline {
+    margin-left: auto;
+    align-self: flex-start;
+    --border-radius: 999px;
+    --padding-start: 0.85rem;
+    --padding-end: 0.85rem;
+    --background: transparent;
+    --color: var(--ag-text);
+    --border-color: color-mix(in srgb, var(--ag-text), #ffffff 55%);
+    font-weight: 700;
+
+    @media (prefers-color-scheme: dark) {
+      --color: var(--ion-text-color);
+      --border-color: color-mix(in srgb, var(--ion-text-color), #000 60%);
+    }
+  }
+}
+
+@media (max-width: 767px) {
+  .admin-header {
+    flex-direction: column;
+
+    .logout-inline {
+      width: 100%;
+      margin-left: 0;
+      justify-content: center;
+    }
   }
 }
 

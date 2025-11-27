@@ -62,7 +62,7 @@
 /* ===== Content ===== */
 .user-content {
   --background: linear-gradient(180deg, var(--user-bg-light) 0%, #d8e2ed 100%);
-  --padding-top: 56px; /* Altura del header para evitar que se corte */
+  --padding-top: calc(env(safe-area-inset-top) + 20px);
   
   @media (prefers-color-scheme: dark) {
     --background: linear-gradient(180deg, var(--user-bg-dark) 0%, #1C2833 100%);
@@ -73,7 +73,7 @@
   padding: 1rem;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 0.5rem; /* Espacio adicional después del header */
+  padding-top: 0.5rem;
   padding-bottom: 80px;
 }
 
@@ -85,6 +85,7 @@
 .welcome-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
   padding: 1.5rem;
   background: var(--card-bg-light);
@@ -137,6 +138,23 @@
     @media (prefers-color-scheme: dark) {
       color: var(--text-muted-dark);
     }
+  }
+}
+
+.logout-inline {
+  margin-left: auto;
+  align-self: flex-start;
+  --border-radius: 999px;
+  --padding-start: 0.75rem;
+  --padding-end: 0.75rem;
+  --background: transparent;
+  --color: var(--text-primary-light);
+  --border-color: color-mix(in srgb, var(--text-primary-light), #ffffff 60%);
+  font-weight: 600;
+
+  @media (prefers-color-scheme: dark) {
+    --color: var(--text-primary-dark);
+    --border-color: color-mix(in srgb, var(--text-primary-dark), #000 60%);
   }
 }
 
@@ -607,17 +625,24 @@
 /* ===== Responsive ===== */
 @media (max-width: 767px) {
   .user-content {
-    --padding-top: 52px; /* Header más compacto en móvil */
+    --padding-top: calc(env(safe-area-inset-top) + 16px);
   }
   
   .content-wrapper {
     padding: 0.75rem;
-    padding-top: 0.5rem; /* Mantener espacio pequeño en móvil */
+    padding-top: 0.5rem;
     padding-bottom: 70px;
   }
   
   .welcome-header {
     padding: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logout-inline {
+    width: 100%;
+    margin-left: 0;
+    justify-content: center;
   }
   
   .welcome-text {

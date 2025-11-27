@@ -1,25 +1,18 @@
-<ion-header [translucent]="true">
-  <ion-toolbar color="primary">
-    <ion-title>Panel de Administrador</ion-title>
-
-    <ion-buttons slot="end">
-      <!-- Accesible: etiqueta aria y solo-icon -->
-      <ion-button aria-label="Cerrar sesión" (click)="logout()">
-        <ion-icon name="log-out-outline" slot="icon-only"></ion-icon>
-      </ion-button>
-    </ion-buttons>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content [fullscreen]="true" class="ion-padding">
+<ion-content [fullscreen]="true" class="admin-content">
   <!-- Encabezado -->
   <section class="admin-header" aria-labelledby="admin-welcome-title">
-    <h1 id="admin-welcome-title">
-      Bienvenido, {{ userProfile?.username || 'admin' }}
-    </h1>
-    <p class="page-info">
-      Gestiona los usuarios y configura el sistema desde este panel.
-    </p>
+    <div class="admin-header__text">
+      <h1 id="admin-welcome-title">
+        Bienvenido, {{ userProfile?.username || 'admin' }}
+      </h1>
+      <p class="page-info">
+        Gestiona los usuarios y configura el sistema desde este panel.
+      </p>
+    </div>
+    <ion-button fill="outline" size="small" (click)="logout()" class="logout-inline">
+      <ion-icon name="log-out-outline" slot="start"></ion-icon>
+      <span>Cerrar sesión</span>
+    </ion-button>
   </section>
 
   <!-- Info de cuenta -->
