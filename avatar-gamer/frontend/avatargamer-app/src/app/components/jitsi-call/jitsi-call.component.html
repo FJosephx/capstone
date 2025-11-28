@@ -24,7 +24,8 @@
       color="primary"
       [disabled]="isConnectingBt"
       (click)="connectBluetooth()">
-      <ion-icon name="bluetooth" slot="start"></ion-icon>
+      <ion-spinner slot="start" *ngIf="isConnectingBt"></ion-spinner>
+      <ion-icon name="bluetooth" slot="start" *ngIf="!isConnectingBt"></ion-icon>
       {{ isConnectingBt ? 'Conectando...' : 'Conectar Arduino por Bluetooth' }}
     </ion-button>
   </div>

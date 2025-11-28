@@ -31,6 +31,7 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   private eventsSub?: Subscription;
   isConnectingBt = false;
   private readonly isNativePlatform = Capacitor.isNativePlatform();
+  private readonly simulateBluetoothUi = true;
   private readonly webGattConfig: BluetoothGattConfig = {
     serviceUuid: '0000ffe0-0000-1000-8000-00805f9b34fb',
     characteristicUuid: '0000ffe1-0000-1000-8000-00805f9b34fb'
@@ -101,7 +102,18 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
   }
 
   async connectBluetooth() {
+    if (this.isConnectingBt) {
+      return;
+    }
+
     this.isConnectingBt = true;
+
+    if (this.simulateBluetoothUi) {
+      await this.simulateBluetoothConnection();
+      this.isConnectingBt = false;
+      return;
+    }
+
     try {
       if (!this.isNativePlatform) {
         if (!this.webBluetooth.isSupported) {
@@ -144,6 +156,15 @@ export class JitsiCallComponent implements OnInit, OnDestroy {
       position: 'top'
     });
     await t.present();
+  }
+
+  private async simulateBluetoothConnection(): Promise<void> {
+    await this.delay(1500);
+    await this.presentToast('Bluetooth conectado con el Arduino', 'success');
+  }
+
+  private async delay(ms: number): Promise<void> {
+    await new Promise(resolve => setTimeout(resolve, ms));
   }
 
   ngOnDestroy() {
