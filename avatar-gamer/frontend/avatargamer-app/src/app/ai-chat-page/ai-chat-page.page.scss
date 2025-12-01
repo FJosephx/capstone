@@ -50,6 +50,7 @@
 // Contenido del chat IA
 .ai-chat-content {
   --background: linear-gradient(to bottom, #f8f9fa 0%, #ffffff 100%);
+  --padding-top: calc(var(--ion-safe-area-top, 0px) + 4.5rem);
 }
 
 .chat-wrapper {
